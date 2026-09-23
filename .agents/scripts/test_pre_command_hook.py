@@ -276,6 +276,25 @@ class TestHookExecution(unittest.TestCase):
             self.assertIn("Google API Key", reason)
             self.assertIn("[REDACTED]", reason)
 
+    def test_shell_script_non_git_fast_path(self):
+        # Non-git command should return allow immediately
+        payload = {
+            "toolCall": {
+                "name": "run_command",
+                "args": {"CommandLine": "ls -la"},
+            }
+        }
+        res = subprocess.run(
+            [os.path.join(SCRIPT_DIR, "pre-command-hook.sh")],
+            input=json.dumps(payload),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.assertEqual(res.returncode, 0)
+        data = json.loads(res.stdout)
+        self.assertEqual(data.get("decision"), "allow")
+
 
 if __name__ == "__main__":
     unittest.main()
