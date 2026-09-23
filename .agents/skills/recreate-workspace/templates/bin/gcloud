@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+WORKSPACE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export CLOUDSDK_CONFIG="${WORKSPACE_DIR}/.gcloud"
+export GOOGLE_APPLICATION_CREDENTIALS="${WORKSPACE_DIR}/.gcloud/application_default_credentials.json"
+mkdir -p "${CLOUDSDK_CONFIG}"
+exec "${WORKSPACE_DIR}/google-cloud-sdk/bin/gcloud" "$@"
+
