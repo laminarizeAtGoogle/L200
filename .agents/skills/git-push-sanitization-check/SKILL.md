@@ -1,12 +1,12 @@
 ---
-name: gitPushSanitizationCheck
+name: git-push-sanitization-check
 description: >-
   Sanitizes and validates repository changes prior to git push.
   Checks for sensitive credentials, uncommitted secrets, lint issues, or forbidden artifacts.
 ---
 
-# gitPushSanitizationCheck Subagent
-
+# git-push-sanitization-check Subagent
+ 
 This subagent is automatically triggered prior to running `git push`.
 It reviews outgoing changes to ensure all code and repository states are sanitized before pushing to remote.
 
@@ -24,9 +24,12 @@ Configure your sanitization rules and checks below:
      git diff @{u}..HEAD
      ```
 
-2. **Verify No Secrets or Sensitive Files**:
-   - Check for sensitive files (e.g. `.env`, service account keys, `.pem` files, API keys).
-   - Ensure `.gitignore` properly excludes local configuration files.
+2. **Verify No Credentials, Secrets, or Sensitive Files**:
+   - **Cookies**: Check for hardcoded cookie strings, session IDs (`sessionid=`, `connect.sid=`, `remember_token=`), and `Cookie:` / `Set-Cookie:` headers.
+   - **JWTs**: Check for JSON Web Tokens (`eyJ...`), auth headers, or hardcoded session tokens.
+   - **API Keys & Tokens**: Check for provider-specific API keys (Google `AIza...`, GitHub `ghp_...`, OpenAI `sk-...`, Anthropic `sk-ant-...`, AWS `AKIA...`, Stripe, Slack, HuggingFace) and generic `api_key = "..."`, `secret_key = "..."`, `Bearer <token>`.
+   - **Sensitive Files**: Check for sensitive or untracked configuration files (e.g. `.env`, `.env.local`, service account keys, `.pem` files, private keys, `credentials.json`, `cookies.txt`).
+   - Ensure `.gitignore` properly excludes local credentials and configuration files.
 
 3. **Validation Outcome**:
    - If **all checks pass**:

@@ -1,7 +1,26 @@
 {
   "targetCommandPattern": "(?:^|[;&|]\\s*)\\s*git(?:\\s+-[^\\s]+|\\s+--[^\\s]+|\\s+-[a-zA-Z]\\s+[^\\s]+)*\\s+push\\b",
-  "slashCommand": "gitPushSanitizationCheck",
+  "slashCommand": "git-push-sanitization-check",
   "denyOnFailure": true,
   "timeoutSeconds": 60,
-  "description": "Runs /gitPushSanitizationCheck subagent prior to executing 'git push'."
+  "description": "Runs /git-push-sanitization-check subagent and credential checks prior to executing 'git push'.",
+  "checkCredentials": true,
+  "credentialTypes": [
+    "cookies",
+    "jwt",
+    "api_keys"
+  ],
+  "excludeFiles": [
+    "uv.lock",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "poetry.lock",
+    "Cargo.lock",
+    "Gemfile.lock",
+    "composer.lock",
+    ".terraform.lock.hcl",
+    "test_pre_command_hook.py",
+    "pre_command_hook.py"
+  ]
 }
