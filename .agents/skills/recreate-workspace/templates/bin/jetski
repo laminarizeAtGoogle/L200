@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Launch Jetski CLI within the L200 workspace environment
+exec /google/bin/releases/jetski-devs/tools/cli "$@"
