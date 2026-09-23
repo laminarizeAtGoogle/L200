@@ -9,6 +9,7 @@ Intercepts tool executions (specifically run_command), detects matching commands
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -355,6 +356,109 @@ def run_credential_checks(cwd: str, config: dict) -> list:
     return findings
 
 
+def get_git_aliases(cwd: str) -> dict:
+    """Retrieves all configured git aliases for the current repository and environment."""
+    aliases = {}
+    try:
+        res = subprocess.run(
+            ["git", "config", "--get-regexp", r"^alias\."],
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if res.returncode == 0:
+            for line in res.stdout.splitlines():
+                parts = line.split(None, 1)
+                if len(parts) == 2 and parts[0].startswith("alias."):
+                    alias_name = parts[0][6:]
+                    aliases[alias_name] = parts[1].strip()
+    except Exception:
+        pass
+    return aliases
+
+
+def get_git_subcommands(command_line: str) -> list:
+    """Extracts git subcommands from a compound shell command line."""
+    subcommands = []
+    # Match segments starting with git (e.g. 'git push', '/usr/bin/git p')
+    git_segments = re.finditer(
+        r"(?:^|[;&|])\s*(?:/[a-zA-Z0-9_.-]+/)?git\b(?P<args>[^;&|]*)",
+        command_line,
+    )
+    flags_with_arg = {
+        "-C", "-c", "--git-dir", "--work-tree",
+        "--namespace", "--exec-path", "--config-env",
+    }
+    for m in git_segments:
+        raw_args = m.group("args").strip()
+        try:
+            tokens = shlex.split(raw_args)
+        except Exception:
+            tokens = raw_args.split()
+
+        idx = 0
+        while idx < len(tokens):
+            tok = tokens[idx]
+            if tok in flags_with_arg:
+                idx += 2
+                continue
+            elif any(tok.startswith(f"{f}=") for f in flags_with_arg):
+                idx += 1
+                continue
+            elif tok.startswith("-"):
+                idx += 1
+                continue
+            else:
+                subcommands.append(tok)
+                break
+            idx += 1
+    return subcommands
+
+
+def resolve_alias_to_subcommand(subcmd: str, aliases: dict, depth: int = 0) -> str:
+    """Recursively resolves a git subcommand through aliases."""
+    if depth > 5:
+        return subcmd
+    if subcmd in aliases:
+        expansion = aliases[subcmd].strip()
+        if expansion.startswith("!"):
+            return expansion
+        first_word = expansion.split()[0] if expansion.split() else expansion
+        return resolve_alias_to_subcommand(first_word, aliases, depth + 1)
+    return subcmd
+
+
+def is_target_command(
+    command_line: str,
+    cwd: str,
+    pattern: str,
+    target_subcommand: str = "push",
+) -> bool:
+    """Checks if command_line matches the target pattern directly or via git alias expansion."""
+    if not command_line:
+        return False
+    # Direct regex match (fast path)
+    if re.search(pattern, command_line, re.IGNORECASE):
+        return True
+
+    # Check for git alias expansion
+    subcommands = get_git_subcommands(command_line)
+    if not subcommands:
+        return False
+
+    aliases = get_git_aliases(cwd)
+    if not aliases:
+        return False
+
+    for subcmd in subcommands:
+        resolved = resolve_alias_to_subcommand(subcmd, aliases)
+        if resolved == target_subcommand or f" {target_subcommand} " in f" {resolved} ":
+            return True
+
+    return False
+
+
 def find_agy_binary():
     """Finds the agy CLI binary path."""
     which_path = shutil.which("agy")
@@ -419,11 +523,6 @@ def main():
     timeout_sec = config.get("timeoutSeconds", 60)
     check_credentials = config.get("checkCredentials", True)
 
-    # Check if this command matches the target pattern
-    if not command_line or not re.search(pattern, command_line, re.IGNORECASE):
-        print(json.dumps({"decision": "allow"}))
-        return
-
     # Determine workspace directory
     workspace_paths = payload.get("workspacePaths", [])
     if workspace_paths and os.path.isdir(workspace_paths[0]):
@@ -431,6 +530,11 @@ def main():
     else:
         # Default to repository root (parent of .agents)
         cwd = os.path.abspath(os.path.join(script_dir, "..", ".."))
+
+    # Check if this command matches the target pattern directly or via git aliases
+    if not is_target_command(command_line, cwd, pattern, target_subcommand="push"):
+        print(json.dumps({"decision": "allow"}))
+        return
 
     # Credential Check Gate
     if check_credentials:

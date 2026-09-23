@@ -295,6 +295,37 @@ class TestHookExecution(unittest.TestCase):
         data = json.loads(res.stdout)
         self.assertEqual(data.get("decision"), "allow")
 
+    def test_git_alias_resolution(self):
+        aliases = {
+            "p": "push",
+            "pub": "push origin main",
+            "st": "status",
+            "pp": "p",
+        }
+        self.assertEqual(pre_command_hook.resolve_alias_to_subcommand("p", aliases), "push")
+        self.assertEqual(pre_command_hook.resolve_alias_to_subcommand("pub", aliases), "push")
+        self.assertEqual(pre_command_hook.resolve_alias_to_subcommand("pp", aliases), "push")
+        self.assertEqual(pre_command_hook.resolve_alias_to_subcommand("st", aliases), "status")
+        self.assertEqual(pre_command_hook.resolve_alias_to_subcommand("commit", aliases), "commit")
+
+    def test_is_target_command_with_aliases(self):
+        from unittest.mock import patch
+        mock_aliases = {"p": "push", "publish": "push origin HEAD", "st": "status"}
+
+        pattern = r"(?:^|[;&|]\s*)\s*git(?:\s+-[^\s]+|\s+--[^\s]+|\s+-[a-zA-Z]\s+[^\s]+)*\s+push\b"
+        with patch("pre_command_hook.get_git_aliases", return_value=mock_aliases):
+            # Literal push matches
+            self.assertTrue(pre_command_hook.is_target_command("git push origin main", "/tmp", pattern))
+            # Aliased push matches
+            self.assertTrue(pre_command_hook.is_target_command("git p origin main", "/tmp", pattern))
+            self.assertTrue(pre_command_hook.is_target_command("git -C /some/dir p", "/tmp", pattern))
+            self.assertTrue(pre_command_hook.is_target_command("git publish", "/tmp", pattern))
+            # Other git commands or aliases do not match
+            self.assertFalse(pre_command_hook.is_target_command("git st", "/tmp", pattern))
+            self.assertFalse(pre_command_hook.is_target_command("git status", "/tmp", pattern))
+            self.assertFalse(pre_command_hook.is_target_command("git commit -m 'msg'", "/tmp", pattern))
+            self.assertFalse(pre_command_hook.is_target_command("ls -la", "/tmp", pattern))
+
 
 if __name__ == "__main__":
     unittest.main()
