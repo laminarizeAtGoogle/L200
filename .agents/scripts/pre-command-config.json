@@ -1,0 +1,7 @@
+{
+  "targetCommandPattern": "(?:^|[;&|]\\s*)\\s*git(?:\\s+-[^\\s]+|\\s+--[^\\s]+|\\s+-[a-zA-Z]\\s+[^\\s]+)*\\s+push\\b",
+  "slashCommand": "gitPushSanitizationCheck",
+  "denyOnFailure": true,
+  "timeoutSeconds": 60,
+  "description": "Runs /gitPushSanitizationCheck subagent prior to executing 'git push'."
+}
