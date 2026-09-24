@@ -29,6 +29,7 @@ All tools, runtimes, dependencies, and credentials are strictly isolated to this
 
 | File / Directory | Purpose |
 |---|---|
+| [`scripts/`](scripts/) | Operational scripts, including Argolis zero-privilege IAM boundary provisioner (`provision-argolis-env.sh`). |
 | [`relocate.sh`](relocate.sh) | Portable workspace relocator to dynamically update environment paths when extracted or moved. |
 | [`terraform/`](terraform/) | Terraform manifests: provider, compute instance, firewall, variables, and outputs. |
 | [`terraform/terraform.tfvars.example`](terraform/terraform.tfvars.example) | Example variable configuration for Argolis projects and instances. |
@@ -96,7 +97,24 @@ This automatically updates `.env` with the new working directory's absolute path
 
 ---
 
-### 4. Terraform Development
+### 4. Argolis Zero-Privilege Security Boundary (Fresh Environments)
+To enforce a hard security boundary at the IAM layer preventing local coding agents from escalating privileges or making unauthorized GCP modifications:
+
+1. **Run Provisioner as Super Admin** (in Cloud Shell or privileged terminal):
+   ```bash
+   ./scripts/provision-argolis-env.sh --project <YOUR_ARGOLIS_PROJECT_ID>
+   ```
+
+2. **Configure Cloudtop to Impersonate the Read-Only Service Account**:
+   ```bash
+   gcloud config set auth/impersonate_service_account cloudtop-agent-reader@<YOUR_ARGOLIS_PROJECT_ID>.iam.gserviceaccount.com
+   ```
+
+For detailed architectural patterns, threat model, and privileged Terraform execution rules, see [`scripts/README.md`](scripts/README.md).
+
+---
+
+### 5. Terraform Development
 The Terraform configuration in [`terraform/`](terraform/) deploys and manages Argolis Compute Engine instances.
 
 1. **Configure Variables**:
@@ -128,7 +146,7 @@ The Terraform configuration in [`terraform/`](terraform/) deploys and manages Ar
 
 ---
 
-### 5. GitHub Tracking & Git Workflow
+### 6. GitHub Tracking & Git Workflow
 
 The workspace is initialized as a git repository with strict `.gitignore` rules that prevent credentials, local state, or heavy binaries from being committed.
 
@@ -160,7 +178,7 @@ The workspace is initialized as a git repository with strict `.gitignore` rules 
 
 ---
 
-### 6. Google Agent Development Kit (ADK) & Python
+### 7. Google Agent Development Kit (ADK) & Python
 
 ```bash
 # Run verification script
@@ -172,7 +190,7 @@ The workspace is initialized as a git repository with strict `.gitignore` rules 
 
 ---
 
-### 7. Spec-Driven Development with OpenSpec
+### 8. Spec-Driven Development with OpenSpec
 
 OpenSpec structures AI development around formal specifications, design choices, and implementation tasks.
 
