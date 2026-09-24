@@ -29,7 +29,7 @@ All tools, runtimes, dependencies, and credentials are strictly isolated to this
 
 | File / Directory | Purpose |
 |---|---|
-| [`scripts/`](scripts/) | Operational scripts, including Argolis zero-privilege IAM boundary provisioner (`provision-argolis-env.sh`). |
+| [`relocate.sh`](relocate.sh) | Portable workspace relocator to dynamically update environment paths when extracted or moved. |
 | [`terraform/`](terraform/) | Terraform manifests: provider, compute instance, firewall, variables, and outputs. |
 | [`terraform/terraform.tfvars.example`](terraform/terraform.tfvars.example) | Example variable configuration for Argolis projects and instances. |
 | [`bin/argolis`](bin/argolis) | Helper CLI for managing Argolis instances (`status`, `list`, `ssh`, `start`, `stop`). |
@@ -87,20 +87,12 @@ Authenticate and manage your Argolis project and instances:
 
 ---
 
-### 3. Argolis Zero-Privilege Security Boundary (Fresh Environments)
-To enforce a hard security boundary at the IAM layer preventing local coding agents from escalating privileges or making unauthorized GCP modifications:
-
-1. **Run Provisioner as Super Admin** (in Cloud Shell or privileged terminal):
-   ```bash
-   ./scripts/provision-argolis-env.sh --project <YOUR_ARGOLIS_PROJECT_ID>
-   ```
-
-2. **Configure Cloudtop to Impersonate the Read-Only Service Account**:
-   ```bash
-   gcloud config set auth/impersonate_service_account cloudtop-agent-reader@<YOUR_ARGOLIS_PROJECT_ID>.iam.gserviceaccount.com
-   ```
-
-For detailed architectural patterns, threat model, and privileged Terraform execution rules, see [`scripts/README.md`](scripts/README.md).
+### 3. Workspace Portability & Relocation
+When extracting the workspace from a portable backup archive or moving it to another directory:
+```bash
+./relocate.sh
+```
+This automatically updates `.env` with the new working directory's absolute paths, relocates `.venv/pyvenv.cfg` and virtualenv shebangs, and runs `main.py` to verify full operation.
 
 ---
 
