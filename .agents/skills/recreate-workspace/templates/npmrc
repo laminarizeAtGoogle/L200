@@ -1,3 +1,0 @@
-# Internal Corp Airlock npm registry configuration
-registry=http://airlock-proxy.uplink.goog:999/npm/artifact-foundry-prod/ah-3p-staging-npm/
-
