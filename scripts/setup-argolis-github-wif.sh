@@ -112,6 +112,17 @@ if [[ -z "${PROJECT_ID}" ]]; then
   fi
 fi
 
+# GCP project IDs must be strictly lowercase
+if [[ "${PROJECT_ID}" =~ [A-Z] ]]; then
+  ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+  echo "Error: GCP Project ID '${PROJECT_ID}' contains uppercase letters, which are invalid in Google Cloud." >&2
+  if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" ]]; then
+    echo "Hint: Your active gcloud project is '${ACTIVE_GCLOUD_PROJECT}'. Try running with:" >&2
+    echo "  $(basename "$0") --project ${ACTIVE_GCLOUD_PROJECT} --repo ${REPO:-<OWNER/REPO>}" >&2
+  fi
+  exit 1
+fi
+
 # Validate Repo
 if [[ -z "${REPO}" ]]; then
   # Try to detect git remote if run inside a repo
@@ -150,7 +161,15 @@ echo ""
 
 # 1. Retrieve Project Number
 echo "==> [1/7] Discovering project number..."
-PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
+if ! PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)" 2>/dev/null); then
+  echo "Error: Could not find or access GCP project '${PROJECT_ID}'." >&2
+  echo "Please verify that the project ID is correct and that you have permissions on it." >&2
+  ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+  if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" && "${ACTIVE_GCLOUD_PROJECT}" != "${PROJECT_ID}" ]]; then
+    echo "Notice: Your active gcloud project is '${ACTIVE_GCLOUD_PROJECT}'." >&2
+  fi
+  exit 1
+fi
 echo "    Project Number: ${PROJECT_NUMBER}"
 
 # 2. Enable Required APIs
