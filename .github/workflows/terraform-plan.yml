@@ -1,0 +1,93 @@
+name: Terraform Plan on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+concurrency:
+  group: terraform-plan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+
+    env:
+      TF_WORKING_DIR: 'terraform'
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID || vars.GCP_PROJECT_ID }}
+      WIF_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER || vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      WIF_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT || vars.GCP_SERVICE_ACCOUNT }}
+      TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET || vars.TF_STATE_BUCKET }}
+      TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID || vars.GCP_PROJECT_ID }}
+      TF_VAR_region: ${{ secrets.GCP_REGION || vars.GCP_REGION || 'us-central1' }}
+      TF_VAR_zone: ${{ secrets.GCP_ZONE || vars.GCP_ZONE || 'us-central1-a' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Required Configuration
+        run: |
+          if [ -z "${WIF_PROVIDER}" ] || [ -z "${WIF_SERVICE_ACCOUNT}" ] || [ -z "${GCP_PROJECT_ID}" ]; then
+            echo "::error::Missing required GCP configuration. Please set repository secrets or variables:"
+            echo "  - GCP_WORKLOAD_IDENTITY_PROVIDER (or secret)"
+            echo "  - GCP_SERVICE_ACCOUNT (or secret)"
+            echo "  - GCP_PROJECT_ID (or secret)"
+            exit 1
+          fi
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT }}
+          token_format: access_token
+          create_credentials_file: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.4
+          terraform_wrapper: false
+
+      - name: Terraform Format Check
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform fmt -check -diff
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          echo "Initializing Terraform..."
+          if [ -n "${TF_STATE_BUCKET}" ]; then
+            echo "Configuring remote GCS backend with bucket: ${TF_STATE_BUCKET}"
+            if ! grep -q 'backend "gcs"' versions.tf 2>/dev/null && [ ! -f backend.tf ]; then
+              echo 'terraform { backend "gcs" {} }' > backend.tf
+            fi
+            terraform init -input=false \
+              -backend-config="bucket=${TF_STATE_BUCKET}" \
+              -backend-config="prefix=terraform/state"
+          else
+            echo "Notice: TF_STATE_BUCKET not specified. Running local backend init."
+            terraform init -input=false
+          fi
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -input=false

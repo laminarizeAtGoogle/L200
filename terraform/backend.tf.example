@@ -1,0 +1,22 @@
+# ==============================================================================
+# Terraform Remote Backend Configuration for Google Cloud Storage (GCS)
+# ==============================================================================
+# When running Terraform in CI/CD (GitHub Actions), state must be stored remotely
+# in Cloud Storage so that ephemeral runner instances share persistent state.
+#
+# USAGE:
+# 1. To enable locally, copy this file to `backend.tf`:
+#      cp backend.tf.example backend.tf
+# 2. Fill in your Argolis state bucket name below, or initialize dynamically:
+#      terraform init -backend-config="bucket=<YOUR_ARGOLIS_TFSTATE_BUCKET>"
+#
+# NOTE: In GitHub Actions, the workflow automatically injects this configuration
+# using the TF_STATE_BUCKET repository variable/secret.
+# ==============================================================================
+
+terraform {
+  backend "gcs" {
+    # bucket = "YOUR_ARGOLIS_TFSTATE_BUCKET_NAME"
+    prefix = "terraform/state"
+  }
+}
