@@ -92,7 +92,102 @@ if [[ -z "${PROJECT_ID}" || "${PROJECT_ID}" == "<YOUR_BOOTSTRAP_OR_MANAGEMENT_PR
   fi
 fi
 
+# GCP project IDs must be strictly lowercase
+if [[ "${PROJECT_ID}" =~ [A-Z] ]]; then
+  ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+  echo "Error: GCP Project ID '${PROJECT_ID}' contains uppercase letters, which are invalid in Google Cloud." >&2
+  if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" ]]; then
+    echo "Hint: Your active gcloud project is '${ACTIVE_GCLOUD_PROJECT}'. Try running with:" >&2
+    echo "  $(basename "$0") --project ${ACTIVE_GCLOUD_PROJECT}" >&2
+  fi
+  exit 1
+fi
+
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
+
+# Helper: Add an IAM policy binding at the organization level with retries for eventual consistency
+add_org_iam_binding_with_retry() {
+  local org_id="$1"
+  local member="$2"
+  local role="$3"
+  local max_attempts=12
+  local delay=5
+  local attempt=1
+  local err_file
+  err_file=$(mktemp)
+
+  while (( attempt <= max_attempts )); do
+    if gcloud organizations add-iam-policy-binding "${org_id}" \
+      --member="${member}" \
+      --role="${role}" \
+      --quiet > /dev/null 2>"${err_file}"; then
+      rm -f "${err_file}"
+      return 0
+    fi
+
+    local err_msg
+    err_msg=$(cat "${err_file}")
+
+    if [[ "${err_msg}" =~ "does not exist" || "${err_msg}" =~ "INVALID_ARGUMENT" ]]; then
+      echo "    ⏳ Service account propagation in progress (attempt ${attempt}/${max_attempts}). Retrying in ${delay}s..."
+      sleep "${delay}"
+      ((attempt++))
+    else
+      echo "Error: Failed to bind ${role} to ${member} on Org ${org_id}:" >&2
+      cat "${err_file}" >&2
+      rm -f "${err_file}"
+      return 1
+    fi
+  done
+
+  echo "Error: Failed to bind ${role} to ${member} on Org ${org_id} after ${max_attempts} attempts." >&2
+  cat "${err_file}" >&2
+  rm -f "${err_file}"
+  return 1
+}
+
+# Helper: Add an IAM policy binding to a service account with retries
+add_sa_iam_binding_with_retry() {
+  local sa_email="$1"
+  local project_id="$2"
+  local member="$3"
+  local role="$4"
+  local max_attempts=10
+  local delay=5
+  local attempt=1
+  local err_file
+  err_file=$(mktemp)
+
+  while (( attempt <= max_attempts )); do
+    if gcloud iam service-accounts add-iam-policy-binding "${sa_email}" \
+      --project="${project_id}" \
+      --member="${member}" \
+      --role="${role}" \
+      --quiet > /dev/null 2>"${err_file}"; then
+      rm -f "${err_file}"
+      return 0
+    fi
+
+    local err_msg
+    err_msg=$(cat "${err_file}")
+
+    if [[ "${err_msg}" =~ "does not exist" || "${err_msg}" =~ "not found" || "${err_msg}" =~ "INVALID_ARGUMENT" ]]; then
+      echo "    ⏳ Service account binding in progress (attempt ${attempt}/${max_attempts}). Retrying in ${delay}s..."
+      sleep "${delay}"
+      ((attempt++))
+    else
+      echo "Error: Failed to bind ${role} to ${member} on ${sa_email}:" >&2
+      cat "${err_file}" >&2
+      rm -f "${err_file}"
+      return 1
+    fi
+  done
+
+  echo "Error: Failed to bind ${role} to ${member} on ${sa_email} after ${max_attempts} attempts." >&2
+  cat "${err_file}" >&2
+  rm -f "${err_file}"
+  return 1
+}
 
 echo "================================================================="
 echo "Argolis Zero-Privilege IAM Security Boundary Provisioner"
@@ -123,7 +218,9 @@ echo "Discovered Organization ID: ${ORG_ID}"
 # Step 2: Ensure required APIs are enabled
 echo "==> 2. Ensuring required APIs are enabled in project ${PROJECT_ID}..."
 gcloud services enable \
+  iam.googleapis.com \
   iamcredentials.googleapis.com \
+  cloudresourcemanager.googleapis.com \
   cloudasset.googleapis.com \
   --project="${PROJECT_ID}" \
   --quiet
@@ -135,6 +232,8 @@ if ! gcloud iam service-accounts describe "${SA_EMAIL}" --project="${PROJECT_ID}
     --project="${PROJECT_ID}" \
     --display-name="Cloudtop Dev Agent Reader"
   echo "Service account ${SA_NAME} created."
+  echo "Waiting 10 seconds for initial IAM directory propagation..."
+  sleep 10
 else
   echo "Service account ${SA_NAME} already exists. Skipping creation."
 fi
@@ -150,20 +249,13 @@ RO_ROLES=(
 
 for role in "${RO_ROLES[@]}"; do
   echo "  - Adding ${role} to serviceAccount:${SA_EMAIL} on Org ${ORG_ID}..."
-  gcloud organizations add-iam-policy-binding "${ORG_ID}" \
-    --member="serviceAccount:${SA_EMAIL}" \
-    --role="${role}" \
-    --quiet > /dev/null
+  add_org_iam_binding_with_retry "${ORG_ID}" "serviceAccount:${SA_EMAIL}" "${role}"
 done
 
 # Step 5: Grant token creation ONLY on this specific Service Account to USER_IDENTITY
 echo "==> 5. Granting token creation ONLY on this specific Service Account to ${USER_IDENTITY}..."
 # Bound strictly to the SA resource, NOT org-wide or project-wide
-gcloud iam service-accounts add-iam-policy-binding "${SA_EMAIL}" \
-  --project="${PROJECT_ID}" \
-  --member="user:${USER_IDENTITY}" \
-  --role="roles/iam.serviceAccountTokenCreator" \
-  --quiet > /dev/null
+add_sa_iam_binding_with_retry "${SA_EMAIL}" "${PROJECT_ID}" "user:${USER_IDENTITY}" "roles/iam.serviceAccountTokenCreator"
 
 # Step 6: Ensuring USER_IDENTITY has NO direct high-privilege permissions at Org level
 echo "==> 6. Ensuring ${USER_IDENTITY} has NO direct write/admin permissions at Org level..."
