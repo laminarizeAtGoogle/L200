@@ -242,13 +242,14 @@ if gcloud iam workload-identity-pools providers describe "${PROVIDER_NAME}" \
   --project="${PROJECT_ID}" >/dev/null 2>&1; then
   echo "    Workload Identity Provider '${PROVIDER_NAME}' already exists."
 else
-  echo "    Creating OIDC Provider '${PROVIDER_NAME}'..."
+  echo "    Creating OIDC Provider '${PROVIDER_NAME}' with repository condition..."
   gcloud iam workload-identity-pools providers create-oidc "${PROVIDER_NAME}" \
     --location="global" \
     --workload-identity-pool="${POOL_NAME}" \
     --display-name="GitHub Actions OIDC Provider" \
     --issuer-uri="https://token.actions.githubusercontent.com" \
     --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner" \
+    --attribute-condition="assertion.repository == '${REPO}'" \
     --project="${PROJECT_ID}"
 fi
 
