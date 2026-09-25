@@ -82,12 +82,87 @@ gcloud asset search-all-resources --scope="organizations/<ORG_ID>"
 
 ---
 
-## Where to Run Privileged Terraform Applies
+## Privileged Terraform Applies: GitHub Actions CI/CD or Cloud Shell
 
-Because your local Cloudtop session is strictly bound to read-only access, all infrastructure modifications and `terraform apply` operations should be executed via **Isolated Cloud Shell**:
+Because your local Cloudtop session is strictly bound to read-only access, all infrastructure modifications and `terraform apply` operations should **never** be run directly with local admin credentials on Cloudtop.
 
+Instead, use either **Automated CI/CD via GitHub Actions (Recommended)** or **Isolated Cloud Shell**.
+
+---
+
+## Argolis GitHub Actions CI/CD (`setup-argolis-github-wif.sh`)
+
+### Overview & Security Pattern
+
+To automatically apply Terraform changes when merging pull requests to `main` from any repository of your choice:
+1. **Keyless Authentication (OIDC)**: GitHub Actions authenticates via **Workload Identity Federation (WIF)**. No static service account keys (`.json`) are generated, stored in GitHub, or stored on Cloudtop.
+2. **Scoping**: Only the specific repository (`OWNER/REPO`) is granted permission to impersonate the deployment Service Account (`github-terraform-deployer`).
+3. **Remote State**: State is persisted in a protected Google Cloud Storage (GCS) bucket with object versioning enabled.
+
+```
+┌────────────────────────────────────────────────────────┐
+│  GitHub Actions Runner (Ephemeral)                     │
+│  Merge to `main` -> Requests OIDC token from GitHub    │
+└───────────────────────────┬────────────────────────────┘
+                            │
+                            │ Exchanges OIDC token via WIF
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│  Google Cloud STS / Workload Identity Pool             │
+│  Validates repository identity & mints short-lived     │
+│  access token for github-terraform-deployer SA         │
+└───────────────────────────┬────────────────────────────┘
+                            │
+                            │ Impersonates SA
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│  Argolis GCP Project                                   │
+│  Executes 'terraform apply' against resources          │
+│  Persists state to gs://<PROJECT_ID>-tfstate           │
+└────────────────────────────────────────────────────────┘
+```
+
+### Provisioning Argolis for GitHub Actions
+
+Run `setup-argolis-github-wif.sh` from Cloud Shell or an authenticated session with admin privileges in your Argolis project:
+
+```bash
+./scripts/setup-argolis-github-wif.sh --project <YOUR_ARGOLIS_PROJECT_ID> --repo <OWNER/REPO>
+```
+
+#### CLI Options:
+| Flag | Description | Default |
+|---|---|---|
+| `-p`, `--project` | Target Argolis GCP project ID | `$PROJECT_ID` or `$ARGOLIS_PROJECT_ID` |
+| `-r`, `--repo` | Target GitHub repository (`OWNER/REPO`) | Auto-discovered from git remote if present |
+| `-s`, `--sa-name` | Deployment Service Account name | `github-terraform-deployer` |
+| `-b`, `--bucket` | GCS state bucket name | `<PROJECT_ID>-tfstate` |
+| `--pool` | Workload Identity Pool name | `github-actions-pool` |
+| `--provider` | Workload Identity Provider name | `github-provider` |
+| `--region` | Cloud Storage bucket region | `us-central1` |
+| `-h`, `--help` | Show usage help | |
+
+### Configuring the GitHub Repository
+
+Once the script finishes, copy the outputs into your repository's **Settings -> Secrets and variables -> Actions**:
+
+| Name | Type | Value |
+|---|---|---|
+| `GCP_PROJECT_ID` | Variable or Secret | Your Argolis project ID |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | Variable or Secret | `projects/<PROJECT_NUM>/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider` |
+| `GCP_SERVICE_ACCOUNT` | Variable or Secret | `github-terraform-deployer@<PROJECT_ID>.iam.gserviceaccount.com` |
+| `TF_STATE_BUCKET` | Variable or Secret | `<PROJECT_ID>-tfstate` |
+
+The repository workflow (`.github/workflows/terraform-apply.yml`) will then automatically trigger on any merge to `main`.
+
+---
+
+## Alternative: Manual Execution in Cloud Shell
+
+If you need to run one-off Terraform changes manually without CI/CD:
 - Maintain your `admin@joshholtz.altostrat.com` session strictly in Cloud Shell.
 - Check out your Terraform repo or sync configurations to Cloud Shell.
 - Execute `terraform apply` within Cloud Shell.
-- Your local Cloudtop workstation never holds high-privilege credentials on its filesystem, ensuring that the local agent has zero access to admin tokens.
+- Your local Cloudtop workstation never holds high-privilege credentials on its filesystem.
+
 
