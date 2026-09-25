@@ -26,6 +26,7 @@ POOL_NAME="github-actions-pool"
 PROVIDER_NAME="github-provider"
 REGION="us-central1"
 BUCKET_NAME=""
+AUTO_DEPLOY_GH=""
 
 usage() {
   cat <<EOF
@@ -48,10 +49,12 @@ Optional Options:
                                (Default: ${PROVIDER_NAME})
   --region REGION              GCP region for state bucket.
                                (Default: ${REGION})
+  --auto-deploy-gh             Automatically set variables in GitHub via 'gh' CLI.
+  --skip-gh                    Skip GitHub CLI variable deployment.
   -h, --help                   Display this help message and exit.
 
 Example:
-  $(basename "$0") -p argolis-sandbox-1234 -r laminarizeAtGoogle/L200
+  $(basename "$0") -p l200-509515 -r laminarizeAtGoogle/L200
 EOF
 }
 
@@ -86,6 +89,14 @@ while [[ $# -gt 0 ]]; do
       REGION="$2"
       shift 2
       ;;
+    --auto-deploy-gh|--deploy-gh)
+      AUTO_DEPLOY_GH="true"
+      shift
+      ;;
+    --skip-gh)
+      AUTO_DEPLOY_GH="false"
+      shift
+      ;;
     -h|--help)
       usage
       exit 0
@@ -112,6 +123,17 @@ if [[ -z "${PROJECT_ID}" ]]; then
   fi
 fi
 
+# GCP project IDs must be strictly lowercase
+if [[ "${PROJECT_ID}" =~ [A-Z] ]]; then
+  ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+  echo "Error: GCP Project ID '${PROJECT_ID}' contains uppercase letters, which are invalid in Google Cloud." >&2
+  if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" ]]; then
+    echo "Hint: Your active gcloud project is '${ACTIVE_GCLOUD_PROJECT}'. Try running with:" >&2
+    echo "  $(basename "$0") --project ${ACTIVE_GCLOUD_PROJECT} --repo ${REPO:-<OWNER/REPO>}" >&2
+  fi
+  exit 1
+fi
+
 # Validate Repo
 if [[ -z "${REPO}" ]]; then
   # Try to detect git remote if run inside a repo
@@ -127,6 +149,66 @@ if [[ -z "${REPO}" ]]; then
     echo "Error: --repo <OWNER/REPO> is required (e.g. --repo laminarizeAtGoogle/L200)." >&2
     usage
     exit 1
+  fi
+fi
+
+# ------------------------------------------------------------------------------
+# GitHub CLI Authentication Check & Configuration Choice
+# ------------------------------------------------------------------------------
+if [[ -z "${AUTO_DEPLOY_GH}" ]]; then
+  if [[ -t 0 ]]; then
+    echo ""
+    echo "================================================================="
+    echo " GitHub CLI Deployment Integration"
+    echo "================================================================="
+    echo "This script can automatically configure the resulting variables"
+    echo "in GitHub repository '${REPO}' using the GitHub CLI ('gh')."
+    echo ""
+    read -r -p "Would you like to automatically deploy variables to GitHub? [Y/n]: " GH_CHOICE
+    GH_CHOICE="${GH_CHOICE:-Y}"
+    if [[ "${GH_CHOICE}" =~ ^[Yy]$ ]]; then
+      AUTO_DEPLOY_GH="true"
+    else
+      AUTO_DEPLOY_GH="false"
+    fi
+  else
+    AUTO_DEPLOY_GH="false"
+  fi
+fi
+
+if [[ "${AUTO_DEPLOY_GH}" == "true" ]]; then
+  if ! command -v gh >/dev/null 2>&1; then
+    echo "Notice: GitHub CLI ('gh') is not installed. Variables will be output for manual entry."
+    AUTO_DEPLOY_GH="false"
+  else
+    echo "Checking GitHub CLI ('gh') authentication status..."
+    if gh auth status --hostname github.com >/dev/null 2>&1; then
+      GH_USER=$(gh api user -q .login 2>/dev/null || echo "authenticated user")
+      echo "✓ GitHub CLI is already authenticated as '${GH_USER}'."
+    else
+      echo "Notice: You are not currently authenticated to GitHub in this terminal session."
+      if [[ -t 0 ]]; then
+        read -r -p "Would you like to log in now using 'gh auth login'? [Y/n]: " LOGIN_CHOICE
+        LOGIN_CHOICE="${LOGIN_CHOICE:-Y}"
+        if [[ "${LOGIN_CHOICE}" =~ ^[Yy]$ ]]; then
+          echo "Launching 'gh auth login'..."
+          gh auth login
+          if gh auth status --hostname github.com >/dev/null 2>&1; then
+            GH_USER=$(gh api user -q .login 2>/dev/null || echo "authenticated user")
+            echo "✓ Successfully authenticated with GitHub as '${GH_USER}'!"
+          else
+            echo "Warning: GitHub authentication was not completed. Variables will be output for manual entry."
+            AUTO_DEPLOY_GH="false"
+          fi
+        else
+          echo "Skipping automatic deployment. Variables will be displayed at the end for manual entry."
+          AUTO_DEPLOY_GH="false"
+        fi
+      else
+        echo "Non-interactive session detected. Skipping 'gh auth login'."
+        AUTO_DEPLOY_GH="false"
+      fi
+    fi
   fi
 fi
 
@@ -150,7 +232,15 @@ echo ""
 
 # 1. Retrieve Project Number
 echo "==> [1/7] Discovering project number..."
-PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)")
+if ! PROJECT_NUMBER=$(gcloud projects describe "${PROJECT_ID}" --format="value(projectNumber)" 2>/dev/null); then
+  echo "Error: Could not find or access GCP project '${PROJECT_ID}'." >&2
+  echo "Please verify that the project ID is correct and that you have permissions on it." >&2
+  ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+  if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" && "${ACTIVE_GCLOUD_PROJECT}" != "${PROJECT_ID}" ]]; then
+    echo "Notice: Your active gcloud project is '${ACTIVE_GCLOUD_PROJECT}'." >&2
+  fi
+  exit 1
+fi
 echo "    Project Number: ${PROJECT_NUMBER}"
 
 # 2. Enable Required APIs
@@ -223,13 +313,14 @@ if gcloud iam workload-identity-pools providers describe "${PROVIDER_NAME}" \
   --project="${PROJECT_ID}" >/dev/null 2>&1; then
   echo "    Workload Identity Provider '${PROVIDER_NAME}' already exists."
 else
-  echo "    Creating OIDC Provider '${PROVIDER_NAME}'..."
+  echo "    Creating OIDC Provider '${PROVIDER_NAME}' with repository condition..."
   gcloud iam workload-identity-pools providers create-oidc "${PROVIDER_NAME}" \
     --location="global" \
     --workload-identity-pool="${POOL_NAME}" \
     --display-name="GitHub Actions OIDC Provider" \
     --issuer-uri="https://token.actions.githubusercontent.com" \
     --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner" \
+    --attribute-condition="assertion.repository == '${REPO}'" \
     --project="${PROJECT_ID}"
 fi
 
@@ -266,12 +357,32 @@ echo ""
 echo "TF_STATE_BUCKET:"
 echo "${BUCKET_NAME}"
 echo "-----------------------------------------------------------------"
-echo ""
-echo "Tip: You can set these automatically using the GitHub CLI if authenticated:"
-echo ""
-echo "  gh variable set GCP_PROJECT_ID --body \"${PROJECT_ID}\" --repo \"${REPO}\""
-echo "  gh variable set GCP_WORKLOAD_IDENTITY_PROVIDER --body \"${WIF_PROVIDER_FULL}\" --repo \"${REPO}\""
-echo "  gh variable set GCP_SERVICE_ACCOUNT --body \"${SA_EMAIL}\" --repo \"${REPO}\""
-echo "  gh variable set TF_STATE_BUCKET --body \"${BUCKET_NAME}\" --repo \"${REPO}\""
+if [[ "${AUTO_DEPLOY_GH}" == "true" ]]; then
+  echo ""
+  echo "==> Deploying variables to GitHub repository '${REPO}' via GitHub CLI..."
+  gh variable set GCP_PROJECT_ID --body "${PROJECT_ID}" --repo "${REPO}"
+  echo "    ✓ Set GCP_PROJECT_ID=${PROJECT_ID}"
+  gh variable set GCP_WORKLOAD_IDENTITY_PROVIDER --body "${WIF_PROVIDER_FULL}" --repo "${REPO}"
+  echo "    ✓ Set GCP_WORKLOAD_IDENTITY_PROVIDER"
+  gh variable set GCP_SERVICE_ACCOUNT --body "${SA_EMAIL}" --repo "${REPO}"
+  echo "    ✓ Set GCP_SERVICE_ACCOUNT=${SA_EMAIL}"
+  gh variable set TF_STATE_BUCKET --body "${BUCKET_NAME}" --repo "${REPO}"
+  echo "    ✓ Set TF_STATE_BUCKET=${BUCKET_NAME}"
+  echo ""
+  echo "✓ All 4 variables successfully configured in GitHub repository '${REPO}'!"
+  echo "You can verify them at: https://github.com/${REPO}/settings/variables/actions"
+else
+  echo ""
+  echo "Configure these GitHub Variables or Secrets manually in:"
+  echo "https://github.com/${REPO}/settings/secrets/actions"
+  echo ""
+  echo "Tip: You can set these automatically using the GitHub CLI if authenticated:"
+  echo ""
+  echo "  gh variable set GCP_PROJECT_ID --body \"${PROJECT_ID}\" --repo \"${REPO}\""
+  echo "  gh variable set GCP_WORKLOAD_IDENTITY_PROVIDER --body \"${WIF_PROVIDER_FULL}\" --repo \"${REPO}\""
+  echo "  gh variable set GCP_SERVICE_ACCOUNT --body \"${SA_EMAIL}\" --repo \"${REPO}\""
+  echo "  gh variable set TF_STATE_BUCKET --body \"${BUCKET_NAME}\" --repo \"${REPO}\""
+fi
+
 echo ""
 echo "Done."
