@@ -53,4 +53,5 @@ The Hermetic Standalone Toolchain contains dedicated, architecture-specific bina
 
 ## 5. References & Linked Assets
 - Dendrite Diagram Node: `isolated_binaries` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`cloudtop-shell`](cloudtop-shell.md), [`adk-runtime`](adk-runtime.md)
+- Related OKF Entries: [`cloudtop-shell`](cloudtop-shell.md), [`adk-runtime`](adk-runtime.md), [`uv-package-manager`](../cloudtop_env/package_managers/uv-package-manager.md)
+

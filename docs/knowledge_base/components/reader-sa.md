@@ -55,4 +55,4 @@ The `cloudtop-agent-reader` service account establishes a hard zero-privilege se
 ## 5. References & Linked Assets
 - Dendrite Diagram Node: `reader_sa` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
 - Security Specification: [`scripts/README.md`](../../scripts/README.md)
-- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`cloudtop-shell`](cloudtop-shell.md)
+- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`cloudtop-shell`](cloudtop-shell.md), [`provision-argolis-env`](../cloudtop_env/scripts/provision-argolis-env.md)

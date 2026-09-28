@@ -186,11 +186,16 @@ dendrite_diagram:
 
 ## Operational Knowledge Framework (OKF) Knowledge Base
 
-Every component identified in the architecture diagram is documented in detail in the [OKF Knowledge Base](knowledge_base/README.md) under [`docs/knowledge_base/components/`](knowledge_base/components/):
-- **Developer Workstation**: [`cloudtop-shell`](knowledge_base/components/cloudtop-shell.md), [`adk-runtime`](knowledge_base/components/adk-runtime.md), [`isolated-binaries`](knowledge_base/components/isolated-binaries.md)
-- **GitHub Platform**: [`github-repo`](knowledge_base/components/github-repo.md), [`gha-plan`](knowledge_base/components/gha-plan.md), [`gha-apply`](knowledge_base/components/gha-apply.md)
-- **GCP IAM Boundary**: [`wif-pool`](knowledge_base/components/wif-pool.md), [`deployer-sa`](knowledge_base/components/deployer-sa.md), [`reader-sa`](knowledge_base/components/reader-sa.md)
-- **Argolis GCP Project**: [`gcs-tfstate`](knowledge_base/components/gcs-tfstate.md), [`vpc-network`](knowledge_base/components/vpc-network.md), [`firewall-rules`](knowledge_base/components/firewall-rules.md), [`compute-vm`](knowledge_base/components/compute-vm.md)
+Every component identified in the architecture diagram is documented in detail in the [OKF Knowledge Base](knowledge_base/README.md):
+- **Canonical Components (`components/`)**:
+  - **Developer Workstation**: [`cloudtop-shell`](knowledge_base/components/cloudtop-shell.md), [`adk-runtime`](knowledge_base/components/adk-runtime.md), [`isolated-binaries`](knowledge_base/components/isolated-binaries.md)
+  - **GitHub Platform**: [`github-repo`](knowledge_base/components/github-repo.md), [`gha-plan`](knowledge_base/components/gha-plan.md), [`gha-apply`](knowledge_base/components/gha-apply.md)
+  - **GCP IAM Boundary**: [`wif-pool`](knowledge_base/components/wif-pool.md), [`deployer-sa`](knowledge_base/components/deployer-sa.md), [`reader-sa`](knowledge_base/components/reader-sa.md)
+  - **Argolis GCP Project**: [`gcs-tfstate`](knowledge_base/components/gcs-tfstate.md), [`vpc-network`](knowledge_base/components/vpc-network.md), [`firewall-rules`](knowledge_base/components/firewall-rules.md), [`compute-vm`](knowledge_base/components/compute-vm.md)
+- **Subcategory Operational Guides**:
+  - **Cloudtop Environment**: [`uv-package-manager`](knowledge_base/cloudtop_env/package_managers/uv-package-manager.md), [`check-architecture-docs`](knowledge_base/cloudtop_env/scripts/check-architecture-docs.md), [`provision-argolis-env`](knowledge_base/cloudtop_env/scripts/provision-argolis-env.md), [`setup-argolis-github-wif`](knowledge_base/cloudtop_env/scripts/setup-argolis-github-wif.md), [`dendrite-architecture-diagrams`](knowledge_base/cloudtop_env/skills/dendrite-architecture-diagrams.md)
+  - **Codebase Modules**: [`terraform-infrastructure-modules`](knowledge_base/codebase/terraform-infrastructure-modules.md)
+  - **Deployed GCP Assets**: [`compute-instances`](knowledge_base/deployed_gcp_assets/compute-instances.md)
 
 ---
 
