@@ -1,0 +1,33 @@
+# Operational Knowledge Framework (OKF) Knowledge Base
+
+Welcome to the **Operational Knowledge Framework (OKF)** catalog for the L200 & Argolis workspace.
+
+Following Google OKF standards, every architectural component represented in the [Dendrite Architecture Diagram](../architecture_diagram.dendrite.yaml) possesses a formal, structured entry documented below.
+
+---
+
+## Component Index & Architecture Cross-Reference Matrix
+
+| Component ID | Component Name | Subsystem / Boundary | Category | Criticality Tier | Dendrite Node ID | OKF Document |
+|:---|:---|:---|:---|:---|:---|:---|
+| `cloudtop-shell` | Cloudtop Terminal & Antigravity Shell | Developer Workstation | Dev Tooling | Tier 3 - Development | `cloudtop_shell` | [`cloudtop-shell.md`](components/cloudtop-shell.md) |
+| `adk-runtime` | Google ADK Agent Runtime & Python Toolchain | Developer Workstation | Compute & Runtime | Tier 2 - Operational | `adk_runtime` | [`adk-runtime.md`](components/adk-runtime.md) |
+| `isolated-binaries` | Hermetic Standalone Toolchain (`./bin`) | Developer Workstation | Dev Tooling | Tier 3 - Development | `isolated_binaries` | [`isolated-binaries.md`](components/isolated-binaries.md) |
+| `github-repo` | GitHub Repository (L200) | GitHub Platform | CI/CD | Tier 1 - Critical Path | `github_repo` | [`github-repo.md`](components/github-repo.md) |
+| `gha-plan` | GitHub Actions: Terraform Plan Pipeline | GitHub Platform | CI/CD | Tier 1 - Critical Path | `gha_plan` | [`gha-plan.md`](components/gha-plan.md) |
+| `gha-apply` | GitHub Actions: Terraform Apply Pipeline | GitHub Platform | CI/CD | Tier 1 - Critical Path | `gha_apply` | [`gha-apply.md`](components/gha-apply.md) |
+| `wif-pool` | Workload Identity Federation (WIF) Pool | GCP IAM Boundary | IAM & Security | Tier 1 - Critical Path | `wif_pool` | [`wif-pool.md`](components/wif-pool.md) |
+| `deployer-sa` | Deployer Service Account (`github-terraform-deployer`) | GCP IAM Boundary | IAM & Security | Tier 1 - Critical Path | `deployer_sa` | [`deployer-sa.md`](components/deployer-sa.md) |
+| `reader-sa` | Read-Only Service Account (`cloudtop-agent-reader`) | GCP IAM Boundary | IAM & Security | Tier 2 - Operational | `reader_sa` | [`reader-sa.md`](components/reader-sa.md) |
+| `gcs-tfstate` | Cloud Storage Remote Terraform State Bucket | Argolis GCP Project | Storage & Data | Tier 1 - Critical Path | `gcs_tfstate` | [`gcs-tfstate.md`](components/gcs-tfstate.md) |
+| `vpc-network` | Virtual Private Cloud (VPC) & Subnets | Argolis GCP Project | Networking | Tier 1 - Critical Path | `vpc_network` | [`vpc-network.md`](components/vpc-network.md) |
+| `firewall-rules` | Compute Engine Security Firewalls | Argolis GCP Project | Networking | Tier 1 - Critical Path | `firewall_rules` | [`firewall-rules.md`](components/firewall-rules.md) |
+| `compute-vm` | Argolis Compute Engine Instances | Argolis GCP Project | Compute & Runtime | Tier 1 - Critical Path | `compute_vm` | [`compute-vm.md`](components/compute-vm.md) |
+
+---
+
+## Standards & Maintenance
+
+- **Schema Definition**: See [OKF Specification](OKF_SPEC.md) for required YAML frontmatter and documentation sections.
+- **Dendrite Diagram Synchronization**: When adding or updating components in [Dendrite](http://go/dendrite) (or viewing in [Dendrite Playground](http://go/dendrite-playground)) and in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml), a corresponding OKF document must be added or revised under [`components/`](components/).
+- **Pre-Push Validation**: The repository's `git-push-architecture-docs-gate` validates that `./docs` and its knowledge base components reflect all outgoing changes prior to executing `git push`.

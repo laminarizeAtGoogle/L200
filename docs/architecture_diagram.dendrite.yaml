@@ -1,0 +1,166 @@
+# Dendrite Architecture Diagram Specification (go/dendrite)
+# Project: Google Academy L200 & Argolis Workspace
+# Authoritative URL: http://go/dendrite
+# Interactive Viewer: http://go/dendrite-playground
+
+dendrite_diagram:
+  title: "L200 Argolis Infrastructure, CI/CD & Agent Architecture"
+  version: "1.0.0"
+  dendrite_url: "http://go/dendrite"
+  playground_url: "http://go/dendrite-playground"
+  description: >-
+    End-to-end system topology covering developer environments (Cloudtop),
+    GitHub Actions CI/CD with Workload Identity Federation (WIF), Argolis GCP
+    sandbox infrastructure managed by Terraform, and Google Agent Development Kit (ADK).
+  last_updated: "2026-09-28"
+
+  boundaries:
+    - id: "developer_workstation"
+      label: "Developer Environment (Cloudtop)"
+      type: "workstation"
+      trust_level: "authenticated_internal"
+      components:
+        - id: "cloudtop_shell"
+          label: "Cloudtop Terminal / Antigravity"
+          type: "dev_environment"
+          role: "Local coding, testing, and git operations"
+        - id: "adk_runtime"
+          label: "Google ADK Agent Runtime"
+          type: "ai_agent"
+          role: "Python 3.12 + Google ADK agent execution"
+        - id: "isolated_binaries"
+          label: "Standalone Binaries (./bin)"
+          type: "toolchain"
+          role: "Terraform v1.16.4, gcloud SDK, gh CLI, uv"
+
+    - id: "github_platform"
+      label: "GitHub Enterprise / Cloud"
+      type: "vcs_cicd"
+      trust_level: "managed_external"
+      components:
+        - id: "github_repo"
+          label: "GitHub Repository (L200)"
+          type: "vcs_repository"
+          role: "Git source of truth with strict sanitization hooks"
+        - id: "gha_plan"
+          label: "GitHub Actions: terraform-plan.yml"
+          type: "ci_pipeline"
+          role: "Automated lint, init, validate, and plan on PRs"
+        - id: "gha_apply"
+          label: "GitHub Actions: terraform-apply.yml"
+          type: "cd_pipeline"
+          role: "Automated terraform apply on merge to main"
+
+    - id: "gcp_iam_boundary"
+      label: "Google Cloud IAM & Workload Identity"
+      type: "security_perimeter"
+      trust_level: "zero_privilege"
+      components:
+        - id: "wif_pool"
+          label: "Workload Identity Pool & Provider"
+          type: "iam_wif"
+          role: "OIDC validation for GitHub Actions (no static keys)"
+        - id: "deployer_sa"
+          label: "Deployer Service Account"
+          type: "service_account"
+          role: "github-terraform-deployer SA (scoped Compute & Storage Admin)"
+        - id: "reader_sa"
+          label: "Read-Only Cloudtop SA"
+          type: "service_account"
+          role: "cloudtop-agent-reader SA (Viewer permissions only)"
+
+    - id: "argolis_project"
+      label: "Argolis GCP Project (Sandbox)"
+      type: "gcp_project"
+      trust_level: "cloud_resources"
+      components:
+        - id: "gcs_tfstate"
+          label: "Cloud Storage (tfstate Bucket)"
+          type: "cloud_storage"
+          role: "Remote encrypted Terraform state with object locking"
+        - id: "vpc_network"
+          label: "VPC Network & Subnet"
+          type: "vpc_networking"
+          role: "Isolated virtual private network (e.g. us-central1)"
+        - id: "firewall_rules"
+          label: "Firewall Rules"
+          type: "security_firewall"
+          role: "Ingress controls (SSH/IAP, internal subnets)"
+        - id: "compute_vm"
+          label: "Compute Engine Instances"
+          type: "compute_engine"
+          role: "Managed VM workloads and test beds"
+
+  connections:
+    # Local Development & Push Flow
+    - from: "cloudtop_shell"
+      to: "github_repo"
+      protocol: "HTTPS / SSH"
+      auth: "GitHub CLI / SSH Key"
+      label: "git push (gated by pre-push hooks)"
+      type: "control"
+
+    # CI/CD Triggers
+    - from: "github_repo"
+      to: "gha_plan"
+      protocol: "GitHub Webhook"
+      label: "Trigger on PR to main"
+      type: "event"
+
+    - from: "github_repo"
+      to: "gha_apply"
+      protocol: "GitHub Webhook"
+      label: "Trigger on Merge to main"
+      type: "event"
+
+    # WIF Authentication Flow
+    - from: "gha_apply"
+      to: "wif_pool"
+      protocol: "HTTPS"
+      auth: "GitHub OIDC JWT"
+      label: "Exchange OIDC token for federated credentials"
+      type: "auth"
+
+    - from: "wif_pool"
+      to: "deployer_sa"
+      protocol: "GCP STS API"
+      auth: "Federated Token"
+      label: "Assume Deployer SA (ephemeral token)"
+      type: "auth"
+
+    # Terraform State & Provisioning Flow
+    - from: "gha_apply"
+      to: "gcs_tfstate"
+      protocol: "HTTPS / GCS API"
+      auth: "Deployer SA Token"
+      label: "Acquire lock & sync terraform.tfstate"
+      type: "data"
+
+    - from: "gha_apply"
+      to: "vpc_network"
+      protocol: "HTTPS / GCP Compute API"
+      auth: "Deployer SA Token"
+      label: "Apply VPC & Subnet configuration"
+      type: "provisioning"
+
+    - from: "gha_apply"
+      to: "firewall_rules"
+      protocol: "HTTPS / GCP Compute API"
+      auth: "Deployer SA Token"
+      label: "Apply firewall rules"
+      type: "provisioning"
+
+    - from: "gha_apply"
+      to: "compute_vm"
+      protocol: "HTTPS / GCP Compute API"
+      auth: "Deployer SA Token"
+      label: "Provision & manage Compute Engine VMs"
+      type: "provisioning"
+
+    # Cloudtop Zero-Privilege Impersonation
+    - from: "cloudtop_shell"
+      to: "reader_sa"
+      protocol: "GCP IAM API"
+      auth: "Google User ADC"
+      label: "Impersonate read-only SA for inspection"
+      type: "auth"

@@ -30,15 +30,15 @@ AUTO_DEPLOY_GH=""
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") -p <PROJECT_ID> -r <OWNER/REPO> [OPTIONS]
+Usage: $(basename "$0") [OPTIONS]
 
 Provisions Workload Identity Federation (WIF) and Terraform remote state in Argolis.
 
-Required Options:
+Options:
   -p, --project PROJECT_ID     Target Argolis GCP project ID.
+                               (Defaults to \$PROJECT_ID, \$ARGOLIS_PROJECT_ID, or active gcloud project)
   -r, --repo OWNER/REPO        GitHub repository (e.g. 'octocat/hello-world').
-
-Optional Options:
+                               (Auto-detected from git remote if inside a repository)
   -s, --sa-name SA_NAME        Deployment Service Account name.
                                (Default: ${SA_NAME})
   -b, --bucket BUCKET_NAME     GCS bucket for Terraform state.
@@ -54,7 +54,7 @@ Optional Options:
   -h, --help                   Display this help message and exit.
 
 Example:
-  $(basename "$0") -p l200-509515 -r laminarizeAtGoogle/L200
+  $(basename "$0")
 EOF
 }
 
@@ -110,15 +110,15 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate Project ID
-if [[ -z "${PROJECT_ID}" ]]; then
-  # Try to read active gcloud project as fallback
+if [[ -z "${PROJECT_ID}" || "${PROJECT_ID}" == "<YOUR_ARGOLIS_PROJECT_ID>" || "${PROJECT_ID}" == "<PROJECT_ID>" ]]; then
+  # Discover active gcloud project as fallback (matches provision-argolis-env.sh)
   ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
   if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" ]]; then
     PROJECT_ID="${ACTIVE_GCLOUD_PROJECT}"
-    echo "Notice: Using active gcloud project '${PROJECT_ID}'"
+    echo "Notice: Discovered active gcloud project '${PROJECT_ID}'"
   else
-    echo "Error: --project <PROJECT_ID> is required." >&2
-    usage
+    echo "Error: PROJECT_ID is required." >&2
+    echo "Provide it with --project <PROJECT_ID>, export PROJECT_ID=<PROJECT_ID>, or set your active gcloud project." >&2
     exit 1
   fi
 fi
