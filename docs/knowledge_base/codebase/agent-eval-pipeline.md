@@ -35,7 +35,7 @@ last_verified: "2026-09-28"
   - Pytest suite: [`tests/test_software_factory_suite.py`](../../../tests/test_software_factory_suite.py)
   - GitHub Actions workflow: [`.github/workflows/agent-eval-and-test.yml`](../../../.github/workflows/agent-eval-and-test.yml)
 - **Protocols & Interfaces**: `pytest`, `asyncio`, FastAPI `TestClient`.
-- **Configuration & Environment Variables**: Configured via `[tool.pytest.ini_options]` in [`pyproject.toml`](../../../pyproject.toml).
+- **Configuration & Environment Variables**: Configured via `[tool.pytest.ini_options]` in [`pyproject.toml`](../../../pyproject.toml). On public GitHub Actions runners (`ubuntu-latest`), `uv sync --no-config` bypasses the internal Corp Airlock proxy (`uv.toml`) to resolve packages from public PyPI while preserving a clean git working tree.
 - **IAM Roles & Permissions**: None required for unit/golden evaluation runs.
 
 ## 4. Operational Runbook & Lifecycle

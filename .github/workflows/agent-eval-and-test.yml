@@ -27,11 +27,16 @@ jobs:
       - name: Set up Python 3.12
         run: uv python install 3.12
 
-      - name: Install Dependencies
-        run: uv sync --frozen || uv sync
+      - name: Install Dependencies (Public PyPI on GitHub Runner)
+        run: |
+          mv uv.toml uv.toml.bak
+          mv uv.lock uv.lock.bak
+          uv sync --no-config
+          mv uv.toml.bak uv.toml
+          mv uv.lock.bak uv.lock
 
       - name: Run Unit & Integration Tests
-        run: uv run pytest -v
+        run: uv run --no-config --no-sync pytest -v
 
       - name: Run Golden Dataset Agent Evaluation Suite
-        run: uv run python evals/run_evaluation_suite.py
+        run: uv run --no-config --no-sync python evals/run_evaluation_suite.py
