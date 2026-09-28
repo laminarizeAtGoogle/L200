@@ -1,12 +1,30 @@
 [project]
 name = "l200-agent-development"
 version = "0.1.0"
-description = "Google Academy L200 Agent Development Workspace"
+description = "Google Academy L200 Agent Development Workspace & A2A Software Factory"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "google-adk[gcp]>=2.9.1",
+    "google-adk[a2a,gcp]>=2.9.1",
     "pandas",
     "ipykernel",
+    "google-cloud-dlp>=3.39.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "httpx>=0.28.1",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests", ".agents/scripts"]
+pythonpath = ["."]
+norecursedirs = [
+    "google-cloud-sdk",
+    ".venv",
+    ".python",
+    ".nodejs",
+    ".git",
+    ".gcloud",
+    ".gemini",
+    "bin",
+]
+asyncio_mode = "auto"
