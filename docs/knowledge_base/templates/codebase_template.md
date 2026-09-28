@@ -58,9 +58,9 @@ last_verified: "YYYY-MM-DD"
   ```
 
 ## 5. References & Cross-Links
-- **Dendrite Architecture Diagram**: [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- **Architecture Overview**: [`docs/architecture.md`](../architecture.md)
+- **Dendrite Architecture Diagram**: [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
 - **Related OKF Entries**:
-  - Component: `[Link to corresponding docs/knowledge_base/components/<id>.md]`
+  - Related Modules: `[Link to corresponding OKF entry in docs/knowledge_base/{cloudtop_env,codebase,deployed_gcp_assets}/]`
   - Upstream / Downstream: `[Link to related OKF entries]`
 - **External / Go Links**: `[go/dendrite, official documentation]`

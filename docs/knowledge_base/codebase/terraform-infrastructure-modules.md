@@ -89,8 +89,8 @@ last_verified: "2026-09-28"
 - **Dendrite Diagram Nodes**: `github_repo`, `gha_plan`, `gha_apply`, `gcs_tfstate`, `vpc_network`, `compute_vm` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
 - **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
 - **Related OKF Entries**:
-  - Canonical Component: [`components/github-repo.md`](../components/github-repo.md)
-  - Remote State Component: [`components/gcs-tfstate.md`](../components/gcs-tfstate.md)
-  - CI Pipeline Component: [`components/gha-plan.md`](../components/gha-plan.md)
-  - CD Pipeline Component: [`components/gha-apply.md`](../components/gha-apply.md)
+  - Canonical Component: [`components/github-repo.md`](github-repo.md)
+  - Remote State Component: [`components/gcs-tfstate.md`](../deployed_gcp_assets/gcs-tfstate.md)
+  - CI Pipeline Component: [`components/gha-plan.md`](gha-plan.md)
+  - CD Pipeline Component: [`components/gha-apply.md`](gha-apply.md)
   - Deployed Compute Asset: [`deployed_gcp_assets/compute-instances.md`](../deployed_gcp_assets/compute-instances.md)

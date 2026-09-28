@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "gcs-tfstate"
-component_name: "Cloud Storage Remote Terraform State Bucket"
-category: "Storage & Data"
+entry_id: "gcs-tfstate"
+entry_name: "Cloud Storage Remote Terraform State Bucket"
+category: "deployed_gcp_assets"
+sub_category: "storage"
 tier: "Tier 1 - Critical Path"
 status: "active"
 owner: "Platform Engineering / State Management"
 dendrite_node_id: "gcs_tfstate"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Cloud Storage Remote Terraform State Bucket
+# OKF (Deployed GCP Asset): Cloud Storage Remote Terraform State Bucket
 
 ## 1. Executive Summary & Purpose
 The Remote Terraform State Bucket provides secure, centralized, and versioned storage for the canonical `terraform.tfstate` file. It features object versioning and state locking to prevent state corruption, concurrent apply collisions, and out-of-band drift.
@@ -26,8 +28,8 @@ The Remote Terraform State Bucket provides secure, centralized, and versioned st
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Backend configuration: [`terraform/backend.tf.example`](../../terraform/backend.tf.example)
-  - Bucket provisioner: [`scripts/setup-argolis-github-wif.sh`](../../scripts/setup-argolis-github-wif.sh)
+  - Backend configuration: [`terraform/backend.tf.example`](../../../terraform/backend.tf.example)
+  - Bucket provisioner: [`scripts/setup-argolis-github-wif.sh`](../../../scripts/setup-argolis-github-wif.sh)
 - **Bucket Name Pattern**: `<PROJECT_ID>-tfstate`
 - **Location**: Multi-region `US` or regional `us-central1`.
 - **Security Features**:
@@ -55,5 +57,9 @@ The Remote Terraform State Bucket provides secure, centralized, and versioned st
     ```
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `gcs_tfstate` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`gha-apply`](gha-apply.md)
+- **Dendrite Diagram Node**: `gcs_tfstate` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Related OKF Entries**:
+  - Deployer SA: [`deployed_gcp_assets/deployer-sa.md`](deployer-sa.md)
+  - Apply Pipeline: [`codebase/gha-apply.md`](../codebase/gha-apply.md)
+  - Terraform Modules: [`codebase/terraform-infrastructure-modules.md`](../codebase/terraform-infrastructure-modules.md)

@@ -65,12 +65,12 @@ When invoked, execute the following steps in sequence:
 
 1. **Follow OKF Specifications**:
    - Follow the standards defined in [`docs/knowledge_base/OKF_SPEC.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/OKF_SPEC.md) and [`docs/knowledge_base/TEMPLATE.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/TEMPLATE.md).
-2. **Create or Update Subcategory Entries**:
-   - For **Cloudtop Environment**: use [`templates/cloudtop_env_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/cloudtop_env_template.md) in `docs/knowledge_base/cloudtop_env/{scripts,skills,slash_commands,package_managers}/`.
+2. **Create or Update Category Entries**:
+   - For **Cloudtop Environment**: use [`templates/cloudtop_env_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/cloudtop_env_template.md) in `docs/knowledge_base/cloudtop_env/{workstation,package_managers,scripts,skills}/`.
    - For **Deployed GCP Assets**: use [`templates/deployed_gcp_asset_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/deployed_gcp_asset_template.md) in `docs/knowledge_base/deployed_gcp_assets/`.
    - For **Codebase**: use [`templates/codebase_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/codebase_template.md) in `docs/knowledge_base/codebase/`.
-3. **Component Reference Entries**:
-   - Every architectural component in the Dendrite diagram must have a matching OKF reference file in `docs/knowledge_base/components/<component-id>.md`.
+3. **Architectural Component Coverage**:
+   - Every architectural component declared in the Dendrite diagram must have a matching OKF documentation entry within its corresponding category directory.
 4. **Update Catalog Index**:
    - Ensure [`docs/knowledge_base/README.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/README.md) lists the new or modified components in the catalog table.
 

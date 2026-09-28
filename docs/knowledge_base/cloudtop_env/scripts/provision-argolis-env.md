@@ -21,7 +21,7 @@ last_verified: "2026-09-28"
 
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `scripts`
-- **File / Directory Path**: [`scripts/provision-argolis-env.sh`](../../../scripts/provision-argolis-env.sh)
+- **File / Directory Path**: [`scripts/provision-argolis-env.sh`](../../../../scripts/provision-argolis-env.sh)
 - **Invocation Command / Syntax**:
   ```bash
   # Execute with explicit target project
@@ -82,9 +82,9 @@ last_verified: "2026-09-28"
     - *Remediation*: Confirm admin privileges: caller requires `roles/resourcemanager.organizationAdmin` or `roles/iam.serviceAccountAdmin` on the target project.
 
 ## 5. References & Cross-Links
-- **Dendrite Diagram Node**: `reader_sa` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
-- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Dendrite Diagram Node**: `reader_sa` in [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../../architecture.md)
 - **Related OKF Entries**:
-  - Canonical Component: [`components/reader-sa.md`](../../components/reader-sa.md)
-  - Workstation Shell: [`components/cloudtop-shell.md`](../../components/cloudtop-shell.md)
+  - Reader Service Account: [`deployed_gcp_assets/reader-sa.md`](../../deployed_gcp_assets/reader-sa.md)
+  - Workstation Shell: [`cloudtop_env/workstation/cloudtop-shell.md`](../workstation/cloudtop-shell.md)
   - WIF Pairing Script: [`cloudtop_env/scripts/setup-argolis-github-wif.md`](setup-argolis-github-wif.md)

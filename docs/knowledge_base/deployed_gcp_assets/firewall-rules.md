@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "firewall-rules"
-component_name: "Compute Engine Security Firewalls"
-category: "Networking"
+entry_id: "firewall-rules"
+entry_name: "Compute Engine Security Firewalls"
+category: "deployed_gcp_assets"
+sub_category: "networking"
 tier: "Tier 1 - Critical Path"
 status: "active"
 owner: "Network Security Team"
 dendrite_node_id: "firewall_rules"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Compute Engine Security Firewalls
+# OKF (Deployed GCP Asset): Compute Engine Security Firewalls
 
 ## 1. Executive Summary & Purpose
 Compute Engine Security Firewalls enforce ingress and egress network filtering rules at the virtual machine level. They protect Argolis instances from unauthorized network access by strictly limiting inbound traffic to approved Identity-Aware Proxy (IAP) ranges, developer IPs, and internal VPC subnets.
@@ -26,7 +28,7 @@ Compute Engine Security Firewalls enforce ingress and egress network filtering r
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Terraform firewall definitions: [`terraform/main.tf`](../../terraform/main.tf)
+  - Terraform firewall definitions: [`terraform/main.tf`](../../../terraform/main.tf)
 - **Protocols & Ports Filtered**:
   - `tcp:22` (SSH via Identity-Aware Proxy / IAP)
   - `tcp:80`, `tcp:443` (HTTP/HTTPS for web agents if enabled)
@@ -52,5 +54,9 @@ Compute Engine Security Firewalls enforce ingress and egress network filtering r
     ```
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `firewall_rules` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`vpc-network`](vpc-network.md), [`compute-vm`](compute-vm.md)
+- **Dendrite Diagram Node**: `firewall_rules` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Related OKF Entries**:
+  - VPC Network: [`deployed_gcp_assets/vpc-network.md`](vpc-network.md)
+  - Compute Instances: [`deployed_gcp_assets/compute-instances.md`](compute-instances.md)
+  - Terraform Modules: [`codebase/terraform-infrastructure-modules.md`](../codebase/terraform-infrastructure-modules.md)

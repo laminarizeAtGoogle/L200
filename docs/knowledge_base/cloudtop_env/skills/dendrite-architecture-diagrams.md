@@ -22,8 +22,8 @@ last_verified: "2026-09-28"
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `skills`
 - **File / Directory Path**:
-  - Skill specification: [`.agents/skills/dendrite-architecture-diagrams/SKILL.md`](../../../.agents/skills/dendrite-architecture-diagrams/SKILL.md)
-  - Reference patterns: [`.agents/skills/dendrite-architecture-diagrams/references/diagram_patterns.md`](../../../.agents/skills/dendrite-architecture-diagrams/references/diagram_patterns.md)
+  - Skill specification: [`.agents/skills/dendrite-architecture-diagrams/SKILL.md`](../../../../.agents/skills/dendrite-architecture-diagrams/SKILL.md)
+  - Reference patterns: [`.agents/skills/dendrite-architecture-diagrams/references/diagram_patterns.md`](../../../../.agents/skills/dendrite-architecture-diagrams/references/diagram_patterns.md)
 - **Invocation Command / Syntax**:
   - Automatically activated by agent prompts matching architecture, topology, or infrastructure planning keywords.
   - Validated on `git push` by `.agents/scripts/check-architecture-docs.sh`.
@@ -51,9 +51,9 @@ last_verified: "2026-09-28"
 
 ## 4. Operational Runbook & Lifecycle
 - **Step 1: Usage / Authoring Workflow**:
-  1. Define or update the system model in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml).
-  2. Synchronize the embedded code block in [`docs/architecture.md`](../../architecture.md).
-  3. Ensure every diagram node has a matching component entry in `docs/knowledge_base/components/<node_id>.md`.
+  1. Define or update the system model in [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml).
+  2. Synchronize the embedded code block in [`docs/architecture.md`](../../../architecture.md).
+  3. Ensure every diagram node has a matching OKF entry under `docs/knowledge_base/{cloudtop_env,codebase,deployed_gcp_assets}/`.
 - **Step 2: Verification & Validation**:
   ```bash
   # Run the pre-push gate locally to verify Dendrite compliance
@@ -65,7 +65,7 @@ last_verified: "2026-09-28"
 
 ## 5. References & Cross-Links
 - **Authoritative Platform**: [go/dendrite](http://go/dendrite) | [go/dendrite-playground](http://go/dendrite-playground)
-- **Repository Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
-- **Declarative Architecture Model**: [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Repository Architecture Overview**: [`docs/architecture.md`](../../../architecture.md)
+- **Declarative Architecture Model**: [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml)
 - **Pre-Push Validation Gate**: [`cloudtop_env/scripts/check-architecture-docs.md`](../scripts/check-architecture-docs.md)
 - **Subagent Automation**: `.agents/skills/update-architecture-docs/SKILL.md`

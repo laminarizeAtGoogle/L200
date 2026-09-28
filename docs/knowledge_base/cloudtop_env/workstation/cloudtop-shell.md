@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "cloudtop-shell"
-component_name: "Cloudtop Terminal & Antigravity Shell"
-category: "Dev Tooling"
+entry_id: "cloudtop-shell"
+entry_name: "Cloudtop Terminal & Antigravity Shell"
+category: "cloudtop_env"
+sub_category: "workstation"
 tier: "Tier 3 - Development"
 status: "active"
 owner: "Developer Productivity / Cloudtop Engineering"
 dendrite_node_id: "cloudtop_shell"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Cloudtop Terminal & Antigravity Shell
+# OKF (Cloudtop Env): Cloudtop Terminal & Antigravity Shell
 
 ## 1. Executive Summary & Purpose
 The Cloudtop Terminal & Antigravity Shell provides the interactive, authenticated development workstation environment on Google Cloudtop (`/usr/local/google/home/joshholtz/Documents/L200`). It serves as the primary developer and AI pairing interface for writing code, running terraform plans, executing agent workflows, and initiating git operations.
@@ -27,9 +29,9 @@ The Cloudtop Terminal & Antigravity Shell provides the interactive, authenticate
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Workstation environment configuration: [`.env`](../../.env)
-  - Pre-command hook definitions: [`.agents/hooks.json`](../../.agents/hooks.json)
-  - Helper scripts: [`relocate.sh`](../../relocate.sh)
+  - Workstation environment configuration: [`.env`](../../../../.env)
+  - Pre-command hook definitions: [`.agents/hooks.json`](../../../../.agents/hooks.json)
+  - Helper scripts: [`relocate.sh`](../../../../relocate.sh)
 - **Protocols & Interfaces**: Bash 5.2, POSIX shell, SSH over corp proxy.
 - **Configuration & Environment Variables**:
   - `CLOUDSDK_CONFIG`: Isolates gcloud settings to `./.gcloud`
@@ -56,6 +58,9 @@ The Cloudtop Terminal & Antigravity Shell provides the interactive, authenticate
   - Run `./relocate.sh` to refresh absolute workspace paths and reset environment exports.
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `cloudtop_shell` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Architecture Overview: [`docs/architecture.md`](../architecture.md)
-- Related OKF Entries: [`adk-runtime`](adk-runtime.md), [`isolated-binaries`](isolated-binaries.md)
+- **Dendrite Diagram Node**: `cloudtop_shell` in [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../../architecture.md)
+- **Related OKF Entries**:
+  - Agent Runtime: [`codebase/adk-runtime.md`](../../codebase/adk-runtime.md)
+  - Standalone Binaries: [`cloudtop_env/package_managers/isolated-binaries.md`](../package_managers/isolated-binaries.md)
+  - Pre-Push Gate: [`cloudtop_env/scripts/check-architecture-docs.md`](../scripts/check-architecture-docs.md)
