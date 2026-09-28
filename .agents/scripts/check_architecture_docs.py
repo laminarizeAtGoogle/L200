@@ -31,6 +31,13 @@ IGNORABLE_FILES = {
     ".openspec-target",
     ".gitignore",
     ".gitkeep",
+    ".gitmessage.txt",
+    ".gitattributes",
+    "AGENTS.md",
+    "GEMINI.md",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md",
 }
 
 

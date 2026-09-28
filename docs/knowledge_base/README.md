@@ -23,6 +23,7 @@ Following Google OKF standards, every architectural component represented in the
 | `vpc-network` | Virtual Private Cloud (VPC) & Subnets | Argolis GCP Project | Networking | Tier 1 - Critical Path | `vpc_network` | [`vpc-network.md`](components/vpc-network.md) |
 | `firewall-rules` | Compute Engine Security Firewalls | Argolis GCP Project | Networking | Tier 1 - Critical Path | `firewall_rules` | [`firewall-rules.md`](components/firewall-rules.md) |
 | `compute-vm` | Argolis Compute Engine Instances | Argolis GCP Project | Compute & Runtime | Tier 1 - Critical Path | `compute_vm` | [`compute-vm.md`](components/compute-vm.md) |
+| `check-architecture-docs` | Architecture Documentation Pre-Push Gate | Developer Workstation | Dev Tooling | Tier 3 - Development | `check_architecture_docs` | [`cloudtop_env/scripts/check-architecture-docs.md`](cloudtop_env/scripts/check-architecture-docs.md) |
 
 ---
 
