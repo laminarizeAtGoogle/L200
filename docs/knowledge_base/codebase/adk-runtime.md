@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "adk-runtime"
-component_name: "Google ADK Agent Runtime & Python Toolchain"
-category: "Compute & Runtime"
+entry_id: "adk-runtime"
+entry_name: "Google ADK Agent Runtime & Python Toolchain"
+category: "codebase"
+sub_category: "agent_runtime"
 tier: "Tier 2 - Operational"
 status: "active"
 owner: "AI Agent Engineering / Academy L200"
 dendrite_node_id: "adk_runtime"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Google ADK Agent Runtime & Python Toolchain
+# OKF (Codebase): Google ADK Agent Runtime & Python Toolchain
 
 ## 1. Executive Summary & Purpose
 The Google ADK Agent Runtime provides the Python 3.12 execution framework for Google Agent Development Kit (ADK) agents, tools, orchestration, and evaluation pipelines within the L200 workspace. It provides hermetic package management via `uv` routed through the internal Corp Airlock proxy.
@@ -26,10 +28,10 @@ The Google ADK Agent Runtime provides the Python 3.12 execution framework for Go
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Runtime definition: [`pyproject.toml`](../../pyproject.toml)
-  - Lockfile: [`uv.lock`](../../uv.lock)
-  - Package proxy config: [`uv.toml`](../../uv.toml)
-  - Verification script: [`main.py`](../../main.py)
+  - Runtime definition: [`pyproject.toml`](../../../pyproject.toml)
+  - Lockfile: [`uv.lock`](../../../uv.lock)
+  - Package proxy config: [`uv.toml`](../../../uv.toml)
+  - Verification script: [`main.py`](../../../main.py)
 - **Protocols & Interfaces**: HTTP/1.1 (Airlock proxy), HTTPS / gRPC (Vertex AI endpoints).
 - **Configuration & Environment Variables**:
   - `VIRTUAL_ENV`: Path to `./.venv`
@@ -55,6 +57,10 @@ The Google ADK Agent Runtime provides the Python 3.12 execution framework for Go
   - Recreate venv: `rm -rf .venv && ./bin/uv sync`
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `adk_runtime` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- ADK Documentation: `https://google.github.io/adk-docs/`
-- Related OKF Entries: [`cloudtop-shell`](cloudtop-shell.md), [`isolated-binaries`](isolated-binaries.md)
+- **Dendrite Diagram Node**: `adk_runtime` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **ADK Documentation**: `https://google.github.io/adk-docs/`
+- **Related OKF Entries**:
+  - Workstation Shell: [`cloudtop_env/workstation/cloudtop-shell.md`](../cloudtop_env/workstation/cloudtop-shell.md)
+  - Package Manager: [`cloudtop_env/package_managers/uv-package-manager.md`](../cloudtop_env/package_managers/uv-package-manager.md)
+  - Standalone Binaries: [`cloudtop_env/package_managers/isolated-binaries.md`](../cloudtop_env/package_managers/isolated-binaries.md)

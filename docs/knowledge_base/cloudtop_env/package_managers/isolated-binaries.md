@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "isolated-binaries"
-component_name: "Hermetic Standalone Toolchain (./bin)"
-category: "Dev Tooling"
+entry_id: "isolated-binaries"
+entry_name: "Hermetic Standalone Toolchain (./bin)"
+category: "cloudtop_env"
+sub_category: "package_managers"
 tier: "Tier 3 - Development"
 status: "active"
 owner: "DevOps / Workspace Infrastructure"
 dendrite_node_id: "isolated_binaries"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Hermetic Standalone Toolchain (./bin)
+# OKF (Cloudtop Env): Hermetic Standalone Toolchain (./bin)
 
 ## 1. Executive Summary & Purpose
 The Hermetic Standalone Toolchain contains dedicated, architecture-specific binaries compiled for Linux x86_64 and committed/symlinked directly under `./bin`. This eliminates host-level package dependencies, version conflicts, or need for root access on Cloudtop.
@@ -52,6 +54,9 @@ The Hermetic Standalone Toolchain contains dedicated, architecture-specific bina
   - Check file permissions: `chmod +x ./bin/*`
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `isolated_binaries` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`cloudtop-shell`](cloudtop-shell.md), [`adk-runtime`](adk-runtime.md), [`uv-package-manager`](../cloudtop_env/package_managers/uv-package-manager.md)
-
+- **Dendrite Diagram Node**: `isolated_binaries` in [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../../architecture.md)
+- **Related OKF Entries**:
+  - Workstation Shell: [`cloudtop_env/workstation/cloudtop-shell.md`](../workstation/cloudtop-shell.md)
+  - Python Package Manager: [`cloudtop_env/package_managers/uv-package-manager.md`](uv-package-manager.md)
+  - Agent Runtime: [`codebase/adk-runtime.md`](../../codebase/adk-runtime.md)

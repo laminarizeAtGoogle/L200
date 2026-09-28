@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "reader-sa"
-component_name: "Read-Only Service Account (cloudtop-agent-reader)"
-category: "IAM & Security"
+entry_id: "reader-sa"
+entry_name: "Read-Only Service Account (cloudtop-agent-reader)"
+category: "deployed_gcp_assets"
+sub_category: "iam"
 tier: "Tier 2 - Operational"
 status: "active"
 owner: "Security Architecture / Zero-Privilege Team"
 dendrite_node_id: "reader_sa"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Read-Only Service Account (cloudtop-agent-reader)
+# OKF (Deployed GCP Asset): Read-Only Service Account (cloudtop-agent-reader)
 
 ## 1. Executive Summary & Purpose
 The `cloudtop-agent-reader` service account establishes a hard zero-privilege security boundary at the IAM layer on Cloudtop workstations. Local coding agents and scripts impersonate this service account to inspect live GCP state without possessing any rights to alter, delete, or create cloud resources.
@@ -25,7 +27,7 @@ The `cloudtop-agent-reader` service account establishes a hard zero-privilege se
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Provisioner: [`scripts/provision-argolis-env.sh`](../../scripts/provision-argolis-env.sh)
+  - Provisioner: [`scripts/provision-argolis-env.sh`](../../../scripts/provision-argolis-env.sh)
 - **Principal Email**:
   `cloudtop-agent-reader@<PROJECT_ID>.iam.gserviceaccount.com`
 - **IAM Roles Granted**:
@@ -53,6 +55,10 @@ The `cloudtop-agent-reader` service account establishes a hard zero-privilege se
   - If impersonation expires or service account is deleted, local read-only commands will fail. Production infrastructure remains completely unaffected.
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `reader_sa` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Security Specification: [`scripts/README.md`](../../scripts/README.md)
-- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`cloudtop-shell`](cloudtop-shell.md), [`provision-argolis-env`](../cloudtop_env/scripts/provision-argolis-env.md)
+- **Dendrite Diagram Node**: `reader_sa` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Security Specification**: [`scripts/README.md`](../../../scripts/README.md)
+- **Related OKF Entries**:
+  - Deployer SA: [`deployed_gcp_assets/deployer-sa.md`](deployer-sa.md)
+  - Workstation Shell: [`cloudtop_env/workstation/cloudtop-shell.md`](../cloudtop_env/workstation/cloudtop-shell.md)
+  - Provisioning Script: [`cloudtop_env/scripts/provision-argolis-env.md`](../cloudtop_env/scripts/provision-argolis-env.md)

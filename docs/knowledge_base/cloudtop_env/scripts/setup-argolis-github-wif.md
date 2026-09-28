@@ -21,7 +21,7 @@ last_verified: "2026-09-28"
 
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `scripts`
-- **File / Directory Path**: [`scripts/setup-argolis-github-wif.sh`](../../../scripts/setup-argolis-github-wif.sh)
+- **File / Directory Path**: [`scripts/setup-argolis-github-wif.sh`](../../../../scripts/setup-argolis-github-wif.sh)
 - **Invocation Command / Syntax**:
   ```bash
   # Standard automated setup with repo auto-detection
@@ -94,10 +94,10 @@ last_verified: "2026-09-28"
     - *Remediation*: Verify that `attribute.repository` condition matches the casing and path of the GitHub repository exactly. Check `WIF_PROVIDER` repository variable in GitHub.
 
 ## 5. References & Cross-Links
-- **Dendrite Diagram Nodes**: `wif_pool`, `deployer_sa`, `gcs_tfstate` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
-- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Dendrite Diagram Nodes**: `wif_pool`, `deployer_sa`, `gcs_tfstate` in [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../../architecture.md)
 - **Related OKF Entries**:
-  - WIF Pool Component: [`components/wif-pool.md`](../../components/wif-pool.md)
-  - Deployer SA Component: [`components/deployer-sa.md`](../../components/deployer-sa.md)
-  - State Bucket Component: [`components/gcs-tfstate.md`](../../components/gcs-tfstate.md)
-  - CI/CD Pipelines: [`components/gha-plan.md`](../../components/gha-plan.md), [`components/gha-apply.md`](../../components/gha-apply.md)
+  - WIF Pool: [`deployed_gcp_assets/wif-pool.md`](../../deployed_gcp_assets/wif-pool.md)
+  - Deployer SA: [`deployed_gcp_assets/deployer-sa.md`](../../deployed_gcp_assets/deployer-sa.md)
+  - State Bucket: [`deployed_gcp_assets/gcs-tfstate.md`](../../deployed_gcp_assets/gcs-tfstate.md)
+  - CI/CD Pipelines: [`codebase/gha-plan.md`](../../codebase/gha-plan.md), [`codebase/gha-apply.md`](../../codebase/gha-apply.md)

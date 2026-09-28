@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "wif-pool"
-component_name: "Workload Identity Federation (WIF) Pool & Provider"
-category: "IAM & Security"
+entry_id: "wif-pool"
+entry_name: "Workload Identity Federation (WIF) Pool & Provider"
+category: "deployed_gcp_assets"
+sub_category: "iam"
 tier: "Tier 1 - Critical Path"
 status: "active"
 owner: "Security Architecture / IAM Team"
 dendrite_node_id: "wif_pool"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Workload Identity Federation (WIF) Pool & Provider
+# OKF (Deployed GCP Asset): Workload Identity Federation (WIF) Pool & Provider
 
 ## 1. Executive Summary & Purpose
 Workload Identity Federation (WIF) enables GitHub Actions workflows to authenticate to Google Cloud without storing static service account keys in GitHub Secrets. It exchanges short-lived GitHub OIDC JWT tokens for federated Google access tokens.
@@ -25,7 +27,7 @@ Workload Identity Federation (WIF) enables GitHub Actions workflows to authentic
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Provisioning script: [`scripts/setup-argolis-github-wif.sh`](../../scripts/setup-argolis-github-wif.sh)
+  - Provisioning script: [`scripts/setup-argolis-github-wif.sh`](../../../scripts/setup-argolis-github-wif.sh)
 - **Protocols & Interfaces**: HTTPS / OIDC (OpenID Connect v1.0) / OAuth 2.0 Token Exchange (RFC 8693).
 - **GCP Resource Hierarchy**:
   - Pool: `projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/github-actions-pool`
@@ -55,6 +57,11 @@ Workload Identity Federation (WIF) enables GitHub Actions workflows to authentic
   - Confirm repository attribute match: check `assertion.repository` in GitHub Actions logs against the WIF provider condition.
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `wif_pool` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Google Cloud WIF Guide: `https://cloud.google.com/iam/docs/workload-identity-federation`
-- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`gha-plan`](gha-plan.md), [`gha-apply`](gha-apply.md), [`setup-argolis-github-wif`](../cloudtop_env/scripts/setup-argolis-github-wif.md)
+- **Dendrite Diagram Node**: `wif_pool` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Google Cloud WIF Guide**: `https://cloud.google.com/iam/docs/workload-identity-federation`
+- **Related OKF Entries**:
+  - Deployer SA: [`deployed_gcp_assets/deployer-sa.md`](deployer-sa.md)
+  - Plan Workflow: [`codebase/gha-plan.md`](../codebase/gha-plan.md)
+  - Apply Workflow: [`codebase/gha-apply.md`](../codebase/gha-apply.md)
+  - Setup Script: [`cloudtop_env/scripts/setup-argolis-github-wif.md`](../cloudtop_env/scripts/setup-argolis-github-wif.md)

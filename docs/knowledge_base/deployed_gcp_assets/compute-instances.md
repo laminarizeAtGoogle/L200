@@ -80,7 +80,12 @@ last_verified: "2026-09-28"
     - *Blast Radius*: Confined to workload testing running on that specific VM; zero impact on corporate Cloudtop or CI/CD pipelines.
 - **Step 4: Remediation & Incident Recovery**:
   ```bash
-  # Restart healthy instance state
+  # Restart or stop/start via helper CLI
+  ./bin/argolis stop <INSTANCE_NAME>
+  ./bin/argolis start <INSTANCE_NAME>
+  ./bin/argolis ssh <INSTANCE_NAME>
+
+  # Restart healthy instance state via gcloud
   gcloud compute instances reset <INSTANCE_NAME> \
     --zone=us-central1-a \
     --project=<PROJECT_ID>
@@ -90,7 +95,6 @@ last_verified: "2026-09-28"
 - **Dendrite Diagram Node**: `compute_vm` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
 - **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
 - **Related OKF Entries**:
-  - Canonical Component: [`components/compute-vm.md`](../components/compute-vm.md)
   - Codebase Modules: [`codebase/terraform-infrastructure-modules.md`](../codebase/terraform-infrastructure-modules.md)
-  - Network Perimeter: [`components/vpc-network.md`](../components/vpc-network.md)
-  - Security Firewalls: [`components/firewall-rules.md`](../components/firewall-rules.md)
+  - Network Perimeter: [`deployed_gcp_assets/vpc-network.md`](vpc-network.md)
+  - Security Firewalls: [`deployed_gcp_assets/firewall-rules.md`](firewall-rules.md)

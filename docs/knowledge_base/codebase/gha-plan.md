@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "gha-plan"
-component_name: "GitHub Actions: Terraform Plan Pipeline"
-category: "CI/CD"
+entry_id: "gha-plan"
+entry_name: "GitHub Actions: Terraform Plan Pipeline"
+category: "codebase"
+sub_category: "cicd"
 tier: "Tier 1 - Critical Path"
 status: "active"
 owner: "DevOps & CI/CD Team"
 dendrite_node_id: "gha_plan"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: GitHub Actions Terraform Plan Pipeline
+# OKF (Codebase): GitHub Actions Terraform Plan Pipeline
 
 ## 1. Executive Summary & Purpose
 The Terraform Plan Pipeline is an automated GitHub Actions workflow triggered whenever a pull request is opened or updated targeting the `main` branch. It validates formatting, initializes Terraform with remote GCS state, verifies syntax, and generates a speculative infrastructure execution plan.
@@ -26,7 +28,7 @@ The Terraform Plan Pipeline is an automated GitHub Actions workflow triggered wh
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Workflow definition: [`.github/workflows/terraform-plan.yml`](../../.github/workflows/terraform-plan.yml)
+  - Workflow definition: [`.github/workflows/terraform-plan.yml`](../../../.github/workflows/terraform-plan.yml)
 - **Protocols & Interfaces**: HTTPS / GitHub Actions runner runtime.
 - **Workflow Steps**:
   1. `actions/checkout@v4`
@@ -53,5 +55,11 @@ The Terraform Plan Pipeline is an automated GitHub Actions workflow triggered wh
   - Inspect failed job logs on GitHub Actions; verify WIF provider permissions and GCS state bucket access.
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `gha_plan` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`github-repo`](github-repo.md), [`gha-apply`](gha-apply.md), [`wif-pool`](wif-pool.md)
+- **Dendrite Diagram Node**: `gha_plan` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Related OKF Entries**:
+  - Repository: [`codebase/github-repo.md`](github-repo.md)
+  - Apply Pipeline: [`codebase/gha-apply.md`](gha-apply.md)
+  - WIF Pool: [`deployed_gcp_assets/wif-pool.md`](../deployed_gcp_assets/wif-pool.md)
+  - State Bucket: [`deployed_gcp_assets/gcs-tfstate.md`](../deployed_gcp_assets/gcs-tfstate.md)
+  - Terraform Modules: [`codebase/terraform-infrastructure-modules.md`](terraform-infrastructure-modules.md)

@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "deployer-sa"
-component_name: "Deployer Service Account (github-terraform-deployer)"
-category: "IAM & Security"
+entry_id: "deployer-sa"
+entry_name: "Deployer Service Account (github-terraform-deployer)"
+category: "deployed_gcp_assets"
+sub_category: "iam"
 tier: "Tier 1 - Critical Path"
 status: "active"
 owner: "Security Architecture / IAM Team"
 dendrite_node_id: "deployer_sa"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: Deployer Service Account (github-terraform-deployer)
+# OKF (Deployed GCP Asset): Deployer Service Account (github-terraform-deployer)
 
 ## 1. Executive Summary & Purpose
 The `github-terraform-deployer` service account is the privileged deployment identity in Google Cloud. It is impersonated by GitHub Actions via Workload Identity Federation (WIF) and possesses the minimum necessary IAM permissions to manage Compute Engine resources and read/write remote Terraform state.
@@ -26,7 +28,7 @@ The `github-terraform-deployer` service account is the privileged deployment ide
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Provisioner: [`scripts/setup-argolis-github-wif.sh`](../../scripts/setup-argolis-github-wif.sh)
+  - Provisioner: [`scripts/setup-argolis-github-wif.sh`](../../../scripts/setup-argolis-github-wif.sh)
 - **Principal Email**:
   `github-terraform-deployer@<PROJECT_ID>.iam.gserviceaccount.com`
 - **IAM Roles Granted**:
@@ -48,5 +50,10 @@ The `github-terraform-deployer` service account is the privileged deployment ide
   - Re-run `setup-argolis-github-wif.sh` or check IAM policy bindings via Cloud Console.
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `deployer_sa` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`wif-pool`](wif-pool.md), [`reader-sa`](reader-sa.md), [`gcs-tfstate`](gcs-tfstate.md)
+- **Dendrite Diagram Node**: `deployer_sa` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Related OKF Entries**:
+  - WIF Pool: [`deployed_gcp_assets/wif-pool.md`](wif-pool.md)
+  - Reader SA: [`deployed_gcp_assets/reader-sa.md`](reader-sa.md)
+  - State Bucket: [`deployed_gcp_assets/gcs-tfstate.md`](gcs-tfstate.md)
+  - Apply Pipeline: [`codebase/gha-apply.md`](../codebase/gha-apply.md)

@@ -23,9 +23,9 @@ last_verified: "2026-09-28"
 - **Sub-Category**: `package_managers`
 - **File / Directory Path**:
   - Binary executable: `./bin/uv` (standalone v0.12.16)
-  - Proxy configuration: [`uv.toml`](../../../uv.toml)
-  - Dependency manifest: [`pyproject.toml`](../../../pyproject.toml)
-  - Lockfile: [`uv.lock`](../../../uv.lock)
+  - Proxy configuration: [`uv.toml`](../../../../uv.toml)
+  - Dependency manifest: [`pyproject.toml`](../../../../pyproject.toml)
+  - Lockfile: [`uv.lock`](../../../../uv.lock)
   - Virtual environment: `./.venv/`
 - **Invocation Command / Syntax**:
   ```bash
@@ -86,8 +86,8 @@ last_verified: "2026-09-28"
       ```
 
 ## 5. References & Cross-Links
-- **Dendrite Diagram Node**: `isolated_binaries` and `adk_runtime` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
-- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Dendrite Diagram Node**: `isolated_binaries` and `adk_runtime` in [`docs/architecture_diagram.dendrite.yaml`](../../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../../architecture.md)
 - **Related OKF Entries**:
-  - Canonical Component: [`components/isolated-binaries.md`](../../components/isolated-binaries.md)
-  - Runtime Component: [`components/adk-runtime.md`](../../components/adk-runtime.md)
+  - Standalone Binaries: [`cloudtop_env/package_managers/isolated-binaries.md`](isolated-binaries.md)
+  - Runtime Component: [`codebase/adk-runtime.md`](../../codebase/adk-runtime.md)

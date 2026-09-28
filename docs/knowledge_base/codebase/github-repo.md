@@ -1,16 +1,18 @@
 ---
 okf_version: "1.0"
-component_id: "github-repo"
-component_name: "GitHub Repository (L200)"
-category: "CI/CD"
+entry_id: "github-repo"
+entry_name: "GitHub Repository (L200)"
+category: "codebase"
+sub_category: "cicd"
 tier: "Tier 1 - Critical Path"
 status: "active"
 owner: "Platform Engineering / Core Workspace"
 dendrite_node_id: "github_repo"
+discovered_by: "static_analysis"
 last_verified: "2026-09-28"
 ---
 
-# OKF: GitHub Repository (L200)
+# OKF (Codebase): GitHub Repository (L200)
 
 ## 1. Executive Summary & Purpose
 The GitHub Repository represents the authoritative version control repository for the L200 project. It stores Terraform manifests, deployment workflows, agent configuration, OpenSpec change specs, and architecture documentation. All updates pushed to this repository trigger automated CI/CD and are gated by client-side pre-push hooks.
@@ -27,9 +29,9 @@ The GitHub Repository represents the authoritative version control repository fo
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
   - Repository root: `/usr/local/google/home/joshholtz/Documents/L200`
-  - Ignore rules: [`.gitignore`](../../.gitignore)
-  - Workflows: [`.github/workflows/`](../../.github/workflows/)
-  - Client-side Pre-push gates: [`.agents/hooks.json`](../../.agents/hooks.json)
+  - Ignore rules: [`.gitignore`](../../../.gitignore)
+  - Workflows: [`.github/workflows/`](../../../.github/workflows/)
+  - Client-side Pre-push gates: [`.agents/hooks.json`](../../../.agents/hooks.json)
 - **Protocols & Interfaces**: Git over SSH (`git@github.com:...`) and HTTPS (`https://github.com/...`).
 - **Branch Protection Rules**:
   - Target branch: `main`
@@ -52,5 +54,10 @@ The GitHub Repository represents the authoritative version control repository fo
   - Review rejection reason emitted by `git-push-architecture-docs-gate` or `git-push-sanitization-gate`.
 
 ## 5. References & Linked Assets
-- Dendrite Diagram Node: `github_repo` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`gha-plan`](gha-plan.md), [`gha-apply`](gha-apply.md)
+- **Dendrite Diagram Node**: `github_repo` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
+- **Related OKF Entries**:
+  - CI Pipeline: [`codebase/gha-plan.md`](gha-plan.md)
+  - CD Pipeline: [`codebase/gha-apply.md`](gha-apply.md)
+  - IaC Modules: [`codebase/terraform-infrastructure-modules.md`](terraform-infrastructure-modules.md)
+  - Pre-Push Gate: [`cloudtop_env/scripts/check-architecture-docs.md`](../cloudtop_env/scripts/check-architecture-docs.md)
