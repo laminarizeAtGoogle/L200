@@ -63,4 +63,4 @@ Argolis Compute Engine Instances provide dedicated virtual machine compute resou
 
 ## 5. References & Linked Assets
 - Dendrite Diagram Node: `compute_vm` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
-- Related OKF Entries: [`vpc-network`](vpc-network.md), [`firewall-rules`](firewall-rules.md), [`deployer-sa`](deployer-sa.md)
+- Related OKF Entries: [`vpc-network`](vpc-network.md), [`firewall-rules`](firewall-rules.md), [`deployer-sa`](deployer-sa.md), [`compute-instances`](../deployed_gcp_assets/compute-instances.md), [`terraform-infrastructure-modules`](../codebase/terraform-infrastructure-modules.md)

@@ -57,4 +57,4 @@ Workload Identity Federation (WIF) enables GitHub Actions workflows to authentic
 ## 5. References & Linked Assets
 - Dendrite Diagram Node: `wif_pool` in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
 - Google Cloud WIF Guide: `https://cloud.google.com/iam/docs/workload-identity-federation`
-- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`gha-plan`](gha-plan.md), [`gha-apply`](gha-apply.md)
+- Related OKF Entries: [`deployer-sa`](deployer-sa.md), [`gha-plan`](gha-plan.md), [`gha-apply`](gha-apply.md), [`setup-argolis-github-wif`](../cloudtop_env/scripts/setup-argolis-github-wif.md)
