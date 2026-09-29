@@ -258,3 +258,32 @@ OpenSpec structures AI development around formal specifications, design choices,
    - **`openspec/changes/<change-name>/tasks.md`**: Ordered implementation checklist.
    - **Implement**: `/opsx-apply` to execute implementation tasks.
    - **Archive**: `/opsx-archive` once changes are tested and synced with root specs.
+
+---
+
+### 10. A2A Agent Graph Software Factory API (`software_factory/`)
+
+The workspace implements an **Agent-to-Agent (A2A) Software Factory** exposed behind a single conversational API (`focal_coordinator_agent`) and mounted A2A protocol endpoints. It can build software and Terraform modules in local or external workspaces, onboard external GCP projects via Workload Identity Federation (WIF), enforce branch-and-PR governance (`main` is strictly protected), and verify live Argolis infrastructure using a read-only `gcloud` probe agent (`cloudtop-agent-reader@<PROJECT_ID>.iam.gserviceaccount.com`).
+
+1. **Run Readiness Smoke Check**:
+   ```bash
+   ./bin/uv run --env-file .env python main.py
+   ```
+
+2. **Start the Unified FastAPI + A2A Server**:
+   ```bash
+   ./bin/uv run --env-file .env python main.py --serve --host 0.0.0.0 --port 8080
+   ```
+   - **Conversational Focal Point API**: `POST /api/v1/chat`
+   - **Cross-Workspace Build Endpoint**: `POST /api/v1/workspaces/build`
+   - **Cross-Project WIF Onboarding Endpoint**: `POST /api/v1/workspaces/onboard`
+   - **Read-Only `gcloud` Probe Endpoint**: `POST /api/v1/probe`
+   - **Human-in-the-Loop Approval Gate**: `POST /api/v1/approvals/{approval_id}`
+   - **A2A Agent Cards**: `GET /api/v1/agents/cards` and `GET /a2a/{focal,architect,builder,wif_delivery,gcloud_probe}/.well-known/agent.json`
+
+3. **Run Automated Tests & Golden Evaluation Suite**:
+   ```bash
+   ./bin/uv run pytest -v
+   ./bin/uv run python evals/run_evaluation_suite.py
+   ```
+

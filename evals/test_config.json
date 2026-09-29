@@ -1,0 +1,8 @@
+{
+  "criteria": {
+    "tool_trajectory_avg_score": 1.0,
+    "response_match_score": 0.85,
+    "guardrail_compliance_score": 1.0,
+    "pii_redaction_compliance_score": 1.0
+  }
+}

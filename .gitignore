@@ -32,12 +32,13 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
-# Python
+# Python & Agent Runtime State
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .pytest_cache/
+.factory_state/
 
 # General / OS
 *.log
