@@ -301,6 +301,7 @@ dendrite_diagram:
 - **Cloud Logging Systems**: Permitted diagnostic log stream providing error traces and audit trails.
 - **Secret Manager & Cloud DLP Vault**: Zero hardcoded credentials with automated PII scrubbing.
 - **Internal Databases (Quarantined)**: Application databases (Cloud SQL, Spanner, Firestore) strictly isolated from agent query access.
+- **IAM Permission Boundary Governance**: Project-level IAM member bindings are gated behind `manage_project_iam` (default: `false`) ensuring keyless WIF deployment pipelines operating under `roles/editor` apply infrastructure without encountering 403 `setIamPolicy` denials.
 
 ---
 
