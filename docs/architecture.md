@@ -302,6 +302,7 @@ dendrite_diagram:
 - **Secret Manager & Cloud DLP Vault**: Zero hardcoded credentials with automated PII scrubbing.
 - **Internal Databases (Quarantined)**: Application databases (Cloud SQL, Spanner, Firestore) strictly isolated from agent query access.
 - **IAM Permission Boundary Governance**: Project-level IAM member bindings are gated behind `manage_project_iam` (default: `false`) ensuring keyless WIF deployment pipelines operating under `roles/editor` apply infrastructure without encountering 403 `setIamPolicy` denials.
+- **Declarative State Import & GCS Backend**: Declarative `import {}` blocks ([`terraform/imports.tf`](../terraform/imports.tf)) adopt pre-existing Argolis cloud resources into the remote GCS state backend (`l200-509515-tfstate`), eliminating 409 conflict errors across ephemeral GitHub Actions CI/CD runners.
 
 ---
 
