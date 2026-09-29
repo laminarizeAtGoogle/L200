@@ -35,6 +35,10 @@ Following Google OKF standards, every architectural component represented in the
 | `adk-runtime` | Google ADK Agent Runtime & Python Toolchain | `codebase/agent_runtime` | `adk_runtime` | Tier 2 - Operational | [`adk-runtime.md`](codebase/adk-runtime.md) |
 | `a2a-software-factory-api` | Unified FastAPI + A2A Focal Coordinator Server | `codebase/agent_runtime` | `a2a_software_factory_api` | Tier 1 - Critical Path | [`a2a-software-factory-api.md`](codebase/a2a-software-factory-api.md) |
 | `a2a-subagent-mesh` | A2A Multi-Agent Specialist Mesh & Tool Suite | `codebase/agent_runtime` | `a2a_subagent_mesh` | Tier 1 - Critical Path | [`a2a-subagent-mesh.md`](codebase/a2a-subagent-mesh.md) |
+| `ge-cloud-chat-frontend` | Gemini Enterprise Web Frontend (Voice & Text UI) | `codebase/user_interface` | `ge_frontend` | Tier 1 - Critical Path | [`ge-cloud-chat-frontend.md`](codebase/ge-cloud-chat-frontend.md) |
+| `iap-verifier` | Identity-Aware Proxy (IAP) Verification Layer | `codebase/security_and_auth` | `iap_gateway` | Tier 1 - Critical Path | [`iap-verifier.md`](codebase/iap-verifier.md) |
+| `cloud-tts-service` | Google Cloud Text-to-Speech (TTS) Voice Engine | `codebase/audio_and_speech` | `cloud_tts_engine` | Tier 1 - Critical Path | [`cloud-tts-service.md`](codebase/cloud-tts-service.md) |
+| `database-access-blocker-guardrail` | Database Access Restriction Guardrail | `codebase/guardrails_and_policies` | `db_quarantine_barrier` | Tier 1 - Critical Path | [`database-access-blocker-guardrail.md`](codebase/database-access-blocker-guardrail.md) |
 | `terraform-infrastructure-modules` | Terraform Infrastructure Modules | `codebase/terraform` | `github_repo` | Tier 1 - Critical Path | [`terraform-infrastructure-modules.md`](codebase/terraform-infrastructure-modules.md) |
 
 ### 3. Deployed GCP Cloud Assets (`deployed_gcp_assets/`)

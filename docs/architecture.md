@@ -1,6 +1,6 @@
-# L200 System, Infrastructure & A2A Software Factory Architecture
+# Gemini Enterprise Cloud Chat Agent & Argolis Infrastructure Architecture
 
-This document serves as the authoritative architectural blueprint for the Google Academy L200, Argolis, and **A2A Agent Graph Software Factory** workspace.
+This document serves as the authoritative architectural blueprint for the Google Academy L200, Argolis, and **Gemini Enterprise (GE) Cloud Chat Agent** workspace.
 
 ---
 
@@ -29,6 +29,7 @@ const SubText = "#5f6368"
 const CardBorder = "#dadce0"
 const BusStroke = "#334155"
 const SurfaceWhite = "#ffffff"
+const DangerRed = "#d93025"
 
 Style @Ghost {
   fill: transparent, strokeWidth: 0, fontColor: transparent, padding: 0
@@ -87,10 +88,15 @@ Style @GatewayHubCard {
   width: 204, height: 68, strokeColor: $GcpBlue, strokeWidth: 2,
   fontSize: 15, subFontSize: 11.5, iconSize: 32, padding: 12
 }
+Style @BlockedCard {
+  base: @ProductCard,
+  strokeColor: $DangerRed, strokeWidth: 2,
+  fill: "#fff8f7", fontColor: $DangerRed
+}
 
 Zone @L200EnterpriseArchitecture {
   title: "Google Cloud Platform"
-  subtitle: "L200 Argolis & A2A Software Factory Architecture"
+  subtitle: "Gemini Enterprise Cloud Chat Agent & Argolis Infrastructure Architecture"
   style: @ArchitectureRoot
   layout: matrix
   areas: [
@@ -103,65 +109,65 @@ Zone @L200EnterpriseArchitecture {
 
   Zone @Zone1_Perimeter {
     area: "z1"
-    title: "1. Developer Environment"
-    subtitle: "Cloudtop & Local Ingress"
+    title: "1. Gemini Enterprise Frontend & Ingress"
+    subtitle: "Client Ingress & IAP Security Perimeter"
     style: @PerimeterZone
     layout: row, gap: 18, align: center, justify: center
 
-    [cloudtop_shell: "Cloudtop Terminal\nAntigravity IDE" | "Developer Workstation"] {
-      style: @ActorCard, width: 196, icon: "Laptop",
-      description: "Local coding, testing, agent orchestrations, and pre-push sanitization hooks"
+    [ge_frontend: "Gemini Enterprise\nWeb Frontend" | "Voice & Text UI"] {
+      style: @ActorCard, width: 200, icon: "Laptop",
+      description: "Interactive chat UI with Web Speech microphone input, real-time response rendering, and TTS audio playback"
     }
-    [adk_runtime: "Google ADK\nRuntime" | "Python 3.12 / SDK"] {
-      style: @ProductCard, width: 172, icon: "GoogleAgents",
-      description: "Google Agent Development Kit runtime engine and multi-agent coordination"
+    [iap_gateway: "Identity-Aware\nProxy (IAP)" | "Google Auth Perimeter"] {
+      style: @ProductCard, width: 188, icon: "GoogleIdentity",
+      description: "Cryptographic JWT signature verification, audience validation, and caller authorization enforcement"
     }
-    [isolated_binaries: "Standalone Toolchain\n./bin Tools" | "Terraform, gcloud, gh"] {
-      style: @ProductCard, width: 184, icon: "GcpDeveloperTools",
-      description: "Hermetic standalone toolchain including Terraform v1.16.4, gcloud CLI, gh, uv, and openspec"
+    [cloudtop_shell: "Developer Shell\n& Toolchain" | "Local Environment"] {
+      style: @ProductCard, width: 180, icon: "GcpDeveloperTools",
+      description: "Hermetic standalone toolchain including Terraform v1.16.4, gcloud CLI, uv, and pre-push hooks"
     }
   }
 
-  Zone @Zone2_SoftwareFactory {
+  Zone @Zone2_AgentEngine {
     area: "z2"
-    title: "2. A2A Software Factory"
-    subtitle: "Focal API & Agent Mesh"
+    title: "2. Gemini 3.8 Agent Engine"
+    subtitle: "Conversational Coordinator, TTS & Guardrails"
     style: @ExecutionZone
     layout: column, gap: 14, align: center
 
-    [a2a_software_factory_api: "Unified FastAPI\nCoordinator" | "Focal Agent Gateway"] {
-      style: @GatewayHubCard, icon: "GcpShuffle",
-      description: "Single conversational focal point exposing POST /api/v1/chat and mounting native A2A protocol endpoints"
+    [cloud_chat_agent: "Gemini Enterprise\nCloud Chat Agent" | "Gemini 3.8 Flash / Pro"] {
+      style: @GatewayHubCard, icon: "Gemini",
+      description: "Single conversational coordinator with strategic model routing, history compaction, and persistent memory"
     }
 
-    Zone @SpecialistAgentMesh {
-      title: "Specialist Sub-Agent Mesh"
+    Zone @AgentServicesSubMesh {
+      title: "Agent Capabilities & Security Guardrails"
       style: @PeachSubGroup
       layout: matrix, cols: 2, gap: 10, align: center, justify: center
 
-      [workspace_architect: "Workspace\nArchitect" | "Gemini 2.5 Pro"] {
-        style: @ProductCard, width: 156, icon: "Gemini",
-        description: "Designs software architectures, system boundaries, and Dendrite/OKF specs"
+      [cloud_tts_engine: "Google Cloud TTS\nVoice Engine" | "Journey / Neural2"] {
+        style: @ProductCard, width: 160, icon: "Audio",
+        description: "Converts conversational answers into natural neural speech audio with automatic markdown cleaning"
       }
-      [software_builder: "Software\nBuilder" | "Gemini 2.5 Pro"] {
-        style: @ProductCard, width: 156, icon: "VertexAI",
-        description: "Generates production code, unit tests, and cross-project Terraform HCL"
+      [db_quarantine_barrier: "Database Access\nBlocker Guardrail" | "Strict Security Boundary"] {
+        style: @BlockedCard, width: 160, icon: "ShieldAlert",
+        description: "Strictly forbids direct queries to internal application databases (Cloud SQL, Spanner, Firestore)"
       }
-      [wif_git_delivery: "WIF & Git PR\nDelivery Agent" | "Branch & PR Gate"] {
-        style: @ProductCard, width: 156, icon: "Github",
-        description: "Manages feature branches, context preservation, HITL gates, and Pull Requests"
+      [readonly_cloud_prober: "Read-Only Cloud\nInspection Tools" | "Zero Mutation"] {
+        style: @ProductCard, width: 160, icon: "ShieldCheck",
+        description: "Schema-validated read-only inspection for Compute VMs, Cloud Run services, Storage buckets, and IAM"
       }
-      [gcloud_probe: "Read-Only gcloud\nProbe Agent" | "Gemini 2.5 Flash"] {
-        style: @ProductCard, width: 156, icon: "ShieldCheck",
-        description: "Impersonates read-only SA to probe live GCP resources and audit Cloud Logging"
+      [cloud_logging_prober: "Cloud Logging\nInspection Tool" | "Diagnostic Logs"] {
+        style: @ProductCard, width: 160, icon: "GcpLogging",
+        description: "Queries Cloud Logging system for application error logs, audit events, and crash traces"
       }
     }
   }
 
   Zone @Zone3_CicdAndIam {
     area: "z3"
-    title: "3. GitHub CI/CD & IAM"
-    subtitle: "Keyless WIF & Pipelines"
+    title: "3. GitHub CI/CD & Security"
+    subtitle: "Keyless WIF & Automated Evaluation"
     style: @GovernanceZone
     layout: row, gap: 18, align: center, justify: center
 
@@ -178,17 +184,13 @@ Zone @L200EnterpriseArchitecture {
       Zone @PipelinesRow {
         style: @Ghost, layout: row, gap: 8, align: center
 
-        [agent_eval_pipeline: "Golden Eval\npytest Suite" | "CI Pipeline"] {
-          style: @ProductCard, width: 138, icon: "Code",
-          description: "Automated pytest and Golden Dataset agent evaluation harness"
+        [agent_eval_pipeline: "Golden Eval\npytest Suite" | "7/7 Cases Passing"] {
+          style: @ProductCard, width: 140, icon: "Code",
+          description: "Automated 26-test pytest suite and 7-scenario Golden Evaluation Dataset measuring guardrails"
         }
         [gha_plan: "Terraform Plan\nPR Validation" | "CI Pipeline"] {
-          style: @ProductCard, width: 138, icon: "GitMerge",
+          style: @ProductCard, width: 140, icon: "GitMerge",
           description: "Automated terraform init, validate, and plan on PRs targeting main"
-        }
-        [gha_apply: "Terraform Apply\nCD Pipeline" | "Merge to Main"] {
-          style: @ProductCard, width: 138, icon: "Server",
-          description: "Automated terraform apply executed on merge to main via WIF"
         }
       }
     }
@@ -200,15 +202,11 @@ Zone @L200EnterpriseArchitecture {
 
       [wif_pool: "Workload Identity\nPool & Provider" | "GitHub OIDC JWT"] {
         style: @ProductCard, width: 176, icon: "GoogleIdentity",
-        description: "Exchanges GitHub Actions OIDC JWT tokens for federated GCP STS credentials without service account keys"
+        description: "Exchanges GitHub Actions OIDC JWT tokens for federated GCP STS credentials without keys"
       }
-      [deployer_sa: "Deployer SA\nTerraform Admin" | "Scoped Admin SA"] {
-        style: @ProductCard, width: 176, icon: "GcpLock",
-        description: "github-terraform-deployer service account with scoped Compute, Run, and Storage Admin permissions"
-      }
-      [reader_sa: "Cloudtop SA\nRead-Only Viewer" | "Impersonated SA"] {
+      [reader_sa: "Read-Only SA\nViewer & Logging" | "Impersonated SA"] {
         style: @ProductCard, width: 176, icon: "Key",
-        description: "cloudtop-agent-reader service account strictly restricted to Viewer permissions"
+        description: "cloudtop-agent-reader service account strictly restricted to Viewer and Logging Viewer roles"
       }
     }
   }
@@ -216,7 +214,7 @@ Zone @L200EnterpriseArchitecture {
   Zone @Zone4_ArgolisInfrastructure {
     area: "z4"
     title: "4. Argolis GCP Project Infrastructure"
-    subtitle: "Sandbox & Target Runtime Foundation"
+    subtitle: "Cloud Run API, Logging Systems & Isolated Databases"
     style: @ResourceZone
     layout: matrix, cols: 3, sizes: ["1.1fr", "0.9fr", "1.3fr"], gap: 18, align: center
 
@@ -225,9 +223,9 @@ Zone @L200EnterpriseArchitecture {
       style: @AmberSubGroup
       layout: row, gap: 12, align: center, justify: center
 
-      [cloud_run_factory_service: "Cloud Run v2 Service\n& Episodic Memory" | "A2A Software Factory"] {
+      [cloud_run_factory_service: "Cloud Run Service\nIAP Protected" | "FastAPI Server"] {
         style: @ProductCard, width: 182, icon: "GcpCloudRun",
-        description: "Containerized A2A Software Factory deployment with persistent episodic memory bucket"
+        description: "Hosts the GE Web Frontend and conversational API protected by Identity-Aware Proxy"
       }
       [secret_manager_vault: "Secret Manager\n& Cloud DLP Vault" | "PII Redaction"] {
         style: @ProductCard, width: 176, icon: "SecretManager",
@@ -235,301 +233,81 @@ Zone @L200EnterpriseArchitecture {
       }
     }
 
-    Zone @StorageStateSubZone {
-      title: "Terraform State Storage"
+    Zone @LoggingSubZone {
+      title: "Cloud Logging Systems (Permitted)"
       style: @AmberSubGroup
       layout: row, align: center, justify: center
 
-      [gcs_tfstate: "Cloud Storage Bucket\nterraform.tfstate" | "Encrypted & Locked"] {
-        style: @ProductCard, width: 178, icon: "GcpStorageBucket",
-        description: "Encrypted remote backend with object versioning and state locking"
+      [cloud_logging: "Cloud Logging API\nSystem & Audit Logs" | "Permitted Telemetry"] {
+        style: @ProductCard, width: 178, icon: "GcpLogging",
+        description: "Authorized telemetry and error log stream queried by the read-only agent for diagnostics"
       }
     }
 
-    Zone @NetworkComputeSubZone {
-      title: "Isolated Network & Compute Engine"
+    Zone @QuarantinedDatabasesSubZone {
+      title: "Internal Databases (Strictly Quarantined)"
       style: @AmberSubGroup
-      layout: row, gap: 12, align: center, justify: center
+      layout: row, gap: 10, align: center, justify: center
 
-      [vpc_network: "VPC Network\n& Subnet" | "a2a-factory-vpc"] {
-        style: @ProductCard, width: 162, icon: "VirtualPrivateCloud",
-        description: "Isolated virtual private cloud network and custom subnet in us-central1"
-      }
-      [firewall_rules: "Firewall Rules\nIAP SSH Gate" | "35.235.240.0/20"] {
-        style: @ProductCard, width: 162, icon: "CloudArmor",
-        description: "Ingress security rules restricting administrative access to Google Cloud IAP ranges"
-      }
-      [compute_vm: "Compute Engine\nInstances" | "Managed Workloads"] {
-        style: @ProductCard, width: 162, icon: "GcpCompute",
-        description: "Target compute workloads, sandbox VMs, and test execution environments"
+      [internal_databases: "Internal Databases\nCloud SQL / Spanner" | "Direct Query Prohibited"] {
+        style: @BlockedCard, width: 210, icon: "DatabaseLock",
+        description: "Customer tables and application databases strictly isolated from direct agent querying"
       }
     }
   }
-}
-
-[cloudtop_shell] --> [a2a_software_factory_api] {
-  color: $GcpBlue, strokeWidth: 2, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "REST / Chat", sequenceBadge: "1", badgeFill: $GcpBlue, badgeFontColor: $SurfaceWhite, badgeDistance: 0.35
-}
-
-[a2a_software_factory_api] --> [SpecialistAgentMesh] {
-  color: $GcpBlue, strokeWidth: 2, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "A2A Protocol", sequenceBadge: "2", badgeFill: $GcpBlue, badgeFontColor: $SurfaceWhite, badgeDistance: 0.40
-}
-
-[wif_git_delivery] --> [github_repo] {
-  color: $GcpBlue, strokeWidth: 2, sourceAnchor: "right", targetAnchor: "left", curve: "step",
-  label: "PR Delivery", sequenceBadge: "3", badgeFill: $GcpBlue, badgeFontColor: $SurfaceWhite, badgeDistance: 0.45
-}
-
-[github_repo] --> [agent_eval_pipeline] {
-  color: $BusStroke, strokeWidth: 1.8, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "On Push/PR"
-}
-
-[github_repo] --> [gha_plan] {
-  color: $BusStroke, strokeWidth: 1.8, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "On PR"
-}
-
-[github_repo] --> [gha_apply] {
-  color: $GcpBlue, strokeWidth: 2, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "On Merge", sequenceBadge: "4", badgeFill: $GcpBlue, badgeFontColor: $SurfaceWhite, badgeDistance: 0.35
-}
-
-[gha_apply] --> [wif_pool] {
-  color: $GcpGreen, strokeWidth: 2, sourceAnchor: "right", targetAnchor: "left", curve: "step",
-  label: "OIDC Token", sequenceBadge: "5", badgeFill: $GcpGreen, badgeFontColor: $SurfaceWhite, badgeDistance: 0.45
-}
-
-[wif_pool] --> [deployer_sa] {
-  color: $GcpGreen, strokeWidth: 2, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "STS Token"
-}
-
-[deployer_sa] --> [gcs_tfstate] {
-  color: $GcpGreen, strokeWidth: 2, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "tfstate Lock", sequenceBadge: "6", badgeFill: $GcpGreen, badgeFontColor: $SurfaceWhite, badgeDistance: 0.35
-}
-
-[deployer_sa] --> [cloud_run_factory_service] {
-  color: $BusStroke, strokeWidth: 1.8, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "Deploy Run"
-}
-
-[deployer_sa] --> [secret_manager_vault] {
-  color: $BusStroke, strokeWidth: 1.8, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "Manage Secret"
-}
-
-[deployer_sa] --> [vpc_network] {
-  color: $BusStroke, strokeWidth: 1.8, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "Apply VPC"
-}
-
-[gcloud_probe] --> [reader_sa] {
-  color: $BusStroke, strokeWidth: 1.8, dashed: true, sourceAnchor: "right", targetAnchor: "left", curve: "step",
-  label: "Impersonate"
-}
-
-[reader_sa] --> [compute_vm] {
-  color: $BusStroke, strokeWidth: 1.8, dashed: true, sourceAnchor: "bottom", targetAnchor: "top", curve: "step",
-  label: "Probe State"
-}
-
-[cloud_run_factory_service] --> [secret_manager_vault] {
-  color: $EmeraldTeal, strokeWidth: 1.8, sourceAnchor: "right", targetAnchor: "left", curve: "step",
-  label: "Read Secrets"
-}
-
-[vpc_network] --> [compute_vm] {
-  color: $BusStroke, strokeWidth: 1.8, sourceAnchor: "right", targetAnchor: "left", curve: "step",
-  label: "Private Net"
 }
 ```
 
 ### 2. Declarative Model Specification (`docs/architecture_diagram.dendrite.yaml`)
 
 ```yaml
-# Dendrite Declarative Architecture Specification (go/dendrite)
 dendrite_diagram:
-  title: "L200 Argolis Infrastructure, CI/CD & A2A Software Factory Architecture"
+  title: "Gemini Enterprise Cloud Chat Agent & Argolis Infrastructure Architecture"
   version: "3.3.0"
   standard: "Executive Standard v3.3"
   archetype: "BENTO-SANDWICH"
   dendrite_url: "http://go/dendrite"
   playground_url: "http://go/dendrite-playground"
-  dsl_source: "docs/architecture_diagram.dendrite"
   last_updated: "2026-09-29"
-  boundaries:
-    - id: "Zone1_Perimeter"
-      label: "1. Developer Environment & Ingress"
-      type: "perimeter_zone"
-      bento_area: "z1"
-      components:
-        - id: "cloudtop_shell"
-          label: "Cloudtop Terminal / Antigravity IDE"
-          type: "dev_environment"
-        - id: "adk_runtime"
-          label: "Google ADK Agent Runtime"
-          type: "ai_agent"
-        - id: "isolated_binaries"
-          label: "Standalone Toolchain (./bin)"
-          type: "toolchain"
-    - id: "Zone2_SoftwareFactory"
-      label: "2. A2A Software Factory & Agent Mesh"
-      type: "execution_zone"
-      bento_area: "z2"
-      components:
-        - id: "a2a_software_factory_api"
-          label: "Unified FastAPI Coordinator"
-          type: "gateway_hub"
-        - id: "workspace_architect"
-          label: "Workspace Architect Agent"
-          type: "subagent"
-        - id: "software_builder"
-          label: "Software Builder Agent"
-          type: "subagent"
-        - id: "wif_git_delivery"
-          label: "WIF & Git PR Delivery Agent"
-          type: "subagent"
-        - id: "gcloud_probe"
-          label: "Read-Only gcloud Probe Agent"
-          type: "subagent"
-    - id: "Zone3_CicdAndIam"
-      label: "3. GitHub CI/CD & WIF Security Boundary"
-      type: "governance_zone"
-      bento_area: "z3"
-      components:
-        - id: "github_repo"
-          label: "GitHub Repository (L200 Mainline)"
-          type: "vcs_repository"
-        - id: "agent_eval_pipeline"
-          label: "GitHub Actions: agent-eval-and-test.yml"
-          type: "ci_pipeline"
-        - id: "gha_plan"
-          label: "GitHub Actions: terraform-plan.yml"
-          type: "ci_pipeline"
-        - id: "gha_apply"
-          label: "GitHub Actions: terraform-apply.yml"
-          type: "cd_pipeline"
-        - id: "wif_pool"
-          label: "Workload Identity Pool & Provider"
-          type: "iam_wif"
-        - id: "deployer_sa"
-          label: "Deployer Service Account"
-          type: "service_account"
-        - id: "reader_sa"
-          label: "Read-Only Cloudtop SA"
-          type: "service_account"
-    - id: "Zone4_ArgolisInfrastructure"
-      label: "4. Argolis GCP Project Infrastructure"
-      type: "resource_foundation"
-      bento_area: "z4"
-      components:
-        - id: "cloud_run_factory_service"
-          label: "Cloud Run v2 Service & Memory Bucket"
-          type: "serverless_compute"
-        - id: "secret_manager_vault"
-          label: "Secret Manager & Cloud DLP Vault"
-          type: "security_vault"
-        - id: "gcs_tfstate"
-          label: "Cloud Storage (tfstate Bucket)"
-          type: "cloud_storage"
-        - id: "vpc_network"
-          label: "VPC Network & Subnet"
-          type: "vpc_networking"
-        - id: "firewall_rules"
-          label: "Firewall Rules"
-          type: "security_firewall"
-        - id: "compute_vm"
-          label: "Compute Engine Instances"
-          type: "compute_engine"
-  connections:
-    - from: "cloudtop_shell"
-      to: "a2a_software_factory_api"
-      label: "REST / Chat"
-    - from: "a2a_software_factory_api"
-      to: "SpecialistAgentMesh"
-      label: "A2A Protocol"
-    - from: "wif_git_delivery"
-      to: "github_repo"
-      label: "PR Delivery"
-    - from: "github_repo"
-      to: "agent_eval_pipeline"
-      label: "On Push/PR"
-    - from: "github_repo"
-      to: "gha_plan"
-      label: "On PR"
-    - from: "github_repo"
-      to: "gha_apply"
-      label: "On Merge"
-    - from: "gha_apply"
-      to: "wif_pool"
-      label: "OIDC Token"
-    - from: "wif_pool"
-      to: "deployer_sa"
-      label: "STS Token"
-    - from: "deployer_sa"
-      to: "gcs_tfstate"
-      label: "tfstate Lock"
-    - from: "deployer_sa"
-      to: "cloud_run_factory_service"
-      label: "Deploy Run"
-    - from: "deployer_sa"
-      to: "secret_manager_vault"
-      label: "Manage Secret"
-    - from: "deployer_sa"
-      to: "vpc_network"
-      label: "Apply VPC"
-    - from: "gcloud_probe"
-      to: "reader_sa"
-      label: "Impersonate"
-    - from: "reader_sa"
-      to: "compute_vm"
-      label: "Probe State"
-    - from: "cloud_run_factory_service"
-      to: "secret_manager_vault"
-      label: "Read Secrets"
-    - from: "vpc_network"
-      to: "compute_vm"
-      label: "Private Net"
 ```
 
 ---
 
-## Architectural Subsystems
+## Architectural Breakdown & Core Subsystems
 
-### 1. Unified FastAPI + A2A Focal Coordinator & Specialist Mesh
-- **Focal Conversational Coordinator (`a2a_software_factory_api`)**: Exposes `POST /api/v1/chat` as a single conversational focal point communicating state from the agent graph to the user and intent from the user to the specialist agents, while mounting native A2A protocol endpoints (`/a2a/focal`, `/a2a/architect`, `/a2a/builder`, `/a2a/wif_delivery`, `/a2a/gcloud_probe`).
-- **A2A Specialist Sub-Agent Mesh (`a2a_subagent_mesh`)**:
-  - `workspace_architect_agent` (`gemini-2.5-pro`): Inspects target workspaces and designs software & Dendrite/OKF specs.
-  - `software_builder_agent` (`gemini-2.5-pro`): Writes software artifacts, tests, and cross-project Terraform HCL.
-  - `wif_git_delivery_agent` (`gemini-2.5-pro`): Creates isolated feature branches from `main`, onboards external projects via WIF, commits with multi-line context, requests Human-in-the-Loop approval, and opens Pull Requests.
-  - `gcloud_readonly_probe_agent` (`gemini-2.5-flash`): Impersonates `cloudtop-agent-reader` to probe live GCP resources, read Cloud Logging, and verify deployed infrastructure.
-  - `software_delivery_pipeline` (`SequentialAgent`) & `parallel_verification_agent` (`ParallelAgent`).
+### 1. Ingress & Client Presentation (Zone 1)
+- **Gemini Enterprise Web Frontend** ([`ge-cloud-chat-frontend.md`](knowledge_base/codebase/ge-cloud-chat-frontend.md)):
+  - Built with clean Material Design 3 tokens and Google Sans styling.
+  - Supports speech input via browser Web Speech API (`SpeechRecognition`).
+  - Spoken audio response playback via integrated HTML5 Web Audio controls and auto-play toggle.
+  - Live status badges reflecting Gemini 3.8 Flash, verified IAP identity, and active database quarantine.
+- **Identity-Aware Proxy (IAP) Gateway** ([`iap-verifier.md`](knowledge_base/codebase/iap-verifier.md)):
+  - Cryptographically validates `X-Goog-IAP-JWT-Assertion` and `X-Goog-Authenticated-User-Email`.
+  - Enforces role-based caller authorization before forwarding requests to the conversational agent.
 
-### 2. CI/CD, Golden Dataset Evaluation & WIF Infrastructure Delivery
-- **GitHub Actions Workflows**:
-  - `agent-eval-and-test.yml`: Executes `pytest` and the Golden Dataset evaluation harness (`evals/run_evaluation_suite.py`) on PRs and pushes.
-  - `terraform-plan.yml`: Triggered on pull requests targeting `main`.
-  - `terraform-apply.yml`: Triggered upon merge to `main`, authenticating via keyless OIDC Workload Identity Federation (`wif_pool` -> `deployer_sa`).
+### 2. Conversational Agent Engine & Security Boundaries (Zone 2)
+- **Gemini Enterprise Cloud Chat Agent** ([`a2a-software-factory-api.md`](knowledge_base/codebase/a2a-software-factory-api.md)):
+  - Single conversational coordinator running Gemini 3.8 Flash for fast telemetry and Gemini 3.8 Pro for deep architectural synthesis.
+  - Maintains persistent episodic memory and dynamic context compaction across multi-turn sessions.
+- **Google Cloud Text-to-Speech (TTS)** ([`cloud-tts-service.md`](knowledge_base/codebase/cloud-tts-service.md)):
+  - Synthesizes Journey and Neural2 voices with automatic markdown-to-speech cleaning.
+- **Strict Database Access Restriction Guardrail** ([`database-access-blocker-guardrail.md`](knowledge_base/codebase/database-access-blocker-guardrail.md)):
+  - Intercepts and denies direct SQL/Spanner/Firestore queries while directing diagnostic workflows to Cloud Logging.
+- **Read-Only Cloud Inspection Tools**:
+  - Zero mutating verbs; inspects Compute Engine VMs, Cloud Run services, Storage bucket metadata, IAM roles, and Cloud Logging entries.
 
-### 3. Argolis Security Perimeter, Secret Manager & Cloud Run Runtime
-- **Privilege Separation**:
-  - `github-terraform-deployer`: Service account restricted to CI/CD deployment.
-  - `cloudtop-agent-reader`: Read-only service account used by `gcloud_readonly_probe_agent`.
-  - `a2a-software-factory-sa`: Least-privilege runtime SA for the Cloud Run v2 service (`cloud_run_factory_service`).
-- **Secret Manager & Cloud DLP (`secret_manager_vault`)**: Eliminates hardcoded credentials and scrubs PII from structured JSON logs and persistent vector memory.
+### 3. Google Cloud Argolis Infrastructure & Observability (Zone 4)
+- **Cloud Run Service**: Containerized FastAPI service deployed behind Identity-Aware Proxy.
+- **Cloud Logging Systems**: Permitted diagnostic log stream providing error traces and audit trails.
+- **Secret Manager & Cloud DLP Vault**: Zero hardcoded credentials with automated PII scrubbing.
+- **Internal Databases (Quarantined)**: Application databases (Cloud SQL, Spanner, Firestore) strictly isolated from agent query access.
 
 ---
 
-## Operational Knowledge Framework (OKF) Knowledge Base
+## Operational Knowledge Framework (OKF) Catalog
 
-Every architectural component identified in the Dendrite architecture diagram is documented in the [OKF Knowledge Base](knowledge_base/README.md):
-- **Developer Workstation (`cloudtop_env/`)**:
-  - [`cloudtop-shell`](knowledge_base/cloudtop_env/workstation/cloudtop-shell.md), [`isolated-binaries`](knowledge_base/cloudtop_env/package_managers/isolated-binaries.md), [`uv-package-manager`](knowledge_base/cloudtop_env/package_managers/uv-package-manager.md), [`check-architecture-docs`](knowledge_base/cloudtop_env/scripts/check-architecture-docs.md), [`provision-argolis-env`](knowledge_base/cloudtop_env/scripts/provision-argolis-env.md), [`setup-argolis-github-wif`](knowledge_base/cloudtop_env/scripts/setup-argolis-github-wif.md), [`dendrite-architecture-diagrams`](knowledge_base/cloudtop_env/skills/dendrite-architecture-diagrams.md)
-- **GitHub Platform & Codebase (`codebase/`)**:
-  - [`github-repo`](knowledge_base/codebase/github-repo.md), [`gha-plan`](knowledge_base/codebase/gha-plan.md), [`gha-apply`](knowledge_base/codebase/gha-apply.md), [`agent-eval-pipeline`](knowledge_base/codebase/agent-eval-pipeline.md), [`adk-runtime`](knowledge_base/codebase/adk-runtime.md), [`a2a-software-factory-api`](knowledge_base/codebase/a2a-software-factory-api.md), [`a2a-subagent-mesh`](knowledge_base/codebase/a2a-subagent-mesh.md), [`terraform-infrastructure-modules`](knowledge_base/codebase/terraform-infrastructure-modules.md)
-- **Argolis GCP Cloud Assets (`deployed_gcp_assets/`)**:
-  - [`wif-pool`](knowledge_base/deployed_gcp_assets/wif-pool.md), [`deployer-sa`](knowledge_base/deployed_gcp_assets/deployer-sa.md), [`reader-sa`](knowledge_base/deployed_gcp_assets/reader-sa.md), [`secret-manager-vault`](knowledge_base/deployed_gcp_assets/secret-manager-vault.md), [`cloud-run-factory-service`](knowledge_base/deployed_gcp_assets/cloud-run-factory-service.md), [`gcs-tfstate`](knowledge_base/deployed_gcp_assets/gcs-tfstate.md), [`vpc-network`](knowledge_base/deployed_gcp_assets/vpc-network.md), [`firewall-rules`](knowledge_base/deployed_gcp_assets/firewall-rules.md), [`compute-instances`](knowledge_base/deployed_gcp_assets/compute-instances.md)
+Every architectural component is documented in [`docs/knowledge_base/`](knowledge_base/):
+- **Web Frontend**: [`docs/knowledge_base/codebase/ge-cloud-chat-frontend.md`](knowledge_base/codebase/ge-cloud-chat-frontend.md)
+- **IAP Verifier**: [`docs/knowledge_base/codebase/iap-verifier.md`](knowledge_base/codebase/iap-verifier.md)
+- **Cloud TTS Service**: [`docs/knowledge_base/codebase/cloud-tts-service.md`](knowledge_base/codebase/cloud-tts-service.md)
+- **Database Guardrail**: [`docs/knowledge_base/codebase/database-access-blocker-guardrail.md`](knowledge_base/codebase/database-access-blocker-guardrail.md)
