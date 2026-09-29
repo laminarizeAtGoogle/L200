@@ -9,7 +9,7 @@ status: "active"
 owner: "Cloud Platform Engineering / Academy L200"
 dendrite_node_id: "github_repo"
 discovered_by: "static_analysis"
-last_verified: "2026-09-28"
+last_verified: "2026-09-29"
 ---
 
 # OKF (Codebase): Terraform Infrastructure Modules
@@ -26,10 +26,12 @@ last_verified: "2026-09-28"
   - Architectural Boundaries: `github_platform` (orchestration) and `argolis_project` (resource delivery)
 - **Source Code Paths**:
   - Module directory: [`terraform/`](../../../terraform/)
-  - Provider & Version Constraints: [`terraform/versions.tf`](../../../terraform/versions.tf) (`terraform >= 1.5.0`, `hashicorp/google ~> 5.0`)
+  - Provider & Version Constraints: [`terraform/versions.tf`](../../../terraform/versions.tf) (`terraform >= 1.5.0`, `hashicorp/google ~> 6.0`)
   - Provider Initialization: [`terraform/provider.tf`](../../../terraform/provider.tf)
   - Input Variables: [`terraform/variables.tf`](../../../terraform/variables.tf)
   - Core Resources: [`terraform/main.tf`](../../../terraform/main.tf)
+  - Declarative Import Blocks: [`terraform/imports.tf`](../../../terraform/imports.tf)
+  - Remote State Backend: [`terraform/backend.tf`](../../../terraform/backend.tf)
   - Outputs: [`terraform/outputs.tf`](../../../terraform/outputs.tf)
   - Remote Backend Template: [`terraform/backend.tf.example`](../../../terraform/backend.tf.example)
   - Sample Variables: [`terraform/terraform.tfvars.example`](../../../terraform/terraform.tfvars.example)
@@ -85,6 +87,8 @@ last_verified: "2026-09-28"
       ```
   - *Symptom*: Plan drift between local and remote state.
     - *Remediation*: Always run `terraform refresh` against the remote GCS backend before local plan analysis.
+  - *Symptom*: `Warning: Missing backend configuration` or `409 Conflict: Already exists`.
+    - *Remediation*: Ensure `backend.tf` declares `backend "gcs" {}` and `imports.tf` contains declarative `import {}` blocks for existing cloud assets.
 
 ## 5. References & Cross-Links
 - **Dendrite Diagram Nodes**: `github_repo`, `gha_plan`, `gha_apply`, `gcs_tfstate`, `vpc_network`, `compute_vm` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)

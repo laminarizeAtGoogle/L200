@@ -11,10 +11,5 @@ terraform {
       version = "~> 6.0"
     }
   }
-
-  # Uncomment to use Google Cloud Storage as a remote backend
-  # backend "gcs" {
-  #   bucket = "YOUR_ARGOLIS_TFSTATE_BUCKET_NAME"
-  #   prefix = "terraform/state"
-  # }
 }
+
