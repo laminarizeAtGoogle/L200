@@ -31,6 +31,7 @@ last_verified: "2026-09-29"
   - Input Variables: [`terraform/variables.tf`](../../../terraform/variables.tf)
   - Core Resources: [`terraform/main.tf`](../../../terraform/main.tf)
   - Declarative Import Blocks: [`terraform/imports.tf`](../../../terraform/imports.tf)
+  - Remote State Backend: [`terraform/backend.tf`](../../../terraform/backend.tf)
   - Outputs: [`terraform/outputs.tf`](../../../terraform/outputs.tf)
   - Remote Backend Template: [`terraform/backend.tf.example`](../../../terraform/backend.tf.example)
   - Sample Variables: [`terraform/terraform.tfvars.example`](../../../terraform/terraform.tfvars.example)
