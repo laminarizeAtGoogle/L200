@@ -87,6 +87,8 @@ last_verified: "2026-09-29"
       ```
   - *Symptom*: Plan drift between local and remote state.
     - *Remediation*: Always run `terraform refresh` against the remote GCS backend before local plan analysis.
+  - *Symptom*: `Warning: Missing backend configuration` or `409 Conflict: Already exists`.
+    - *Remediation*: Ensure `backend.tf` declares `backend "gcs" {}` and `imports.tf` contains declarative `import {}` blocks for existing cloud assets.
 
 ## 5. References & Cross-Links
 - **Dendrite Diagram Nodes**: `github_repo`, `gha_plan`, `gha_apply`, `gcs_tfstate`, `vpc_network`, `compute_vm` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
