@@ -51,6 +51,7 @@ last_verified: "2026-09-28"
   | `project_id` | `string` | N/A | Yes | Target GCP project identifier |
   | `region` | `string` | `"us-central1"` | No | Default GCP region for regional resources |
   | `zone` | `string` | `"us-central1-a"` | No | Default GCP zone for compute engine VMs |
+  | `manage_project_iam` | `bool` | `false` | No | Whether to manage project-level IAM bindings (requires projectIamAdmin) |
 - **Remote State Backend**:
   ```hcl
   terraform {

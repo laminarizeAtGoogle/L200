@@ -40,7 +40,7 @@ resource "google_service_account" "software_factory_runtime" {
 }
 
 resource "google_project_iam_member" "factory_runtime_roles" {
-  for_each = toset([
+  for_each = var.manage_project_iam ? toset([
     "roles/aiplatform.user",
     "roles/cloudtrace.agent",
     "roles/compute.viewer",
@@ -50,7 +50,7 @@ resource "google_project_iam_member" "factory_runtime_roles" {
     "roles/run.viewer",
     "roles/secretmanager.secretAccessor",
     "roles/storage.objectViewer",
-  ])
+  ]) : toset([])
   project = var.project_id
   role    = each.value
   member  = "serviceAccount:${google_service_account.software_factory_runtime.email}"

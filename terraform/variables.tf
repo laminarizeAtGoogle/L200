@@ -38,3 +38,10 @@ variable "fast_model" {
   type        = string
   default     = "gemini-2.5-flash"
 }
+
+variable "manage_project_iam" {
+  description = "Whether to manage project-level IAM member bindings. Set to true only if the deployer identity has roles/resourcemanager.projectIamAdmin or roles/owner."
+  type        = bool
+  default     = false
+}
+
