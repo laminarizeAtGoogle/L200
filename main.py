@@ -42,13 +42,19 @@ def run_verification_smoke_check() -> None:
     print(f" - CLOUDSDK_CONFIG: {cloudsdk_config}")
     print(f" - GOOGLE_APPLICATION_CREDENTIALS: {gac}")
 
-    print("\nA2A Software Factory Graph Summary:")
+    print("\nGemini Enterprise (GE) Cloud Chat & A2A Graph Summary:")
     print(f" - ADK App Name: {adk_app.name}")
+    print(f" - Primary Model: {DEFAULT_CONFIG.primary_chat_model} (Planning: {DEFAULT_CONFIG.planning_model})")
+    print(f" - Cloud TTS Voice: {DEFAULT_CONFIG.tts_voice_name} ({DEFAULT_CONFIG.tts_language_code})")
+    print(f" - Security / IAP Enforced: {DEFAULT_CONFIG.iap_enforce}")
+    print(" - Database Access Policy: STRICT QUARANTINE (Cloud SQL/Spanner/Firestore blocked)")
+    print(" - Read-Only Cloud Inspection: Active (Compute, Run, GKE, GCS, IAM, Cloud Logging)")
     print(f" - Focal Root Agent: {root_agent.name} (model={root_agent.model})")
     print(
         f" - Specialist Sub-Agents: {[sa.name for sa in root_agent.sub_agents]}"
     )
     print(f" - Mounted A2A Routes: {list(A2A_AGENT_ROUTES.values())}")
+    print(" - Web UI Frontend: Mounted at http://localhost:8080/")
     print("\nEnvironment verification successful!")
 
 

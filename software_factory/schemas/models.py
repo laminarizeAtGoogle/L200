@@ -459,3 +459,216 @@ class ChatMessageResponse(BaseModel):
     reply: str
     state: AgentStateSummary
     a2a_endpoints: dict[str, str]
+
+
+class IapUserIdentity(BaseModel):
+    """Verified identity extracted from Identity-Aware Proxy (IAP) headers."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    email: str = Field(
+        ...,
+        description="Authenticated Google account email address.",
+    )
+    user_id: str = Field(
+        default="",
+        description="Unique Google account numeric identifier.",
+    )
+    verified: bool = Field(
+        default=True,
+        description="Whether the IAP JWT assertion signature was cryptographically verified.",
+    )
+    roles: list[str] = Field(
+        default_factory=lambda: ["roles/iap.httpsResourceAccessor"],
+        description="IAM roles granted to this authenticated user.",
+    )
+    jwt_claims: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Decoded payload claims from the IAP JWT assertion.",
+    )
+
+
+class CloudChatRequest(BaseModel):
+    """Request schema for the Gemini Enterprise Cloud Chat conversational API."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    message: str = Field(
+        ...,
+        min_length=1,
+        description="User text or transcribed voice query about the cloud environment.",
+    )
+    session_id: str = Field(
+        default="ge-session-default",
+        min_length=1,
+        description="Persistent conversation session ID.",
+    )
+    enable_tts: bool = Field(
+        default=True,
+        description="Whether to generate and return synthesized speech audio (TTS).",
+    )
+    voice_name: str | None = Field(
+        default=None,
+        description="Optional Cloud TTS voice name (e.g. 'en-US-Journey-F').",
+    )
+    target_project_id: str | None = Field(
+        default=None,
+        description="Optional GCP Project ID to query; defaults to configured project.",
+    )
+
+
+class CloudChatResponse(BaseModel):
+    """Response schema for the Gemini Enterprise Cloud Chat conversational API."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str
+    reply: str = Field(
+        ...,
+        description="Conversational markdown response rendered in the GE chat interface.",
+    )
+    audio_base64: str | None = Field(
+        default=None,
+        description="Base64-encoded MP3 audio from Cloud Text-to-Speech for voice playback.",
+    )
+    audio_content_type: str = Field(
+        default="audio/mp3",
+        description="MIME type of the synthesized audio.",
+    )
+    user_email: str = Field(
+        ...,
+        description="Verified IAP user identity that submitted the request.",
+    )
+    model_used: str = Field(
+        default="gemini-3.8-flash",
+        description="Gemini model invoked (e.g. gemini-3.8-flash or gemini-3.8-pro).",
+    )
+    resource_queries_executed: list[str] = Field(
+        default_factory=list,
+        description="List of read-only cloud inspection tools executed.",
+    )
+    database_blocked: bool = Field(
+        default=False,
+        description="True if an attempt to query internal databases was intercepted and blocked.",
+    )
+    trace_id: str | None = Field(
+        default=None,
+        description="OpenTelemetry distributed trace ID for the request.",
+    )
+
+
+class TtsSynthesisRequest(BaseModel):
+    """Request schema for standalone Text-to-Speech synthesis."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(
+        ...,
+        min_length=1,
+        description="Text content to synthesize into speech audio.",
+    )
+    voice_name: str | None = Field(
+        default=None,
+        description="Cloud TTS voice name (e.g. 'en-US-Journey-F').",
+    )
+    language_code: str = Field(
+        default="en-US",
+        description="BCP-47 language code.",
+    )
+    speaking_rate: float = Field(
+        default=1.05,
+        ge=0.25,
+        le=4.0,
+        description="Speech rate multiplier (1.0 is normal speed).",
+    )
+
+
+class TtsSynthesisResponse(BaseModel):
+    """Response schema for standalone Text-to-Speech synthesis."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    audio_base64: str = Field(
+        ...,
+        description="Base64-encoded audio bytes.",
+    )
+    audio_content_type: str = Field(
+        default="audio/mp3",
+        description="MIME type of the audio.",
+    )
+    duration_seconds: float = Field(
+        default=0.0,
+        description="Estimated or actual audio duration in seconds.",
+    )
+    voice_used: str = Field(
+        default="en-US-Journey-F",
+        description="Voice name used for synthesis.",
+    )
+
+
+class QueryComputeInstancesInput(BaseModel):
+    """Strict input schema for querying Compute Engine VM instances."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str | None = Field(
+        default=None,
+        description="GCP project ID to query.",
+    )
+    zone: str | None = Field(
+        default=None,
+        description="Optional Compute Engine zone filter (e.g. 'us-central1-a').",
+    )
+
+
+class QueryCloudRunServicesInput(BaseModel):
+    """Strict input schema for querying Cloud Run services."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str | None = Field(
+        default=None,
+        description="GCP project ID to query.",
+    )
+    region: str | None = Field(
+        default=None,
+        description="Optional region filter (e.g. 'us-central1').",
+    )
+
+
+class QueryGkeClustersInput(BaseModel):
+    """Strict input schema for querying GKE Kubernetes clusters."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str | None = Field(
+        default=None,
+        description="GCP project ID to query.",
+    )
+    location: str | None = Field(
+        default=None,
+        description="Optional regional or zonal location filter.",
+    )
+
+
+class QueryStorageBucketsInput(BaseModel):
+    """Strict input schema for querying Cloud Storage bucket metadata."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str | None = Field(
+        default=None,
+        description="GCP project ID to query.",
+    )
+
+
+class QueryIamPolicyInput(BaseModel):
+    """Strict input schema for querying project IAM policy bindings."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    project_id: str | None = Field(
+        default=None,
+        description="GCP project ID to query.",
+    )
+

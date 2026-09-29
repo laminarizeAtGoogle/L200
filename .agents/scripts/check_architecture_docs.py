@@ -156,6 +156,12 @@ def check_diagram_is_dendrite(file_path: str) -> tuple[bool, str]:
 
     lower = os.path.basename(file_path).lower()
 
+    # Dendrite native DSL (.dendrite) check
+    if lower.endswith(".dendrite"):
+        if not re.search(r"(?:Zone|Style|renderOrder|direction|theme)", content):
+            return False, f"Dendrite DSL model '{file_path}' must contain valid Dendrite DSL declarations (Zone, Style, renderOrder, etc.)."
+        return True, ""
+
     # Dendrite YAML / JSON model check
     if lower.endswith(".dendrite.yaml") or lower.endswith(".dendrite.yml") or lower.endswith(".dendrite.json"):
         if "dendrite_diagram:" not in content and '"dendrite_diagram"' not in content:

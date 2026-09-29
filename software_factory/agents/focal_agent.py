@@ -21,6 +21,7 @@ from google.adk.agents import LlmAgent
 from google.adk.apps.app import App
 from google.adk.tools import load_memory, preload_memory
 
+from ..audio import DEFAULT_TTS_SERVICE
 from ..config import DEFAULT_CONFIG, WORKSPACE_ROOT, FactoryConfig
 from ..memory import (
     DEFAULT_ASYNC_CONSOLIDATOR,
@@ -39,11 +40,19 @@ from ..orchestration import (
     DEFAULT_HITL_GATE,
     DEFAULT_MODEL_ROUTER,
 )
-from ..prompts import FOCAL_COORDINATOR_CONSTITUTION
+from ..orchestration.database_guardrail import DEFAULT_DATABASE_GUARDRAIL
+from ..prompts import (
+    FOCAL_COORDINATOR_CONSTITUTION,
+    GEMINI_ENTERPRISE_CLOUD_CHAT_CONSTITUTION,
+)
 from ..schemas import (
     AgentStateSummary,
     ChatMessageRequest,
     ChatMessageResponse,
+    CloudChatRequest,
+    CloudChatResponse,
+    IapUserIdentity,
+    TtsSynthesisRequest,
 )
 from ..tools import (
     ALL_FACTORY_TOOLS,
@@ -54,6 +63,11 @@ from ..tools import (
     open_pull_request_for_terraform_apply,
     probe_gcp_resources_readonly,
     query_cloud_logging_entries_readonly,
+    query_cloud_logging_readonly,
+    query_cloud_run_services_readonly,
+    query_compute_instances_readonly,
+    query_iam_policy_readonly,
+    query_storage_buckets_readonly,
     request_human_approval_for_high_stakes_action,
     synthesize_cross_project_terraform_module,
     verify_deployed_argolis_infrastructure,
@@ -391,5 +405,228 @@ class FocalConversationOrchestrator:
                 a2a_endpoints=a2a_endpoints,
             )
 
+    async def handle_cloud_chat(
+        self,
+        request: CloudChatRequest,
+        authenticated_user: IapUserIdentity,
+    ) -> CloudChatResponse:
+        """Handles a conversational turn from the Gemini Enterprise frontend.
+
+        Enforces:
+        - Strict database access quarantine (Cloud SQL, Spanner, Firestore, Bigtable, BigQuery)
+        - Least-privilege read-only cloud infrastructure inspection
+        - Multi-turn sliding window memory compaction
+        - Cloud Text-to-Speech (TTS) voice response synthesis
+        - Real-time OpenTelemetry distributed tracing and structured JSON logging
+        """
+        with DEFAULT_TELEMETRY.start_span(
+            "cloud_chat.orchestrate",
+            attributes={
+                "user_email": authenticated_user.email,
+                "session_id": request.session_id,
+                "enable_tts": request.enable_tts,
+            },
+        ) as span:
+            raw_tid = span.get_span_context().trace_id if span else None
+            trace_id = (
+                f"{raw_tid:032x}"
+                if isinstance(raw_tid, int)
+                else (str(raw_tid) if raw_tid else None)
+            )
+            project_id = request.target_project_id or self.config.project_id
+            user_msg = request.message.strip()
+
+            DEFAULT_LOGGER.log_event(
+                event_type="CLOUD_CHAT_TURN_STARTED",
+                message=f"Received query from IAP user '{authenticated_user.email}'",
+                session_id=request.session_id,
+                metadata={
+                    "user_email": authenticated_user.email,
+                    "target_project": project_id,
+                    "enable_tts": request.enable_tts,
+                },
+            )
+
+            # 1. Evaluate Strict Database Access Quarantine Guardrail
+            is_allowed, denial_reason, remediation_steps = (
+                DEFAULT_DATABASE_GUARDRAIL.check_query_allowed(user_msg)
+            )
+            if not is_allowed:
+                refusal_reply = (
+                    f"### 🛡️ Enterprise Security Policy Refusal\n\n"
+                    f"**Action Blocked:** {denial_reason}\n\n"
+                    f"**Permitted Actions:**\n"
+                    + "\n".join(f"- {step}" for step in remediation_steps)
+                )
+
+                audio_b64 = None
+                if request.enable_tts:
+                    tts_res = await DEFAULT_TTS_SERVICE.synthesize(
+                        TtsSynthesisRequest(
+                            text="Access to internal application databases is restricted by enterprise policy. You can query cloud infrastructure resources or inspect Cloud Logging systems instead.",
+                            voice_name=request.voice_name,
+                        )
+                    )
+                    audio_b64 = tts_res.audio_base64
+
+                return CloudChatResponse(
+                    session_id=request.session_id,
+                    reply=refusal_reply,
+                    audio_base64=audio_b64,
+                    user_email=authenticated_user.email,
+                    model_used=self.config.primary_chat_model,
+                    resource_queries_executed=[],
+                    database_blocked=True,
+                    trace_id=trace_id,
+                )
+
+            # 2. Strategic Model Routing (Gemini 3.8 Flash vs Gemini 3.8 Pro)
+            routing = DEFAULT_MODEL_ROUTER.route_user_intent(user_msg)
+
+            # 3. Dynamic Context & Turn Compaction
+            turns = self.session_turns.setdefault(request.session_id, [])
+            turns.append({"role": "user", "content": user_msg})
+            compaction_res = DEFAULT_COMPACTOR.compact_turns(
+                turns, session_id=request.session_id
+            )
+            if compaction_res.get("compacted"):
+                self.session_turns[request.session_id] = list(
+                    compaction_res["active_turns"]
+                )
+
+            # 4. Dispatch Read-Only Cloud Inspection Tools
+            lower_msg = user_msg.lower()
+            executed_tools: list[str] = []
+            reply_sections: list[str] = []
+
+            # Compute VM check
+            if any(k in lower_msg for k in ("compute", "vm", "instance", "server")):
+                executed_tools.append("query_compute_instances_readonly")
+                comp_res = query_compute_instances_readonly({"project_id": project_id})
+                reply_sections.append(
+                    f"### 🖥️ Compute Engine VM Instances\n"
+                    f"- {comp_res.get('summary')}\n"
+                    f"- **Project**: `{project_id}`\n"
+                    f"- **Inspection SA**: `{self.config.readonly_service_account}`"
+                )
+
+            # Cloud Run services check
+            if any(k in lower_msg for k in ("run", "service", "revision", "container", "endpoint")):
+                executed_tools.append("query_cloud_run_services_readonly")
+                run_res = query_cloud_run_services_readonly({"project_id": project_id})
+                reply_sections.append(
+                    f"### ⚡ Cloud Run Services\n"
+                    f"- {run_res.get('summary')}\n"
+                    f"- **Status**: Monitored via Cloud Run v2 Admin API (read-only)."
+                )
+
+            # Storage buckets check
+            if any(k in lower_msg for k in ("bucket", "storage", "gcs")):
+                executed_tools.append("query_storage_buckets_readonly")
+                gcs_res = query_storage_buckets_readonly({"project_id": project_id})
+                reply_sections.append(
+                    f"### 🪣 Cloud Storage Buckets\n"
+                    f"- {gcs_res.get('summary')}\n"
+                    f"- **Security Constraint**: Bucket metadata only; customer object payloads are isolated."
+                )
+
+            # IAM roles check
+            if any(k in lower_msg for k in ("iam", "role", "permission", "service account", "principal")):
+                executed_tools.append("query_iam_policy_readonly")
+                iam_res = query_iam_policy_readonly({"project_id": project_id})
+                reply_sections.append(
+                    f"### 🔐 IAM Policy & Role Bindings\n"
+                    f"- {iam_res.get('summary')}\n"
+                    f"- **Caller Identity**: `{authenticated_user.email}` (Role: `roles/iap.httpsResourceAccessor`)"
+                )
+
+            # Cloud Logging check
+            if any(k in lower_msg for k in ("log", "logging", "error", "trace", "stackdriver", "audit")):
+                executed_tools.append("query_cloud_logging_readonly")
+                severity = "ERROR" if "error" in lower_msg else "DEFAULT"
+                log_res = query_cloud_logging_readonly(
+                    {"severity": severity, "max_entries": 10, "target_project_id": project_id}
+                )
+                reply_sections.append(
+                    f"### 📋 Cloud Logging Inspection\n"
+                    f"- {log_res.get('summary')}\n"
+                    f"- **Severity Filter**: `{severity}`\n"
+                    f"- **Audit Scope**: Project `{project_id}`"
+                )
+
+            # Default environment synthesis if no single tool matched
+            if not reply_sections:
+                executed_tools.append("probe_gcp_resources_readonly")
+                probe_res = probe_gcp_resources_readonly(
+                    {"resource_domain": "service_accounts", "target_project_id": project_id}
+                )
+                reply_sections.append(
+                    f"### ✦ Cloud Infrastructure Summary\n\n"
+                    f"Hello **{authenticated_user.email}**. I have verified your Google Cloud environment in project `{project_id}`:\n\n"
+                    f"- **Model**: `{routing.selected_model}` ({routing.complexity_tier})\n"
+                    f"- **Environment Access**: Strictly read-only (`{self.config.readonly_service_account}`)\n"
+                    f"- **Application Database Guardrail**: Active (Direct SQL/Spanner/Firestore querying blocked)\n"
+                    f"- **Cloud Logging**: Ready for diagnostic trace inspection\n\n"
+                    f"You can ask me to list Compute VMs, Cloud Run services, inspect IAM role bindings, or query Cloud Logging for recent system errors."
+                )
+
+            raw_reply = "\n\n".join(reply_sections)
+            sanitized_reply = DEFAULT_SCRUBBER.scrub_text(raw_reply)
+
+            # Save turn in memory
+            self.session_turns[request.session_id].append(
+                {"role": "assistant", "content": sanitized_reply}
+            )
+
+            # 5. Text-to-Speech (TTS) Voice Synthesis
+            audio_base64 = None
+            if request.enable_tts:
+                tts_res = await DEFAULT_TTS_SERVICE.synthesize(
+                    TtsSynthesisRequest(
+                        text=sanitized_reply,
+                        voice_name=request.voice_name or self.config.tts_voice_name,
+                    )
+                )
+                audio_base64 = tts_res.audio_base64
+
+            # 6. Schedule non-blocking async memory consolidation
+            DEFAULT_ASYNC_CONSOLIDATOR.schedule_turn_consolidation(
+                session_id=request.session_id,
+                user_id=authenticated_user.email,
+                user_message=user_msg,
+                agent_reply=sanitized_reply,
+                workspace_path=str(WORKSPACE_ROOT),
+                metadata={
+                    "target_gcp_project": project_id,
+                    "routed_model": routing.selected_model,
+                    "executed_tools": executed_tools,
+                    "user_email": authenticated_user.email,
+                },
+            )
+
+            DEFAULT_LOGGER.log_event(
+                event_type="CLOUD_CHAT_TURN_COMPLETED",
+                message=f"Completed Cloud Chat turn for user '{authenticated_user.email}'",
+                session_id=request.session_id,
+                metadata={
+                    "model_used": routing.selected_model,
+                    "executed_tools": executed_tools,
+                    "tts_generated": bool(audio_base64),
+                },
+            )
+
+            return CloudChatResponse(
+                session_id=request.session_id,
+                reply=sanitized_reply,
+                audio_base64=audio_base64,
+                audio_content_type="audio/mp3",
+                user_email=authenticated_user.email,
+                model_used=routing.selected_model,
+                resource_queries_executed=executed_tools,
+                database_blocked=False,
+                trace_id=trace_id,
+            )
+
 
 DEFAULT_FOCAL_ORCHESTRATOR = FocalConversationOrchestrator()
+

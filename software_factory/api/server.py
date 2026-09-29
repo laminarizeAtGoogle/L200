@@ -18,9 +18,11 @@ Exposes:
 from __future__ import annotations
 
 from contextlib import AsyncExitStack, asynccontextmanager
+from pathlib import Path
 from typing import Any, AsyncIterator
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..agents import (
@@ -29,6 +31,7 @@ from ..agents import (
     build_all_agent_cards,
     create_a2a_subapps,
 )
+from ..audio import DEFAULT_TTS_SERVICE
 from ..config import DEFAULT_CONFIG, FactoryConfig
 from ..memory import (
     DEFAULT_ASYNC_CONSOLIDATOR,
@@ -43,9 +46,15 @@ from ..orchestration import DEFAULT_HITL_GATE
 from ..schemas import (
     ChatMessageRequest,
     ChatMessageResponse,
+    CloudChatRequest,
+    CloudChatResponse,
     ConfigureCrossProjectWifInput,
     GcloudReadonlyProbeInput,
+    IapUserIdentity,
+    TtsSynthesisRequest,
+    TtsSynthesisResponse,
 )
+from ..security import DEFAULT_IAP_VERIFIER, IapVerifier, verify_iap_user
 from ..tools import (
     commit_workspace_changes_with_context,
     configure_cross_project_wif_federation,
@@ -54,6 +63,10 @@ from ..tools import (
     open_pull_request_for_terraform_apply,
     probe_gcp_resources_readonly,
     synthesize_cross_project_terraform_module,
+)
+
+FRONTEND_HTML_PATH = (
+    Path(__file__).resolve().parent.parent / "frontend" / "index.html"
 )
 
 
@@ -143,6 +156,13 @@ def create_software_factory_api(
     for mount_path, subapp in a2a_subapps.items():
         app.mount(mount_path, subapp)
 
+    @app.get("/", response_class=HTMLResponse)
+    async def serve_gemini_enterprise_frontend() -> str:
+        """Serves the interactive Gemini Enterprise Cloud Chat web frontend."""
+        if FRONTEND_HTML_PATH.is_file():
+            return FRONTEND_HTML_PATH.read_text(encoding="utf-8")
+        return "<h1>Gemini Enterprise Cloud Chat Assistant</h1><p>Frontend file not found.</p>"
+
     @app.get("/health")
     async def health_check() -> dict[str, Any]:
         return {
@@ -154,17 +174,60 @@ def create_software_factory_api(
             "models": {
                 "planning": config.planning_model,
                 "fast_execution": config.fast_model,
+                "primary_chat": config.primary_chat_model,
+            },
+            "security": {
+                "iap_enforced": config.iap_enforce,
+                "database_queries_permitted": False,
+                "cloud_logging_permitted": True,
+            },
+            "audio": {
+                "tts_voice": config.tts_voice_name,
+                "tts_language": config.tts_language_code,
             },
             "a2a_routes": A2A_AGENT_ROUTES,
         }
 
-    @app.post("/api/v1/chat", response_model=ChatMessageResponse)
-    async def chat_with_focal_agent(
-        request: ChatMessageRequest,
-    ) -> ChatMessageResponse:
-        """Single conversational focal point communicating intent and agent state."""
+    iap_verifier = IapVerifier(config)
+
+    @app.get("/api/v1/me", response_model=IapUserIdentity)
+    async def get_authenticated_user_profile(
+        raw_request: Request,
+    ) -> IapUserIdentity:
+        """Returns the verified Identity-Aware Proxy (IAP) profile of the caller."""
+        return await iap_verifier.verify_request(raw_request)
+
+    @app.post("/api/v1/tts", response_model=TtsSynthesisResponse)
+    async def synthesize_speech(
+        request: TtsSynthesisRequest,
+    ) -> TtsSynthesisResponse:
+        """Synthesizes text into high-fidelity speech audio via Cloud Text-to-Speech."""
+        return await DEFAULT_TTS_SERVICE.synthesize(request)
+
+    @app.post("/api/v1/chat")
+    async def chat_endpoint(
+        raw_request: Request,
+    ) -> Any:
+        """Conversational chat endpoint supporting both Gemini Enterprise Cloud Chat
+
+        (with IAP verification & TTS audio) and legacy A2A coordinator requests.
+        """
+        body = await raw_request.json()
+
+        # If request specifies CloudChatRequest attributes or comes from GE Frontend
+        if "enable_tts" in body or "voice_name" in body or "target_project_id" in body:
+            cloud_req = CloudChatRequest.model_validate(body)
+            # Verify IAP authorization
+            authenticated_user = await iap_verifier.verify_request(raw_request)
+            return await DEFAULT_FOCAL_ORCHESTRATOR.handle_cloud_chat(
+                request=cloud_req,
+                authenticated_user=authenticated_user,
+            )
+
+        # Standard / legacy coordinator request
+        legacy_req = ChatMessageRequest.model_validate(body)
         return await DEFAULT_FOCAL_ORCHESTRATOR.handle_chat(
-            request=request,
+            request=legacy_req,
             a2a_endpoints=A2A_AGENT_ROUTES,
         )
 

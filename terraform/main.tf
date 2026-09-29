@@ -11,11 +11,13 @@ locals {
     "dlp.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
+    "iap.googleapis.com",
     "logging.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "storage.googleapis.com",
     "sts.googleapis.com",
+    "texttospeech.googleapis.com",
   ])
 }
 
@@ -32,8 +34,8 @@ resource "google_project_service" "factory_apis" {
 resource "google_service_account" "software_factory_runtime" {
   project      = var.project_id
   account_id   = "a2a-software-factory-sa"
-  display_name = "A2A Software Factory Runtime Service Account"
-  description  = "Executes the Focal Coordinator and A2A specialist sub-agents"
+  display_name = "Gemini Enterprise Cloud Chat Runtime Service Account"
+  description  = "Executes the GE Cloud Chat Agent, TTS voice engine, and read-only GCP inspection"
   depends_on   = [google_project_service.factory_apis]
 }
 
@@ -41,10 +43,13 @@ resource "google_project_iam_member" "factory_runtime_roles" {
   for_each = toset([
     "roles/aiplatform.user",
     "roles/cloudtrace.agent",
+    "roles/compute.viewer",
     "roles/dlp.user",
     "roles/logging.logWriter",
+    "roles/logging.viewer",
+    "roles/run.viewer",
     "roles/secretmanager.secretAccessor",
-    "roles/viewer",
+    "roles/storage.objectViewer",
   ])
   project = var.project_id
   role    = each.value
@@ -179,6 +184,18 @@ resource "google_cloud_run_v2_service" "a2a_software_factory" {
       env {
         name  = "FACTORY_FAST_MODEL"
         value = var.fast_model
+      }
+      env {
+        name  = "FACTORY_CHAT_MODEL"
+        value = "gemini-3.8-flash"
+      }
+      env {
+        name  = "FACTORY_TTS_VOICE"
+        value = "en-US-Journey-F"
+      }
+      env {
+        name  = "IAP_ENFORCE"
+        value = "true"
       }
       env {
         name  = "FACTORY_READONLY_SA"

@@ -27,7 +27,11 @@ from software_factory.agents import (
     FocalConversationOrchestrator,
 )
 from software_factory.memory import DEFAULT_ASYNC_CONSOLIDATOR
-from software_factory.schemas import ChatMessageRequest
+from software_factory.schemas import (
+    ChatMessageRequest,
+    CloudChatRequest,
+    IapUserIdentity,
+)
 
 
 async def evaluate_golden_dataset(
@@ -45,6 +49,63 @@ async def evaluate_golden_dataset(
 
     for case in dataset.get("eval_cases", []):
         eval_id = case["eval_id"]
+
+        if case.get("is_cloud_chat"):
+            cloud_req = CloudChatRequest(
+                message=case["prompt"],
+                session_id=f"eval-{eval_id}",
+                enable_tts=False,
+            )
+            mock_user = IapUserIdentity(
+                email="joshholtz@google.com",
+                user_id="10987654321",
+                verified=True,
+            )
+            cloud_res = await orchestrator.handle_cloud_chat(
+                request=cloud_req,
+                authenticated_user=mock_user,
+            )
+            actual_tools = cloud_res.resource_queries_executed
+            expected_tools = case.get("expected_tools", [])
+            tools_matched = all(t in actual_tools for t in expected_tools)
+            subagents_matched = True
+            expected_model = case.get("expected_routed_model")
+            model_matched = (
+                expected_model is None or cloud_res.model_used == expected_model
+            )
+            expected_keywords = case.get("expected_keywords", [])
+            keywords_matched = all(
+                kw.lower() in cloud_res.reply.lower() for kw in expected_keywords
+            )
+            guardrail_matched = True
+            if case.get("expected_guardrail_code"):
+                guardrail_matched = cloud_res.database_blocked is True
+
+            case_passed = (
+                tools_matched
+                and model_matched
+                and keywords_matched
+                and guardrail_matched
+            )
+            if case_passed:
+                passed_cases += 1
+
+            case_results.append(
+                {
+                    "eval_id": eval_id,
+                    "passed": case_passed,
+                    "routed_model": cloud_res.model_used,
+                    "model_matched": model_matched,
+                    "expected_tools": expected_tools,
+                    "actual_tools": actual_tools,
+                    "tools_matched": tools_matched,
+                    "subagents_matched": subagents_matched,
+                    "keywords_matched": keywords_matched,
+                    "guardrail_matched": guardrail_matched,
+                }
+            )
+            continue
+
         req = ChatMessageRequest(
             message=case["prompt"],
             session_id=f"eval-{eval_id}",

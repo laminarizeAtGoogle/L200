@@ -16,6 +16,17 @@ from .models import (
     QueryCloudLoggingInput,
     SynthesizeTerraformModuleInput,
     ToolExecutionStatus,
+    # GE Cloud Chat & TTS additions
+    CloudChatRequest,
+    CloudChatResponse,
+    IapUserIdentity,
+    QueryCloudRunServicesInput,
+    QueryComputeInstancesInput,
+    QueryGkeClustersInput,
+    QueryIamPolicyInput,
+    QueryStorageBucketsInput,
+    TtsSynthesisRequest,
+    TtsSynthesisResponse,
 )
 
 __all__ = [
@@ -34,4 +45,14 @@ __all__ = [
     "QueryCloudLoggingInput",
     "SynthesizeTerraformModuleInput",
     "ToolExecutionStatus",
+    "CloudChatRequest",
+    "CloudChatResponse",
+    "IapUserIdentity",
+    "QueryCloudRunServicesInput",
+    "QueryComputeInstancesInput",
+    "QueryGkeClustersInput",
+    "QueryIamPolicyInput",
+    "QueryStorageBucketsInput",
+    "TtsSynthesisRequest",
+    "TtsSynthesisResponse",
 ]
