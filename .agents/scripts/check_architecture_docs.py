@@ -3,7 +3,7 @@
 Pre-command hook script: Architecture Documentation & Diagram Gate.
 Intercepts tool executions (specifically run_command), detects git push commands,
 and executes a subagent slash command (/update-architecture-docs) to ensure that:
-1. The './docs' folder exists and contains an architecture diagram utilizing the Google Dendrite format (go/dendrite).
+1. The './docs' folder exists and contains an architecture diagram utilizing the Mermaid format.
 2. The architecture documentation and diagram have been updated with all changes comprised in the git push action.
 3. The Google OKF (Operational Knowledge Framework) Knowledge Base is synchronized.
 4. No uncommitted modifications to './docs' are left behind.
@@ -20,7 +20,7 @@ import sys
 DEFAULT_DOCS_DIR = "docs"
 DEFAULT_DIAGRAM_FILES = [
     "architecture.md",
-    "architecture_diagram.dendrite.yaml",
+    "architecture_diagram.mmd",
 ]
 
 # Non-architectural files that do not strictly require architecture diagram updates
@@ -146,8 +146,8 @@ def is_git_push_command(
     return False
 
 
-def check_diagram_is_dendrite(file_path: str) -> tuple[bool, str]:
-    """Verifies that an architecture diagram file conforms to Dendrite standards and avoids ASCII art."""
+def check_diagram_is_mermaid(file_path: str) -> tuple[bool, str]:
+    """Verifies that an architecture diagram file conforms to Mermaid standards and avoids ASCII art."""
     try:
         with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             content = f.read()
@@ -156,49 +156,49 @@ def check_diagram_is_dendrite(file_path: str) -> tuple[bool, str]:
 
     lower = os.path.basename(file_path).lower()
 
-    # Dendrite native DSL (.dendrite) check
-    if lower.endswith(".dendrite"):
-        if not re.search(r"(?:Zone|Style|renderOrder|direction|theme)", content):
-            return False, f"Dendrite DSL model '{file_path}' must contain valid Dendrite DSL declarations (Zone, Style, renderOrder, etc.)."
-        return True, ""
-
-    # Dendrite YAML / JSON model check
-    if lower.endswith(".dendrite.yaml") or lower.endswith(".dendrite.yml") or lower.endswith(".dendrite.json"):
-        if "dendrite_diagram:" not in content and '"dendrite_diagram"' not in content:
-            return False, f"Dendrite model '{file_path}' must contain top-level 'dendrite_diagram:' key."
+    # Mermaid native file (.mmd, .mermaid) check
+    if lower.endswith(".mmd") or lower.endswith(".mermaid"):
+        if not re.search(r"(?:flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie|gitGraph|journey|mindmap|quadrantChart|xychart-beta)", content):
+            return False, f"Mermaid model '{file_path}' must contain valid Mermaid declarations (flowchart, graph, sequenceDiagram, etc.)."
         return True, ""
 
     # Markdown documentation check
     if lower.endswith(".md"):
         # Check for banned ASCII art box drawing masquerading as diagrams
         has_ascii_box = bool(re.search(r"\+[=-]{10,}\+", content)) and bool(re.search(r"\|[ ]{10,}\|", content))
-        if has_ascii_box and "dendrite_diagram:" not in content:
+        if has_ascii_box and "```mermaid" not in content:
             return False, (
                 f"Architecture documentation '{file_path}' contains markdown/ASCII box drawing instead of "
-                f"the mandatory Dendrite diagram format. Please replace ASCII art with canonical Dendrite "
-                f"declarative YAML (go/dendrite)."
+                f"the mandatory Mermaid diagram format. Please replace ASCII art with canonical Mermaid "
+                f"declarations (```mermaid ... ```)."
             )
 
-        # Must reference dendrite or go/dendrite
-        if "dendrite" not in content.lower() and "go/dendrite" not in content.lower():
-            return False, (
-                f"Architecture documentation '{file_path}' must reference Google Dendrite (go/dendrite) "
-                f"as the authoritative diagram platform."
-            )
+        # Must contain mermaid block or reference
+        has_mermaid_block = bool(re.search(r"```mermaid\s*\n.*?\n```", content, re.DOTALL))
+        if not has_mermaid_block:
+            if "```mermaid" not in content and "mermaid" not in content.lower():
+                return False, (
+                    f"Architecture documentation '{file_path}' must contain a valid Mermaid diagram "
+                    f"(```mermaid ... ```) as the authoritative diagram platform."
+                )
 
     return True, ""
 
 
+# Backward-compatible alias
+check_diagram_is_dendrite = check_diagram_is_mermaid
+
+
 def verify_docs_directory(cwd: str, docs_dir_name: str = "docs") -> tuple[bool, str]:
-    """Verifies that the docs directory exists, contains a Dendrite diagram, and valid OKF KB."""
+    """Verifies that the docs directory exists, contains a Mermaid diagram, and valid OKF KB."""
     docs_path = os.path.join(cwd, docs_dir_name)
     if not os.path.isdir(docs_path):
         return (
             False,
             f"Pre-push architecture check failed: Missing './{docs_dir_name}' directory.\n"
-            f"Repository policy requires that architecture documentation and a Dendrite architecture diagram (go/dendrite) "
+            f"Repository policy requires that architecture documentation and a Mermaid architecture diagram "
             f"be maintained within './{docs_dir_name}/'.\n"
-            f"Please create './{docs_dir_name}/architecture.md' and './{docs_dir_name}/architecture_diagram.dendrite.yaml' before pushing.",
+            f"Please create './{docs_dir_name}/architecture.md' (containing a ```mermaid diagram) before pushing.",
         )
 
     # Check for architecture diagram files
@@ -218,15 +218,19 @@ def verify_docs_directory(cwd: str, docs_dir_name: str = "docs") -> tuple[bool, 
         if (
             "architecture" in lower
             or "diagram" in lower
-            or lower.endswith(".dendrite.yaml")
-            or lower.endswith(".dendrite.json")
+            or lower.endswith(".mmd")
+            or lower.endswith(".mermaid")
         ):
+            # Ignore legacy dendrite files
+            if lower.endswith(".dendrite") or lower.endswith(".dendrite.yaml") or lower.endswith(".dendrite.yml"):
+                continue
+
             # Check content is non-empty
             size = os.path.getsize(full_path)
             if size > 50:
-                is_dendrite, dendrite_err = check_diagram_is_dendrite(full_path)
-                if not is_dendrite:
-                    return False, f"Pre-push architecture check failed: {dendrite_err}"
+                is_mermaid, mermaid_err = check_diagram_is_mermaid(full_path)
+                if not is_mermaid:
+                    return False, f"Pre-push architecture check failed: {mermaid_err}"
                 found_diagram = True
                 valid_files.append(entry)
 
@@ -234,9 +238,9 @@ def verify_docs_directory(cwd: str, docs_dir_name: str = "docs") -> tuple[bool, 
         return (
             False,
             f"Pre-push architecture check failed: No valid architecture diagram found in './{docs_dir_name}/'.\n"
-            f"The './{docs_dir_name}' folder must contain an architecture documentation file or Dendrite diagram "
-            f"(e.g., 'architecture.md' or 'architecture_diagram.dendrite.yaml') utilizing the Dendrite format (go/dendrite).\n"
-            f"Please author your architecture diagram using Dendrite (go/dendrite) and save it in './{docs_dir_name}/'.",
+            f"The './{docs_dir_name}' folder must contain an architecture documentation file with a Mermaid diagram "
+            f"(e.g., 'architecture.md' or 'architecture_diagram.mmd') utilizing the Mermaid format.\n"
+            f"Please author your architecture diagram using Mermaid and save it in './{docs_dir_name}/'.",
         )
 
     # Check for Google OKF Knowledge Base
@@ -464,7 +468,7 @@ def invoke_subagent_update(
     prompt = (
         f"{cmd_name} Intercepted '{command_line}'. "
         f"Outgoing changes detected in repository without synchronized architecture documentation. "
-        f"Update the Dendrite architecture diagram and Google OKF Knowledge Base before pushing."
+        f"Update the Mermaid architecture diagram and Google OKF Knowledge Base before pushing."
     )
 
     agy_cmd = [
@@ -513,7 +517,7 @@ def evaluate_architecture_docs_gate(cwd: str, config: dict, command_line: str = 
     slash_cmd = config.get("slashCommand", "update-architecture-docs")
     timeout_sec = config.get("timeoutSeconds", 60)
 
-    # Step 1: Verify docs directory and Dendrite diagram exist
+    # Step 1: Verify docs directory and Mermaid diagram exist
     docs_valid, docs_err = verify_docs_directory(cwd, docs_dir)
     if not docs_valid:
         return "deny", docs_err
@@ -557,7 +561,7 @@ def evaluate_architecture_docs_gate(cwd: str, config: dict, command_line: str = 
         )
 
         if subagent_success:
-            # Re-check if docs directory and Dendrite diagram are valid
+            # Re-check if docs directory and Mermaid diagram are valid
             recheck_valid, recheck_err = verify_docs_directory(cwd, docs_dir)
             if not recheck_valid:
                 return "deny", f"Subagent completed but docs validation failed: {recheck_err}"
@@ -580,13 +584,13 @@ def evaluate_architecture_docs_gate(cwd: str, config: dict, command_line: str = 
             f"Pre-push architecture check failed: Changes are being pushed to GitHub, but architecture docs "
             f"in './{docs_dir}/' were not updated!\n\n"
             f"Repository Policy:\n"
-            f"Whenever modifying code, infrastructure, or workflows, the architecture documentation and Dendrite "
+            f"Whenever modifying code, infrastructure, or workflows, the architecture documentation and Mermaid "
             f"diagram in './{docs_dir}/' must be updated to reflect all changes comprised in the git push action.\n\n"
             f"Project files changed in this push ({commit_range}):\n{changed_list}\n\n"
             f"Subagent Execution ({cmd_name}):\n{subagent_msg}\n\n"
             f"Action Required for Agent:\n"
-            f"1. Run the subagent slash command `{cmd_name}` to automatically analyze diffs and update the Dendrite diagram and OKF Knowledge Base.\n"
-            f"2. Stage and commit the documentation: `git add {docs_dir}/ && git commit -m 'docs: update architecture diagram (Dendrite) and OKF KB'`\n"
+            f"1. Run the subagent slash command `{cmd_name}` to automatically analyze diffs and update the Mermaid diagram and OKF Knowledge Base.\n"
+            f"2. Stage and commit the documentation: `git add {docs_dir}/ && git commit -m 'docs: update architecture diagram (Mermaid) and OKF KB'`\n"
             f"3. Re-run '{command_line}'.",
         )
 

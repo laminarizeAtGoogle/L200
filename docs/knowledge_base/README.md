@@ -2,7 +2,7 @@
 
 Welcome to the **Operational Knowledge Framework (OKF)** catalog for the L200, Argolis & **A2A Software Factory** workspace.
 
-Following Google OKF standards, every architectural component represented in the [Google Dendrite Architecture Diagram](../architecture_diagram.dendrite.yaml) and all operational runbooks are organized across three canonical architectural pillars:
+Following Google OKF standards, every architectural component represented in the [Mermaid Architecture Diagram](../architecture.md) (and [standalone Mermaid model](../architecture_diagram.mmd)) and all operational runbooks are organized across three canonical architectural pillars:
 
 1. **Cloudtop Environment (`cloudtop_env/`)**: Workstation shell, hermetic package managers, developer toolchains, pre-push lifecycle gates, and agent skills.
 2. **Codebase & CI/CD (`codebase/`)**: Git repository configuration, CI/CD & evaluation pipelines, Google ADK agent runtime, Unified FastAPI + A2A Focal Coordinator server, specialist A2A sub-agent mesh, and Terraform Infrastructure as Code (IaC) modules.
@@ -65,5 +65,5 @@ Following Google OKF standards, every architectural component represented in the
   - Cloudtop Environment Template: [`templates/cloudtop_env_template.md`](templates/cloudtop_env_template.md)
   - Codebase Module Template: [`templates/codebase_template.md`](templates/codebase_template.md)
   - Deployed GCP Asset Template: [`templates/deployed_gcp_asset_template.md`](templates/deployed_gcp_asset_template.md)
-- **Dendrite Diagram Synchronization**: When adding or updating components in [Dendrite](http://go/dendrite) (or viewing in [Dendrite Playground](http://go/dendrite-playground)) and in [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml), a corresponding OKF document must be added or revised under its corresponding category.
+- **Mermaid Diagram Synchronization**: When adding or updating components in [`docs/architecture.md`](../architecture.md) and [`docs/architecture_diagram.mmd`](../architecture_diagram.mmd), a corresponding OKF document must be added or revised under its corresponding category.
 - **Pre-Push Validation**: The repository's `git-push-architecture-docs-gate` validates that `./docs` and its knowledge base components reflect all outgoing changes prior to executing `git push`.
