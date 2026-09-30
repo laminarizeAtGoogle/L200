@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 """
 Unit and integration test suite for check_architecture_docs.py.
 Verifies git command parsing, alias resolution, docs folder verification,
-Dendrite diagram validation, subagent slash command execution, and PreToolUse hook execution contract.
+Mermaid diagram validation, subagent slash command execution, and PreToolUse hook execution contract.
 """
 
 import json
@@ -39,17 +38,16 @@ class TestCheckArchitectureDocs(unittest.TestCase):
             )
 
     def _create_valid_docs(self):
-        """Creates valid docs directory with Dendrite diagram and OKF KB."""
+        """Creates valid docs directory with Mermaid diagram and OKF KB."""
         os.makedirs(self.docs_dir, exist_ok=True)
         arch_file = os.path.join(self.docs_dir, "architecture.md")
         with open(arch_file, "w") as f:
             f.write(
                 "# Architecture\n"
-                "Canonical Architecture Diagram in Dendrite go/dendrite.\n"
-                "```yaml\n"
-                "dendrite_diagram:\n"
-                "  title: 'Topology'\n"
-                "  dendrite_url: 'http://go/dendrite'\n"
+                "Canonical Architecture Diagram in Mermaid.\n"
+                "```mermaid\n"
+                "flowchart TD\n"
+                "    client[Web Client] --> gateway[IAP Gateway]\n"
                 "```\n"
                 + "x" * 100
             )
@@ -88,8 +86,8 @@ class TestCheckArchitectureDocs(unittest.TestCase):
         arch_file = os.path.join(self.docs_dir, "architecture.md")
         with open(arch_file, "w") as f:
             f.write(
-                "# Architecture\nCanonical Architecture Diagram in Dendrite go/dendrite.\n"
-                "```yaml\ndendrite_diagram:\n  title: 'Test'\n```\n" + "x" * 60
+                "# Architecture\nCanonical Architecture Diagram in Mermaid.\n"
+                "```mermaid\nflowchart TD\n  A --> B\n```\n" + "x" * 60
             )
         valid, msg = check_architecture_docs.verify_docs_directory(self.temp_dir, "docs")
         self.assertFalse(valid)
@@ -116,32 +114,31 @@ class TestCheckArchitectureDocs(unittest.TestCase):
         self._create_valid_kb()
         valid, msg = check_architecture_docs.verify_docs_directory(self.temp_dir, "docs")
         self.assertFalse(valid)
-        self.assertIn("contains markdown/ASCII box drawing instead of the mandatory Dendrite diagram format", msg)
+        self.assertIn("contains markdown/ASCII box drawing instead of the mandatory Mermaid diagram format", msg)
 
-    def test_verify_docs_accepts_dendrite_yaml(self):
+    def test_verify_docs_accepts_mermaid_file(self):
         os.makedirs(self.docs_dir, exist_ok=True)
-        yaml_file = os.path.join(self.docs_dir, "architecture_diagram.dendrite.yaml")
-        with open(yaml_file, "w") as f:
+        mmd_file = os.path.join(self.docs_dir, "architecture_diagram.mmd")
+        with open(mmd_file, "w") as f:
             f.write(
-                "dendrite_diagram:\n"
-                "  title: 'Test Topology'\n"
-                "  version: '1.0'\n"
-                "  dendrite_url: 'http://go/dendrite'\n"
+                "flowchart TD\n"
+                "  client[Web Client] --> gateway[IAP Gateway]\n"
+                "  gateway --> agent[Cloud Chat Agent]\n"
                 + "x" * 60
             )
         self._create_valid_kb()
         valid, msg = check_architecture_docs.verify_docs_directory(self.temp_dir, "docs")
         self.assertTrue(valid)
 
-    def test_verify_docs_rejects_dendrite_missing_diagram_key(self):
+    def test_verify_docs_rejects_mermaid_missing_keyword(self):
         os.makedirs(self.docs_dir, exist_ok=True)
-        yaml_file = os.path.join(self.docs_dir, "architecture_diagram.dendrite.yaml")
-        with open(yaml_file, "w") as f:
-            f.write("wrong_key:\n  title: 'Test Topology'\n" + "x" * 60)
+        mmd_file = os.path.join(self.docs_dir, "architecture_diagram.mmd")
+        with open(mmd_file, "w") as f:
+            f.write("invalid diagram syntax without keywords\n" + "x" * 60)
         self._create_valid_kb()
         valid, msg = check_architecture_docs.verify_docs_directory(self.temp_dir, "docs")
         self.assertFalse(valid)
-        self.assertIn("must contain top-level 'dendrite_diagram:' key", msg)
+        self.assertIn("must contain valid Mermaid declarations", msg)
 
     def test_pretooluse_hook_allows_non_push(self):
         payload = {
@@ -208,11 +205,14 @@ class TestCheckArchitectureDocs(unittest.TestCase):
             },
             "workspacePaths": [self.temp_dir],
         }
+        env = os.environ.copy()
+        env["MOCK_SUBAGENT_RESULT"] = "fail"
         proc = subprocess.run(
             [sys.executable, os.path.join(SCRIPT_DIR, "check_architecture_docs.py")],
             input=json.dumps(payload),
             text=True,
             capture_output=True,
+            env=env,
         )
         self.assertEqual(proc.returncode, 0)
         out = json.loads(proc.stdout.strip())

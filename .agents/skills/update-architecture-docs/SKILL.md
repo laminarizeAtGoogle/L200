@@ -1,14 +1,14 @@
 ---
 name: update-architecture-docs
 description: >-
-  Instructs a subagent to update the Google OKF Knowledge Base and Dendrite architecture
+  Instructs a subagent to update the Google OKF Knowledge Base and Mermaid architecture
   diagram with all changes comprised in outgoing git commits prior to pushing.
 ---
 
 # update-architecture-docs Subagent
 
 This subagent is executed automatically by the pre-tool-use hook on `git push` or manually via the `/update-architecture-docs` slash command.
-Its mission is to ensure that `./docs/` is always completely synchronized with outgoing code and infrastructure updates, utilizing the **Google Dendrite format** (`go/dendrite`) for diagrams and **Google OKF** (Operational Knowledge Framework) for the Knowledge Base.
+Its mission is to ensure that `./docs/` is always completely synchronized with outgoing code and infrastructure updates, utilizing the **Mermaid format** for diagrams and **Google OKF** (Operational Knowledge Framework) for the Knowledge Base.
 
 ---
 
@@ -44,35 +44,35 @@ When invoked, execute the following steps in sequence:
 
 ---
 
-### Step 2: Update the Canonical Dendrite Architecture Diagram
+### Step 2: Update the Canonical Mermaid Architecture Diagram
 
-1. **Strict Dendrite Standard**:
-   - The architecture diagram **MUST** utilize the official **Google Dendrite format** (`dendrite_diagram:` declarative YAML/DSL specification pointing to `http://go/dendrite` and interactive playground at `http://go/dendrite-playground`).
-   - **NEVER** use ASCII text box art (`+---+` / `|   |`) or generic markdown diagrams.
+1. **Strict Mermaid Standard**:
+   - The architecture diagram **MUST** utilize **Mermaid** syntax (`flowchart TD` or `flowchart LR`).
+   - Diagrams must be maintained in [`docs/architecture.md`](docs/architecture.md) (in a ````mermaid` block) and [`docs/architecture_diagram.mmd`](docs/architecture_diagram.mmd).
+   - **NEVER** use ASCII text box art (`+---+` / `|   |`).
 2. **Update Diagram Model**:
-   - Inspect [`docs/architecture_diagram.dendrite.yaml`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/architecture_diagram.dendrite.yaml).
-   - If new components or systems were introduced, add them under the corresponding boundary (`developer_workstation`, `github_platform`, `gcp_iam_boundary`, or `argolis_project`).
-   - If new inter-component flows or security controls were added, register the directional `connections` (with `protocol`, `auth`, `label`, and `type`).
-   - Ensure `playground_url: "http://go/dendrite-playground"` is present.
-   - Update `last_updated: "<YYYY-MM-DD>"`.
+   - Inspect [`docs/architecture_diagram.mmd`](docs/architecture_diagram.mmd) and [`docs/architecture.md`](docs/architecture.md).
+   - If new components or systems were introduced, add them under the corresponding subgraph boundary (`Zone1`, `Zone2`, `Zone3`, or `Zone4`).
+   - If new inter-component flows or security controls were added, register the directional edges with appropriate labels and protocols.
+   - Update `Last Synchronized` date.
 3. **Synchronize `docs/architecture.md`**:
-   - Update the embedded ````yaml` code block in [`docs/architecture.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/architecture.md) to reflect the refreshed Dendrite model.
-   - Update the `Last Synchronized` date and ensure it clearly points to `[http://go/dendrite](http://go/dendrite)` as authoritative and provides the interactive viewer link `[http://go/dendrite-playground](http://go/dendrite-playground)`.
+   - Update the embedded ````mermaid` code block in [`docs/architecture.md`](docs/architecture.md) to reflect the refreshed architecture.
+   - Ensure component descriptions, security perimeters, and interfaces remain completely synchronized.
 
 ---
 
 ### Step 3: Update the Google OKF Knowledge Base
 
 1. **Follow OKF Specifications**:
-   - Follow the standards defined in [`docs/knowledge_base/OKF_SPEC.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/OKF_SPEC.md) and [`docs/knowledge_base/TEMPLATE.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/TEMPLATE.md).
+   - Follow the standards defined in [`docs/knowledge_base/OKF_SPEC.md`](docs/knowledge_base/OKF_SPEC.md) and [`docs/knowledge_base/TEMPLATE.md`](docs/knowledge_base/TEMPLATE.md).
 2. **Create or Update Category Entries**:
-   - For **Cloudtop Environment**: use [`templates/cloudtop_env_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/cloudtop_env_template.md) in `docs/knowledge_base/cloudtop_env/{workstation,package_managers,scripts,skills}/`.
-   - For **Deployed GCP Assets**: use [`templates/deployed_gcp_asset_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/deployed_gcp_asset_template.md) in `docs/knowledge_base/deployed_gcp_assets/`.
-   - For **Codebase**: use [`templates/codebase_template.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/templates/codebase_template.md) in `docs/knowledge_base/codebase/`.
+   - For **Cloudtop Environment**: use [`templates/cloudtop_env_template.md`](docs/knowledge_base/templates/cloudtop_env_template.md) in `docs/knowledge_base/cloudtop_env/{workstation,package_managers,scripts,skills}/`.
+   - For **Deployed GCP Assets**: use [`templates/deployed_gcp_asset_template.md`](docs/knowledge_base/templates/deployed_gcp_asset_template.md) in `docs/knowledge_base/deployed_gcp_assets/`.
+   - For **Codebase**: use [`templates/codebase_template.md`](docs/knowledge_base/templates/codebase_template.md) in `docs/knowledge_base/codebase/`.
 3. **Architectural Component Coverage**:
-   - Every architectural component declared in the Dendrite diagram must have a matching OKF documentation entry within its corresponding category directory.
+   - Every architectural component declared in the Mermaid diagram must have a matching OKF documentation entry within its corresponding category directory.
 4. **Update Catalog Index**:
-   - Ensure [`docs/knowledge_base/README.md`](file:///usr/local/google/home/joshholtz/Documents/L200/docs/knowledge_base/README.md) lists the new or modified components in the catalog table.
+   - Ensure [`docs/knowledge_base/README.md`](docs/knowledge_base/README.md) lists the new or modified components in the catalog table.
 
 ---
 
@@ -84,19 +84,19 @@ When invoked, execute the following steps in sequence:
    ```
 2. Commit the changes:
    ```bash
-   git commit -m "docs: update architecture diagram (Dendrite) and OKF knowledge base"
+   git commit -m "docs: update architecture diagram (Mermaid) and OKF knowledge base"
    ```
 
 ---
 
 ### Step 5: Verification & Status Output
 
-1. Verify that `docs/architecture.md` and `docs/architecture_diagram.dendrite.yaml` are clean, well-formed, and free of ASCII box drawings.
+1. Verify that `docs/architecture.md` and `docs/architecture_diagram.mmd` are clean, well-formed, and free of ASCII box drawings.
 2. Verify that all OKF files pass basic structure checks.
 3. Emit final status line:
    - On success:
      ```text
-     ARCHITECTURE_DOCS_UPDATE: SUCCESS: Updated <list-of-updated-components> in Dendrite diagram and OKF Knowledge Base.
+     ARCHITECTURE_DOCS_UPDATE: SUCCESS: Updated <list-of-updated-components> in Mermaid diagram and OKF Knowledge Base.
      ```
    - On failure:
      ```text

@@ -39,8 +39,8 @@ Verification:
 
 ## 2. Architecture Documentation & Google OKF Standard
 
-- **Canonical Architecture Platform**: All system designs and infrastructure topologies must use **Google Dendrite** ([go/dendrite](http://go/dendrite)) and the interactive playground ([go/dendrite-playground](http://go/dendrite-playground)).
-- **Declarative Models**: The source of truth is [`docs/architecture_diagram.dendrite.yaml`](docs/architecture_diagram.dendrite.yaml).
+- **Canonical Architecture Platform**: All system designs and infrastructure topologies must use **Mermaid** diagrams (`mermaid` code blocks in [`docs/architecture.md`](docs/architecture.md) and [`docs/architecture_diagram.mmd`](docs/architecture_diagram.mmd)).
+- **Declarative Models**: The source of truth is [`docs/architecture.md`](docs/architecture.md) and [`docs/architecture_diagram.mmd`](docs/architecture_diagram.mmd).
 - **Prohibited**: Markdown ASCII box drawings (`+---+`, `|   |`) are strictly banned in architecture documentation.
 - **Google OKF Knowledge Base**: Every architectural component must have an entry in [`docs/knowledge_base/`](docs/knowledge_base/) conforming to [`docs/knowledge_base/OKF_SPEC.md`](docs/knowledge_base/OKF_SPEC.md).
 
@@ -50,4 +50,4 @@ Verification:
 
 - Prior to `git push`, the repository runs:
   1. `git-push-sanitization-gate`: Scans for leaked credentials, cookies, JWTs, and API keys.
-  2. `git-push-architecture-docs-gate`: Executes `/update-architecture-docs` subagent to synchronize the Dendrite diagram and OKF Knowledge Base before pushing.
+  2. `git-push-architecture-docs-gate`: Executes `/update-architecture-docs` subagent to synchronize the Mermaid diagram and OKF Knowledge Base before pushing.
