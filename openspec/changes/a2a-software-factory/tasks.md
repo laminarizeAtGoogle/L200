@@ -7,4 +7,4 @@
 - [x] 5. Implement 11 schema-validated tools across `workspace_tools.py`, `git_wif_tools.py`, and `gcloud_probe_tools.py`.
 - [x] 6. Implement ADK multi-agent graph (`subagents.py`, `focal_agent.py`), A2A mesh (`a2a_mesh.py`), and unified FastAPI + A2A server (`server.py`, `main.py`).
 - [x] 7. Populate Argolis Terraform infrastructure (`terraform/main.tf`, `terraform/variables.tf`, `terraform/outputs.tf`) and automated evaluation suite (`evals/`, `tests/`, `.github/workflows/agent-eval-and-test.yml`).
-- [x] 8. Synchronize Google Dendrite architecture diagram (`docs/architecture_diagram.dendrite.yaml`, `docs/architecture.md`) and Google OKF Knowledge Base (`docs/knowledge_base/`).
+- [x] 8. Synchronize Mermaid architecture diagram (`docs/architecture_diagram.mmd`, `docs/architecture.md`) and Google OKF Knowledge Base (`docs/knowledge_base/`).

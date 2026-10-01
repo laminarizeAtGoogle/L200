@@ -3,12 +3,15 @@
   "slashCommand": "git-push-sanitization-check",
   "denyOnFailure": true,
   "timeoutSeconds": 60,
-  "description": "Runs /git-push-sanitization-check subagent and credential checks prior to executing 'git push'.",
+  "description": "Runs /git-push-sanitization-check subagent and credential/sensitive content checks prior to executing 'git push'.",
   "checkCredentials": true,
   "credentialTypes": [
     "cookies",
     "jwt",
-    "api_keys"
+    "api_keys",
+    "oauth_tokens",
+    "service_accounts",
+    "internal_google"
   ],
   "excludeFiles": [
     "uv.lock",
@@ -21,6 +24,11 @@
     "composer.lock",
     ".terraform.lock.hcl",
     "test_pre_command_hook.py",
-    "pre_command_hook.py"
+    "pre_command_hook.py",
+    "sanitize_repo.sh",
+    "compliance-guide.md",
+    ".agents/skills/fde-cross-compliance/SKILL.md",
+    ".agents/skills/fde-git-push/SKILL.md",
+    ".agents/skills/git-push-sanitization-check/SKILL.md"
   ]
 }

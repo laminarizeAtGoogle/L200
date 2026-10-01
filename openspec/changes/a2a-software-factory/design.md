@@ -1,9 +1,8 @@
 # Design: A2A Agent Graph Software Factory
 
 ## System Architecture Diagram
-> **Canonical Architecture Diagram**: Authored in **Dendrite** ([go/dendrite](http://go/dendrite))  
-> **Interactive Viewer**: [go/dendrite-playground](http://go/dendrite-playground)  
-> **Authoritative Source**: [`docs/architecture_diagram.dendrite.yaml`](../../../docs/architecture_diagram.dendrite.yaml)
+> **Canonical Architecture Diagram**: Authored in **Mermaid** (`docs/architecture.md`)  
+> **Authoritative Source**: [`docs/architecture_diagram.mmd`](../../../docs/architecture_diagram.mmd)
 
 ## Architectural Decisions
 
