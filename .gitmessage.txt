@@ -1,11 +1,1 @@
-# <type>(<scope>): <concise subject>
-# ----------------------------------------------------------------------
-# Why:
-# - What problem does this solve, or what requirement does this satisfy?
-#
-# What:
-# - Bulleted breakdown of changes made across files and components.
-#
-# Verification:
-# - How was this change validated? (e.g., unit test suite, manual run)
-# ----------------------------------------------------------------------
+.agents/templates/.gitmessage.txt

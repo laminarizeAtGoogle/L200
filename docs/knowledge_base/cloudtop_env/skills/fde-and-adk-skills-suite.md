@@ -17,12 +17,13 @@ tags:
 # FDE & Official ADK-Python Agent Skills Catalog (`.agents/skills/` & `.agents/skill-library/`)
 
 ## 1. Overview & Purpose
-Provides a two-tier AI engineering customization architecture documented in [`.agents/README.md`](../../../../.agents/README.md):
+Mounted via the [`cloud-ai-fde/fde-agent-factory`](https://github.com/cloud-ai-fde/fde-agent-factory) Git submodule at [`.agents/`](../../../../.agents/) (configured via [`.gitmodules`](../../../../.gitmodules) and [`./.agents/install.sh --link`](../../../../.agents/install.sh)), providing a reusable two-tier AI engineering customization architecture documented in [`.agents/README.md`](../../../../.agents/README.md):
 1. **Pre-Loaded Core Skills (`.agents/skills/` — 25 Skills)**: Always-active YAML frontmatter in the `<skills>` system prompt, kept within the 15–25 routing sweet spot:
    - **11 Official Google ADK-Python Skills** from [`google/adk-python`](https://github.com/google/adk-python/tree/main) (`.agents/skills/adk-*`).
    - **6 Core Production FDE Skills** (`fde-genai-sdk`, `fde-mcp-server-builder`, `fde-a2ui-skills`, `fde-gcp-architect`, `fde-cloud-run-builder`, `fde-cross-compliance`).
    - **8 OpenSpec & Governance Skills** (`openspec-*`, `git-push-sanitization-check`, `update-architecture-docs`).
 2. **On-Demand Skill Library (`.agents/skill-library/` — 13 Skills)**: Deliverable, audit, domain, and meta-tooling FDE skills stored off the auto-discovery path so they consume zero system-prompt tokens on normal turns, invoked ad-hoc by the user via `/fde-*` workflows in [`.agents/workflows/`](../../../../.agents/workflows/) and [`.gemini/commands/fde/`](../../../../.gemini/commands/fde/).
+3. **Symlinked Governance & OKF Templates**: [`AGENTS.md`](../../../../AGENTS.md), [`.gitmessage.txt`](../../../../.gitmessage.txt), [`docs/knowledge_base/OKF_SPEC.md`](../../OKF_SPEC.md), [`docs/knowledge_base/TEMPLATE.md`](../../TEMPLATE.md), and [`docs/knowledge_base/templates`](../../templates) are symlinked directly into `.agents/` so local edits propagate to the shared plugin repository.
 
 ## 2. Installed Skills Breakdown
 
