@@ -26,7 +26,7 @@ This skill provides capabilities to interact with Google Docs, specifically focu
 
 2.  **Dependencies**:
     ```bash
-    uv pip install -r .agents/skills/fde-google-docs/requirements.txt
+    uv pip install -r .agents/skill-library/fde-google-docs/requirements.txt
     ```
 
 3.  **Authentication Flow**:
@@ -43,7 +43,7 @@ This skill provides capabilities to interact with Google Docs, specifically focu
 
 ### 1. Create a Doc from Markdown
 ```bash
-python .agents/skills/fde-google-docs/scripts/docs_cli.py create \
+python .agents/skill-library/fde-google-docs/scripts/docs_cli.py create \
   --title "My Document Title" \
   --content-file "path/to/content.md" \
   --settings-file "path/to/settings.json" # Optional
@@ -51,14 +51,14 @@ python .agents/skills/fde-google-docs/scripts/docs_cli.py create \
 
 ### 2. Append Text
 ```bash
-python .agents/skills/fde-google-docs/scripts/docs_cli.py append \
+python .agents/skill-library/fde-google-docs/scripts/docs_cli.py append \
   --document-id <DOC_ID> \
   --content "Text to append"
 ```
 
 ### 3. Insert Text
 ```bash
-python .agents/skills/fde-google-docs/scripts/docs_cli.py insert \
+python .agents/skill-library/fde-google-docs/scripts/docs_cli.py insert \
   --document-id <DOC_ID> \
   --content "Text to insert" \
   --index <INDEX>
@@ -66,7 +66,7 @@ python .agents/skills/fde-google-docs/scripts/docs_cli.py insert \
 
 ### 4. Delete Text
 ```bash
-python .agents/skills/fde-google-docs/scripts/docs_cli.py delete \
+python .agents/skill-library/fde-google-docs/scripts/docs_cli.py delete \
   --document-id <DOC_ID> \
   --start-index <START> \
   --end-index <END>
@@ -74,7 +74,7 @@ python .agents/skills/fde-google-docs/scripts/docs_cli.py delete \
 
 ### 5. Find and Replace
 ```bash
-python .agents/skills/fde-google-docs/scripts/docs_cli.py replace \
+python .agents/skill-library/fde-google-docs/scripts/docs_cli.py replace \
   --document-id <DOC_ID> \
   --find "Text to find" \
   --replace-with "New text"

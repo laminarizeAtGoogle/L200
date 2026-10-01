@@ -24,13 +24,13 @@ Whenever a user mentions "Skill Manager", or asks to "add a skill" or "list avai
 
 1. **List Skills First**: Use the helper script to get the current list of available skills from the remote repository.
    ```bash
-   python3 .agents/skills/fde-skill-manager/scripts/skill-manager.py list
+   python3 .agents/skill-library/fde-skill-manager/scripts/skill-manager.py list
    ```
 2. **Present and Ask**: Show the user the list of available skills.
 3. **Determine Target**: Ask if they want the skill installed in the **current workspace** (default) or **globally** (recommended for most skills).
 4. **Execute Installation**: Use the helper script to perform the installation.
-   - **For Workspace**: `python3 .agents/skills/fde-skill-manager/scripts/skill-manager.py install [skill_name]`
-   - **For Global**: `python3 .agents/skills/fde-skill-manager/scripts/skill-manager.py install [skill_name] --target ~/.gemini/jetski/skills/`
+   - **For Workspace**: `python3 .agents/skill-library/fde-skill-manager/scripts/skill-manager.py install [skill_name]`
+   - **For Global**: `python3 .agents/skill-library/fde-skill-manager/scripts/skill-manager.py install [skill_name] --target ~/.gemini/jetski/skills/`
 5. **Post-Install Refresh**: After a new skill is installed, acknowledge it and explain its purpose (check the new skill's `SKILL.md`).
 
 ## Technical Details
