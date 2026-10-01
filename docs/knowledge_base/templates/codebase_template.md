@@ -7,7 +7,7 @@ sub_category: "<terraform | agent_runtime | cicd | core_library>"
 tier: "<Tier 1 - Critical Path | Tier 2 - Operational | Tier 3 - Dev/Tooling>"
 status: "active"
 owner: "<Responsible Team or Engineering Function>"
-dendrite_node_id: "<exact node id in docs/architecture_diagram.dendrite.yaml>"
+dendrite_node_id: "<exact node id in docs/architecture_diagram.mmd>"
 discovered_by: "static_analysis"
 last_verified: "YYYY-MM-DD"
 ---
@@ -20,9 +20,9 @@ last_verified: "YYYY-MM-DD"
 - **Key Outcome**: [What goal or state is achieved when this code executes]
 
 ## 2. Codebase & Architectural Context
-- **Dendrite Diagram Backing**:
-  - Authoritative Platform: **Dendrite** ([go/dendrite](http://go/dendrite))
-  - Node ID: `[Matching ID in docs/architecture_diagram.dendrite.yaml]`
+- **Mermaid Diagram Backing**:
+  - Authoritative Platform: **Mermaid** (`docs/architecture_diagram.mmd`)
+  - Node ID: `[Matching ID in docs/architecture_diagram.mmd]`
   - Architectural Boundary: `[developer_workstation | github_platform | gcp_iam_boundary | argolis_project]`
 - **Source Code Paths**: `[e.g., terraform/, .github/workflows/, main.py]`
 - **Inbound Connections**: `[Upstream callers, workflows, or events triggering this module]`
@@ -58,9 +58,9 @@ last_verified: "YYYY-MM-DD"
   ```
 
 ## 5. References & Cross-Links
-- **Dendrite Architecture Diagram**: [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Mermaid Architecture Diagram**: [`docs/architecture_diagram.mmd`](../../architecture_diagram.mmd)
 - **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
 - **Related OKF Entries**:
   - Related Modules: `[Link to corresponding OKF entry in docs/knowledge_base/{cloudtop_env,codebase,deployed_gcp_assets}/]`
   - Upstream / Downstream: `[Link to related OKF entries]`
-- **External / Go Links**: `[go/dendrite, official documentation]`
+- **External Links**: `[Official documentation]`

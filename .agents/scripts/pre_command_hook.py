@@ -207,8 +207,6 @@ CREDENTIAL_PATTERNS = {
 }
 
 ALLOWED_INTERNAL_REFERENCES = {
-    "go/dendrite",
-    "go/dendrite-playground",
     "go/wif",
     "go/cross",
     "b/123456",

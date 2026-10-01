@@ -137,7 +137,7 @@ class TestCredentialPatterns(unittest.TestCase):
             'api_key = "00000000000000000000"',
             'api_key = "xxxxxxxxxxxxxxxxxxxx"',
             f'aws_key = "{fake_aws_example}"',
-            "See go/dendrite for architecture diagrams",
+            "See go/cross for OSPO compliance guidelines",
             "Example bug b/123456 or path //depot/google3/...",
         ]
         for p in placeholders:

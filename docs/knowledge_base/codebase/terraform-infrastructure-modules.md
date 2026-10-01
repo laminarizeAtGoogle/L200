@@ -20,8 +20,8 @@ last_verified: "2026-09-29"
 - **Key Outcome**: Standardizes reproducible cloud environments across sandboxes, ensuring all infrastructure modifications are version-controlled, plan-inspected during pull request review, and deployed via keyless CI/CD.
 
 ## 2. Codebase & Architectural Context
-- **Dendrite Diagram Backing**:
-  - Authoritative Platform: **Dendrite** ([go/dendrite](http://go/dendrite))
+- **Mermaid Diagram Backing**:
+  - Authoritative Platform: **Mermaid** (`docs/architecture_diagram.mmd`)
   - Node ID: `github_repo` (Source of truth and pipeline trigger)
   - Architectural Boundaries: `github_platform` (orchestration) and `argolis_project` (resource delivery)
 - **Source Code Paths**:
@@ -91,7 +91,7 @@ last_verified: "2026-09-29"
     - *Remediation*: Ensure `backend.tf` declares `backend "gcs" {}` and `imports.tf` contains declarative `import {}` blocks for existing cloud assets.
 
 ## 5. References & Cross-Links
-- **Dendrite Diagram Nodes**: `github_repo`, `gha_plan`, `gha_apply`, `gcs_tfstate`, `vpc_network`, `compute_vm` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Mermaid Diagram Nodes**: `github_repo`, `gha_plan`, `gha_apply`, `gcs_tfstate`, `vpc_network`, `compute_vm` in [`docs/architecture_diagram.mmd`](../../architecture_diagram.mmd)
 - **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
 - **Related OKF Entries**:
   - Canonical Component: [`components/github-repo.md`](github-repo.md)

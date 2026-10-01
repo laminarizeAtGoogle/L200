@@ -4,7 +4,7 @@
   knowledge base entries across three primary subcategories:
     1. cloudtop_env (scripts, skills, slash_commands, package_managers)
     2. deployed_gcp_assets (discovered via read-only agent queries)
-    3. codebase (backed by the Dendrite architecture diagram)
+    3. codebase (backed by the Mermaid architecture diagram)
 
   INSTRUCTIONS FOR KB CREATION AGENT:
   - Copy this template into the appropriate directory under docs/knowledge_base/:
@@ -25,7 +25,7 @@ sub_category: "<scripts | skills | slash_commands | package_managers | compute |
 tier: "<Tier 1 - Critical Path | Tier 2 - Operational | Tier 3 - Dev/Tooling>"
 status: "<active | stable | experimental | deprecated>"
 owner: "<Responsible Team or Engineering Function>"
-dendrite_node_id: "<exact node id in docs/architecture_diagram.dendrite.yaml, or 'n/a' if purely local tool>"
+dendrite_node_id: "<exact node id in docs/architecture_diagram.mmd, or 'n/a' if purely local tool>"
 discovered_by: "<read_agent | static_analysis | code_manifest | human>"
 last_verified: "YYYY-MM-DD"
 ---
@@ -70,9 +70,9 @@ last_verified: "YYYY-MM-DD"
 
 ### Option C: Codebase Context (`category: codebase`)
 <!-- Use this section for code, Terraform modules, and architecture assets backed by the diagram -->
-- **Dendrite Diagram Backing**:
-  - Authoritative Platform: **Dendrite** ([go/dendrite](http://go/dendrite))
-  - Node ID: `[Matching ID in docs/architecture_diagram.dendrite.yaml]`
+- **Mermaid Diagram Backing**:
+  - Authoritative Platform: **Mermaid** (`docs/architecture_diagram.mmd`)
+  - Node ID: `[Matching ID in docs/architecture_diagram.mmd]`
   - Architectural Boundary: `[e.g., developer_workstation | github_platform | gcp_iam_boundary | argolis_project]`
 - **Source Code Paths**: `[e.g., terraform/main.tf, .github/workflows/terraform-apply.yml, main.py]`
 - **Inbound Connections**: `[Upstream components that trigger, call, or provide input to this module]`
@@ -114,9 +114,9 @@ last_verified: "YYYY-MM-DD"
 ---
 
 ## 5. References & Cross-Links
-- **Dendrite Architecture Diagram**: [`docs/architecture_diagram.dendrite.yaml`](../architecture_diagram.dendrite.yaml)
+- **Mermaid Architecture Diagram**: [`docs/architecture_diagram.mmd`](../architecture_diagram.mmd)
 - **Architecture Overview**: [`docs/architecture.md`](../architecture.md)
 - **Related OKF Entries**:
   - Upstream: `[Link to upstream OKF component]`
   - Downstream: `[Link to downstream OKF component]`
-- **External / Go Links**: `[go/dendrite, go/wif, official GCP docs]`
+- **External Links**: `[Official GCP docs]`

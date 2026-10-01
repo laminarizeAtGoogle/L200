@@ -3,7 +3,7 @@
 Dynamically selects the optimal Gemini foundation model based on task
 complexity, latency requirements, and reasoning depth:
 - `gemini-2.5-pro`: Complex multi-agent coordination, architectural planning,
-  OpenSpec/Dendrite synthesis, and Terraform/code generation.
+  OpenSpec/Mermaid synthesis, and Terraform/code generation.
 - `gemini-2.5-flash`: Fast, low-latency read-only `gcloud` probes, Cloud
   Logging inspection, and status summarization.
 """

@@ -2,7 +2,7 @@
 
 Defines factory functions for:
 1. `workspace_architect_agent` (Gemini 2.5 Pro): Inspects target workspaces and
-   designs software, OpenSpec artifacts, and Dendrite/OKF architectures.
+   designs software, OpenSpec artifacts, and Mermaid/OKF architectures.
 2. `software_builder_agent` (Gemini 2.5 Pro): Writes application code, unit
    tests, and cross-project Terraform HCL manifests.
 3. `wif_git_delivery_agent` (Gemini 2.5 Pro): Creates feature branches from
@@ -51,7 +51,7 @@ def build_workspace_architect_agent(
         model=routing.selected_model,
         description=(
             "Inspects local or external target workspaces, analyzes git and "
-            "Terraform state, and designs modular software and Dendrite/OKF architectures."
+            "Terraform state, and designs modular software and Mermaid/OKF architectures."
         ),
         instruction=WORKSPACE_ARCHITECT_CONSTITUTION,
         tools=[inspect_target_workspace_state],

@@ -7,7 +7,7 @@ sub_category: "<compute | networking | iam | storage>"
 tier: "<Tier 1 - Critical Path | Tier 2 - Operational | Tier 3 - Dev/Tooling>"
 status: "active"
 owner: "<Responsible Team or Engineering Function>"
-dendrite_node_id: "<exact node id in docs/architecture_diagram.dendrite.yaml>"
+dendrite_node_id: "<exact node id in docs/architecture_diagram.mmd>"
 discovered_by: "read_agent"
 last_verified: "YYYY-MM-DD"
 ---
@@ -59,9 +59,9 @@ last_verified: "YYYY-MM-DD"
   ```
 
 ## 5. References & Cross-Links
-- **Dendrite Architecture Diagram**: [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
+- **Mermaid Architecture Diagram**: [`docs/architecture_diagram.mmd`](../../architecture_diagram.mmd)
 - **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
 - **Related OKF Entries**:
   - Related Cloud Assets: `[Link to corresponding OKF entry in docs/knowledge_base/{cloudtop_env,codebase,deployed_gcp_assets}/]`
   - Codebase: `[Link to related codebase module in docs/knowledge_base/codebase/]`
-- **External / Go Links**: `[go/dendrite, GCP Documentation]`
+- **External Links**: `[GCP Documentation]`
