@@ -20,9 +20,11 @@ Following Google OKF standards, every architectural component represented in the
 | `isolated-binaries` | Hermetic Standalone Toolchain (`./bin`) | `cloudtop_env/package_managers` | `isolated_binaries` | Tier 3 - Development | [`isolated-binaries.md`](cloudtop_env/package_managers/isolated-binaries.md) |
 | `uv-package-manager` | uv Python Package & Project Manager | `cloudtop_env/package_managers` | `isolated_binaries` | Tier 3 - Development | [`uv-package-manager.md`](cloudtop_env/package_managers/uv-package-manager.md) |
 | `check-architecture-docs` | Architecture Documentation Pre-Push Gate | `cloudtop_env/scripts` | `cloudtop_shell` | Tier 3 - Development | [`check-architecture-docs.md`](cloudtop_env/scripts/check-architecture-docs.md) |
+| `pre-command-hook` | Pre-Push Credential & OSPO Sanitization Gate | `cloudtop_env/scripts` | `cloudtop_shell` | Tier 1 - Critical Path | [`pre-command-hook.md`](cloudtop_env/scripts/pre-command-hook.md) |
 | `provision-argolis-env` | Argolis Zero-Privilege IAM Provisioning Script | `cloudtop_env/scripts` | `reader_sa` | Tier 1 - Critical Path | [`provision-argolis-env.md`](cloudtop_env/scripts/provision-argolis-env.md) |
 | `setup-argolis-github-wif` | Argolis WIF & Terraform State Setup Script | `cloudtop_env/scripts` | `wif_pool` | Tier 1 - Critical Path | [`setup-argolis-github-wif.md`](cloudtop_env/scripts/setup-argolis-github-wif.md) |
 | `dendrite-architecture-diagrams` | Dendrite Architecture Diagrams Skill | `cloudtop_env/skills` | `cloudtop_shell` | Tier 3 - Development | [`dendrite-architecture-diagrams.md`](cloudtop_env/skills/dendrite-architecture-diagrams.md) |
+| `fde-and-adk-skills-suite` | FDE & Official ADK-Python Agent Skills Catalog | `cloudtop_env/skills` | `cloudtop_shell` | Tier 2 - Operational | [`fde-and-adk-skills-suite.md`](cloudtop_env/skills/fde-and-adk-skills-suite.md) |
 
 ### 2. Codebase Modules & CI/CD Pipelines (`codebase/`)
 

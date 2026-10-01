@@ -8,7 +8,7 @@ This document serves as the authoritative architectural blueprint for the Google
 
 > **Authoritative Architecture Platform**: **Mermaid** (`mermaid` diagram standard)  
 > **Standalone Diagram Source**: [`docs/architecture_diagram.mmd`](architecture_diagram.mmd)  
-> **Last Synchronized**: 2026-09-30
+> **Last Synchronized**: 2026-10-01
 
 ### System Architecture Topology
 
@@ -20,7 +20,7 @@ flowchart TD
         direction TB
         ge_frontend["Gemini Enterprise Web UI<br/>• Voice Recording (Web Speech)<br/>• Markdown Chat Feed<br/>• TTS Audio Playback<br/>• Status & Identity Badges"]
         iap_gateway["Google Identity-Aware Proxy (IAP)<br/>• Cryptographic JWT Assertion<br/>• Caller Authorization Verification<br/>• Google Login Perimeter"]
-        cloudtop_shell["Developer Shell & Workstation<br/>• Hermetic Toolchain (Terraform v1.16.4)<br/>• Pre-Push Sanitization Hooks<br/>• Automated Architecture Validation"]
+        cloudtop_shell["Developer Shell & Workstation<br/>• Hermetic Toolchain (Terraform v1.16.4)<br/>• FDE & Official ADK-Python Skills Suite (45 Skills)<br/>• Pre-Push Credential & OSPO Sanitization Gate<br/>• Automated Architecture Validation"]
     end
 
     subgraph Zone2["2. Gemini 3.8 Agent Engine & Security Boundaries (Execution Zone)"]
@@ -153,3 +153,5 @@ Every architectural component is documented in [`docs/knowledge_base/`](knowledg
 - **IAP Verifier**: [`docs/knowledge_base/codebase/iap-verifier.md`](knowledge_base/codebase/iap-verifier.md)
 - **Cloud TTS Service**: [`docs/knowledge_base/codebase/cloud-tts-service.md`](knowledge_base/codebase/cloud-tts-service.md)
 - **Database Guardrail**: [`docs/knowledge_base/codebase/database-access-blocker-guardrail.md`](knowledge_base/codebase/database-access-blocker-guardrail.md)
+- **Pre-Push Credential & OSPO Sanitization Gate**: [`docs/knowledge_base/cloudtop_env/scripts/pre-command-hook.md`](knowledge_base/cloudtop_env/scripts/pre-command-hook.md)
+- **FDE & Official ADK-Python Skills Catalog**: [`docs/knowledge_base/cloudtop_env/skills/fde-and-adk-skills-suite.md`](knowledge_base/cloudtop_env/skills/fde-and-adk-skills-suite.md)

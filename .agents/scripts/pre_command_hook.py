@@ -34,14 +34,19 @@ DEFAULT_EXCLUDE_FILES = {
     ".terraform.lock.hcl",
     "test_pre_command_hook.py",
     "pre_command_hook.py",
+    "sanitize_repo.sh",
+    "compliance-guide.md",
+    ".agents/skills/fde-cross-compliance/SKILL.md",
+    ".agents/skills/fde-git-push/SKILL.md",
+    ".agents/skills/git-push-sanitization-check/SKILL.md",
 }
 
 SENSITIVE_FILENAME_PATTERN = re.compile(
-    r"(?:^|/)(?:\.env|\.env\.[a-zA-Z0-9_.-]+|id_rsa|id_ed25519|.*\.pem|.*\.key|credentials\.json|client_secret\.json|cookies\.txt)$",
+    r"(?:^|/)(?:\.env|\.env\.[a-zA-Z0-9_.-]+|id_rsa|id_ed25519|.*\.pem|.*\.key|credentials\.json|client_secret[a-zA-Z0-9_.-]*\.json|(?:.*[-_])?service[-_]?account[a-zA-Z0-9_.-]*\.json|cookies\.txt|skill-runs\.jsonl)$",
     re.IGNORECASE,
 )
 
-# Credential patterns organized by category
+# Credential and sensitive content patterns organized by category
 CREDENTIAL_PATTERNS = {
     "cookies": [
         (
@@ -80,6 +85,18 @@ CREDENTIAL_PATTERNS = {
     "api_keys": [
         ("Google API Key", re.compile(r"\b(AIza[0-9A-Za-z-_]{35})\b")),
         (
+            "Google OAuth Access Token",
+            re.compile(r"\b(ya29\.[0-9A-Za-z_-]{16,})\b"),
+        ),
+        (
+            "GCP Service Account Key",
+            re.compile(r'("type"\s*:\s*"service_account")'),
+        ),
+        (
+            "GCP Service Account Private Key ID",
+            re.compile(r'(?i)"private_key_id"\s*:\s*"([a-f0-9]{20,})"'),
+        ),
+        (
             "GitHub Token",
             re.compile(
                 r"\b((?:ghp|gho|ghu|ghs|ghr)_[0-9a-zA-Z]{36}|github_pat_[0-9a-zA-Z_]{82})\b"
@@ -92,7 +109,9 @@ CREDENTIAL_PATTERNS = {
         ("Anthropic API Key", re.compile(r"\b(sk-ant-[a-zA-Z0-9_-]{20,})\b")),
         (
             "AWS Access Key ID",
-            re.compile(r"\b((?:AKIA|ABIA|ACCA|ASIA)[0-9A-Z]{16})\b"),
+            re.compile(
+                r"\b((?:A3T[A-Z0-9]|AKIA|ABIA|ACCA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[0-9A-Z]{16})\b"
+            ),
         ),
         (
             "AWS Secret Key",
@@ -112,7 +131,9 @@ CREDENTIAL_PATTERNS = {
         ("HuggingFace Token", re.compile(r"\b(hf_[a-zA-Z0-9]{34})\b")),
         (
             "Private Key Block",
-            re.compile(r"(-----BEGIN (?:[A-Z0-9_-]+\s+)?PRIVATE KEY-----)"),
+            re.compile(
+                r"(-----BEGIN (?:(?:RSA|EC|OPENSSH|DSA|PGP|[A-Z0-9_-]+)\s+)?PRIVATE KEY-----)"
+            ),
         ),
         (
             "Generic API Key / Secret",
@@ -125,12 +146,84 @@ CREDENTIAL_PATTERNS = {
             re.compile(r"""(?i)\bBearer\s+([a-zA-Z0-9_\-\.]{20,})\b"""),
         ),
     ],
+    "oauth_tokens": [
+        (
+            "Google OAuth Access Token",
+            re.compile(r"\b(ya29\.[0-9A-Za-z_-]{16,})\b"),
+        ),
+    ],
+    "service_accounts": [
+        (
+            "GCP Service Account Key",
+            re.compile(r'("type"\s*:\s*"service_account")'),
+        ),
+        (
+            "GCP Service Account Private Key ID",
+            re.compile(r'(?i)"private_key_id"\s*:\s*"([a-f0-9]{20,})"'),
+        ),
+    ],
+    "internal_google": [
+        (
+            "Internal Go Shortlink",
+            re.compile(r"(?<![a-zA-Z0-9_./-])(go/[a-zA-Z0-9_-]{2,})\b"),
+        ),
+        (
+            "Internal Buganizer ID",
+            re.compile(r"(?<![a-zA-Z0-9_./-])(b/[0-9]{6,})\b"),
+        ),
+        (
+            "Internal Changelist ID",
+            re.compile(r"(?<![a-zA-Z0-9_./-])(cl/[0-9]{6,})\b"),
+        ),
+        (
+            "Internal YAQS Link",
+            re.compile(r"(?<![a-zA-Z0-9_./-])(yaqs/[0-9]{4,})\b"),
+        ),
+        (
+            "Internal g3doc Reference",
+            re.compile(
+                r"\b(g3doc(?:\.corp\.google\.com)?/[a-zA-Z0-9_./-]+)\b",
+                re.IGNORECASE,
+            ),
+        ),
+        (
+            "Internal google3 / Depot Path",
+            re.compile(
+                r"(//depot/google3[^\s\"'`)]*|\bgoogle3/[a-zA-Z0-9_./-]+)"
+            ),
+        ),
+        (
+            "Internal Corp Hostname",
+            re.compile(
+                r"\b([a-zA-Z0-9][a-zA-Z0-9_.-]*\.corp\.google\.com)\b",
+                re.IGNORECASE,
+            ),
+        ),
+        (
+            "Internal Piper Path",
+            re.compile(r"(piper:///[a-zA-Z0-9_./-]+)"),
+        ),
+    ],
+}
+
+ALLOWED_INTERNAL_REFERENCES = {
+    "go/dendrite",
+    "go/dendrite-playground",
+    "go/wif",
+    "go/cross",
+    "b/123456",
+    "cl/123456",
+    "yaqs/123456",
 }
 
 
 def is_likely_placeholder(val: str) -> bool:
     """Checks if a matched string is an obvious placeholder rather than a real secret."""
     lower = val.lower().strip("\"' \t\r\n")
+    if lower in ALLOWED_INTERNAL_REFERENCES:
+        return True
+    if "..." in lower:
+        return True
     placeholder_keywords = [
         "placeholder", "example", "dummy", "fake", "sample",
         "your_", "your-", "replace", "changeme", "change_this",
@@ -170,11 +263,15 @@ def is_binary_file(filepath: str) -> bool:
 
 
 def get_active_patterns(enabled_types: list):
-    """Returns a combined list of (label, regex) for active credential types."""
+    """Returns a combined, deduplicated list of (label, regex) for active credential types."""
     patterns = []
+    seen_labels = set()
     for cat in enabled_types:
         if cat in CREDENTIAL_PATTERNS:
-            patterns.extend(CREDENTIAL_PATTERNS[cat])
+            for label, pat in CREDENTIAL_PATTERNS[cat]:
+                if label not in seen_labels:
+                    seen_labels.add(label)
+                    patterns.append((label, pat))
     return patterns
 
 
@@ -264,7 +361,10 @@ def scan_diff_for_credentials(diff_text: str, active_patterns: list, exclude_fil
 
 def run_credential_checks(cwd: str, config: dict) -> list:
     """Runs credential detection across tracked files and outgoing git commits."""
-    enabled_types = config.get("credentialTypes", ["cookies", "jwt", "api_keys"])
+    enabled_types = config.get(
+        "credentialTypes",
+        ["cookies", "jwt", "api_keys", "oauth_tokens", "service_accounts", "internal_google"],
+    )
     active_patterns = get_active_patterns(enabled_types)
     exclude_files = set(config.get("excludeFiles", DEFAULT_EXCLUDE_FILES))
     self_path = os.path.abspath(__file__)
@@ -505,7 +605,14 @@ def main():
         "denyOnFailure": True,
         "timeoutSeconds": 60,
         "checkCredentials": True,
-        "credentialTypes": ["cookies", "jwt", "api_keys"],
+        "credentialTypes": [
+            "cookies",
+            "jwt",
+            "api_keys",
+            "oauth_tokens",
+            "service_accounts",
+            "internal_google",
+        ],
         "excludeFiles": list(DEFAULT_EXCLUDE_FILES),
     }
 

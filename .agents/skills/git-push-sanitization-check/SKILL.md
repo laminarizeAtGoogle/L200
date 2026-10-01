@@ -24,16 +24,17 @@ Configure your sanitization rules and checks below:
      git diff @{u}..HEAD
      ```
 
-2. **Verify No Credentials, Secrets, or Sensitive Files**:
+2. **Verify No Credentials, Secrets, Internal Identifiers, or Sensitive Files**:
    - **Cookies**: Check for hardcoded cookie strings, session IDs (`sessionid=`, `connect.sid=`, `remember_token=`), and `Cookie:` / `Set-Cookie:` headers.
-   - **JWTs**: Check for JSON Web Tokens (`eyJ...`), auth headers, or hardcoded session tokens.
-   - **API Keys & Tokens**: Check for provider-specific API keys (Google `AIza...`, GitHub `ghp_...`, OpenAI `sk-...`, Anthropic `sk-ant-...`, AWS `AKIA...`, Stripe, Slack, HuggingFace) and generic `api_key = "..."`, `secret_key = "..."`, `Bearer <token>`.
-   - **Sensitive Files**: Check for sensitive or untracked configuration files (e.g. `.env`, `.env.local`, service account keys, `.pem` files, private keys, `credentials.json`, `cookies.txt`).
-   - Ensure `.gitignore` properly excludes local credentials and configuration files.
+   - **JWTs & OAuth Tokens**: Check for JSON Web Tokens (`eyJ...`), Google OAuth 2.0 access tokens (`ya29....`), auth headers, or hardcoded session tokens.
+   - **API Keys, Cloud Credentials & Service Accounts**: Check for provider-specific API keys and IAM resource identifiers (Google `AIza...`, GitHub `ghp_...` / `github_pat_...`, OpenAI `sk-...`, Anthropic `sk-ant-...`, AWS `A3T...` / `AKIA...` / `AGPA...` / `AIDA...` / `AROA...` / `AIPA...` / `ANPA...` / `ANVA...` / `ASIA...`, Stripe, Slack, SendGrid, HuggingFace), GCP Service Account key payloads (`"type": "service_account"`, `"private_key_id"`), private key blocks (`-----BEGIN ... PRIVATE KEY-----`), and generic `api_key = "..."`, `secret_key = "..."`, `Bearer <token>`.
+   - **Internal Google Links & Identifiers**: Check for unredacted internal shortlinks (`go/...`, `b/...`, `cl/...`, `yaqs/...`), internal depot/Piper paths (`//depot/google3/...`, `google3/...`, `piper:///...`), internal corporate hostnames (`*.corp.google.com`), and `g3doc` URLs.
+   - **Sensitive Files**: Check for sensitive or untracked configuration files (e.g. `.env`, `.env.*`, service account JSON keys, `client_secret*.json`, `.pem` / `.key` files, private keys, `credentials.json`, `cookies.txt`, `skill-runs.jsonl`).
+   - Ensure `.gitignore` properly excludes local credentials, scratch directories, and configuration files.
 
 3. **Validation Outcome**:
    - If **all checks pass**:
      - Conclude with a clear confirmation: `SANITIZATION_CHECK: PASSED`.
    - If **issues are detected**:
      - State clearly what issue was found: `SANITIZATION_CHECK: FAILED: <details of issue>`.
-     - Detail the corrective actions needed (e.g. `git reset`, untracking sensitive files, or removing hardcoded secrets).
+     - Detail the corrective actions needed (e.g. `git reset`, untracking sensitive files, or removing hardcoded secrets/internal references).
