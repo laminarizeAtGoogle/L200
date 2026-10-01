@@ -20,7 +20,7 @@ When developing for this domain, prioritize these ADK patterns:
 2. **SequentialAgent**: For multi-stage enrichment pipelines (Clean -> Enrich -> Validate).
 3. **MCP Tools**: Integrate with `BigQuery` for catalog storage and `GCS` for asset management.
 
-## 📝 Example SPEC.md Snippet
+## 📝 Example OpenSpec Snippet
 ```markdown
 ## Catalog Enhancement Core Features
 - [ ] Product Normalization (Brand, Title, SKU)

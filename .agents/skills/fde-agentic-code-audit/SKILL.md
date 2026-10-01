@@ -14,7 +14,7 @@ Search for library imports and configuration patterns to determine the orchestra
 
 | Framework | Key Indicators (imports/files) |
 | :--- | :--- |
-| **ADK** | `from google.adk import`, `Agent`, `Workflow`, `Tool`, `SPEC.md`, `SCOPE.md` |
+| **ADK** | `from google.adk import`, `Agent`, `Workflow`, `Tool`, `openspec/` |
 | **LangGraph** | `from langgraph`, `StateGraph`, `nodes`, `edges` |
 | **LangChain** | `from langchain`, `LCEL`, `chains/`, `PromptTemplate` |
 | **LlamaIndex** | `from llama_index`, `VectorStoreIndex`, `QueryEngine`, `Workflows` |

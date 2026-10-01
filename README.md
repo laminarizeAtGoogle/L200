@@ -291,12 +291,12 @@ The workspace implements an **Agent-to-Agent (A2A) Software Factory** exposed be
 
 ### 11. Agent Skills Catalog & Pre-Push Sanitization Harness (`.agents/`)
 
-The workspace includes a curated set of **44 agent skills** in [`.agents/skills/`](.agents/skills/) and deterministic `PreToolUse` lifecycle gates in [`.agents/hooks.json`](.agents/hooks.json):
+The workspace includes a curated set of **38 agent skills** in [`.agents/skills/`](.agents/skills/) and deterministic `PreToolUse` lifecycle gates in [`.agents/hooks.json`](.agents/hooks.json):
 
 1. **Official Google ADK-Python Skills** ([`google/adk-python`](https://github.com/google/adk-python/tree/main)):
    - `adk-agent-builder`, `adk-architecture`, `adk-debug`, `adk-git`, `adk-review`, `adk-sample-creator`, `adk-setup`, `adk-style`, `adk-unit-design`, `adk-unit-guide`, `adk-verify-snippets`
 2. **Cloud AI FDE Skills** ([`cloud-ai-fde/agent-driven-dev`](https://github.com/cloud-ai-fde/agent-driven-dev)):
-   - `fde-a2ui-skills`, `fde-agentic-code-audit`, `fde-catalog-enhancement`, `fde-cloud-run-builder`, `fde-code-reviewer`, `fde-code-tester`, `fde-cross-compliance`, `fde-gcp-architect`, `fde-genai-sdk`, `fde-git-push`, `fde-google-docs`, `fde-impl-spec`, `fde-init-setup`, `fde-intelligent-sync`, `fde-mcp-server-builder`, `fde-mermaid-chart`, `fde-model-migration-audit`, `fde-presentation-skill`, `fde-project-manager`, `fde-scope-creator`, `fde-skill-auditor`, `fde-skill-creator`, `fde-skill-manager`, `fde-spec-creator`, `fde-subagent-creator`, and `.agents/agents/autonomous-improver.md`
+   - `fde-a2ui-skills`, `fde-agentic-code-audit`, `fde-catalog-enhancement`, `fde-cloud-run-builder`, `fde-cross-compliance`, `fde-gcp-architect`, `fde-genai-sdk`, `fde-git-push`, `fde-google-docs`, `fde-intelligent-sync`, `fde-mcp-server-builder`, `fde-mermaid-chart`, `fde-model-migration-audit`, `fde-presentation-skill`, `fde-project-manager`, `fde-skill-auditor`, `fde-skill-creator`, `fde-skill-manager`, `fde-subagent-creator`, and `.agents/agents/autonomous-improver.md`
 3. **Workspace Governance & OpenSpec Skills**:
    - `git-push-sanitization-check`, `update-architecture-docs`, `openspec-apply-change`, `openspec-archive-change`, `openspec-explore`, `openspec-propose`, `openspec-sync-specs`, `openspec-update-change`
 4. **Pre-Push Lifecycle Gates** ([`.agents/scripts/pre_command_hook.py`](.agents/scripts/pre_command_hook.py) & [`.agents/scripts/check_architecture_docs.py`](.agents/scripts/check_architecture_docs.py)):

@@ -20,7 +20,7 @@ flowchart TD
         direction TB
         ge_frontend["Gemini Enterprise Web UI<br/>• Voice Recording (Web Speech)<br/>• Markdown Chat Feed<br/>• TTS Audio Playback<br/>• Status & Identity Badges"]
         iap_gateway["Google Identity-Aware Proxy (IAP)<br/>• Cryptographic JWT Assertion<br/>• Caller Authorization Verification<br/>• Google Login Perimeter"]
-        cloudtop_shell["Developer Shell & Workstation<br/>• Hermetic Toolchain (Terraform v1.16.4)<br/>• FDE & Official ADK-Python Skills Suite (44 Skills)<br/>• Pre-Push Credential & OSPO Sanitization Gate<br/>• Automated Architecture Validation"]
+        cloudtop_shell["Developer Shell & Workstation<br/>• Hermetic Toolchain (Terraform v1.16.4)<br/>• FDE, Official ADK-Python & OpenSpec Skills Suite (38 Skills)<br/>• Pre-Push Credential & OSPO Sanitization Gate<br/>• Automated Architecture Validation"]
     end
 
     subgraph Zone2["2. Gemini 3.8 Agent Engine & Security Boundaries (Execution Zone)"]

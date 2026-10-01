@@ -16,7 +16,7 @@ The Skill Manager allows you to manage the skills in your local workspace or glo
 ## Installation Strategy
 
 > [!TIP]
-> **Recommend Global Installation**: For shared tools like `adk-agent-builder`, `fde-gcp-architect`, or `fde-spec-creator`, recommend that the user installs them into their global directory: `~/.gemini/jetski/skills/`. This makes them available across all projects.
+> **Recommend Global Installation**: For shared tools like `adk-agent-builder`, `fde-gcp-architect`, or `openspec-propose`, recommend that the user installs them into their global directory: `~/.gemini/jetski/skills/`. This makes them available across all projects.
 
 ## Instructions
 
