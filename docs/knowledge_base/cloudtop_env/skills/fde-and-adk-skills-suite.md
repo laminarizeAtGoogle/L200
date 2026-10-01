@@ -14,16 +14,19 @@ tags:
   - "okf"
 ---
 
-# FDE & Official ADK-Python Agent Skills Catalog (`.agents/skills/`)
+# FDE & Official ADK-Python Agent Skills Catalog (`.agents/skills/` & `.agents/skill-library/`)
 
 ## 1. Overview & Purpose
-Provides a comprehensive suite of workspace-scoped AI engineering skills combining:
-1. **Official Google ADK-Python Skills** from [`google/adk-python`](https://github.com/google/adk-python/tree/main) (`.agents/skills/adk-*`) for building, debugging, styling, reviewing, and testing ADK 2.0 agents and graph workflows.
-2. **Consolidated Cloud AI FDE Skills** harvested from the latest feature branches and commits of [`cloud-ai-fde/agent-driven-dev`](https://github.com/cloud-ai-fde/agent-driven-dev) (`.agents/skills/fde-*` and `.agents/agents/autonomous-improver.md`).
+Provides a two-tier AI engineering customization architecture documented in [`.agents/README.md`](../../../../.agents/README.md):
+1. **Pre-Loaded Core Skills (`.agents/skills/` — 25 Skills)**: Always-active YAML frontmatter in the `<skills>` system prompt, kept within the 15–25 routing sweet spot:
+   - **11 Official Google ADK-Python Skills** from [`google/adk-python`](https://github.com/google/adk-python/tree/main) (`.agents/skills/adk-*`).
+   - **6 Core Production FDE Skills** (`fde-genai-sdk`, `fde-mcp-server-builder`, `fde-a2ui-skills`, `fde-gcp-architect`, `fde-cloud-run-builder`, `fde-cross-compliance`).
+   - **8 OpenSpec & Governance Skills** (`openspec-*`, `git-push-sanitization-check`, `update-architecture-docs`).
+2. **On-Demand Skill Library (`.agents/skill-library/` — 13 Skills)**: Deliverable, audit, domain, and meta-tooling FDE skills stored off the auto-discovery path so they consume zero system-prompt tokens on normal turns, invoked ad-hoc by the user via `/fde-*` workflows in [`.agents/workflows/`](../../../../.agents/workflows/) and [`.gemini/commands/fde/`](../../../../.gemini/commands/fde/).
 
 ## 2. Installed Skills Breakdown
 
-### A. Official ADK-Python Skills (`google/adk-python`)
+### A. Official ADK-Python Skills (`.agents/skills/adk-*` — Pre-Loaded)
 - `adk-agent-builder`: Builds ADK Python LLM agents, function/agent graph workflows, conditional routing, fan-out/JoinNode, task-mode delegation, HITL `RequestInput`, and `pytest` tests.
 - `adk-architecture`: Explains ADK runtime internals (`BaseNode`, `Workflow`, `Runner`, `Agent`, `Context`, `Event`, checkpoint/resume, tracing).
 - `adk-debug`: Diagnoses ADK agent sessions, events, tool calls, `adk run` CLI, and `adk web` debug endpoints.
@@ -36,11 +39,16 @@ Provides a comprehensive suite of workspace-scoped AI engineering skills combini
 - `adk-unit-guide`: Authors hands-on developer usage guides for ADK code units.
 - `adk-verify-snippets`: Extracts and executes Python code blocks in Markdown files to verify runnable documentation.
 
-### B. Cloud AI FDE Skills (`cloud-ai-fde/agent-driven-dev`)
+### B. Core Production Cloud AI FDE Skills (`.agents/skills/fde-*` — Pre-Loaded)
+- `fde-genai-sdk`: Unified `google-genai` SDK patterns (`genai.Client`, multimodal, Pydantic structured outputs, grounding, thinking).
+- `fde-mcp-server-builder`: Production `FastMCP` server design, Pydantic validation, pagination, and self-healing errors.
 - `fde-a2ui-skills` (from `feat/a2ui-skills` `ce655cd`): Gemini Enterprise A2UI v0.9 component builder and validator.
+- `fde-gcp-architect`: Cloud Run, Vertex AI Agent Engine, IAM least-privilege, and Secret Manager architecture.
+- `fde-cloud-run-builder` (from `4526bd5`): Cloud Run source deployment via Buildpacks (`deploy.sh`).
 - `fde-cross-compliance` (from `feat/fde-cross-compliance` `4526bd5`, PR #23): OSPO & client delivery sanitization toolkit (`sanitize_repo.sh`).
-- `fde-cloud-run-builder` (from `4526bd5`): Cloud Run deployment via Buildpacks.
-- `fde-git-push` (from `4526bd5` & `fix/yaml-parsing` `935fb78`): Pre-commit security audit, README alignment, and Conventional Commits governance.
-- `fde-agentic-code-audit`, `fde-catalog-enhancement`, `fde-gcp-architect`, `fde-genai-sdk`, `fde-google-docs`, `fde-intelligent-sync`, `fde-mcp-server-builder`, `fde-mermaid-chart`, `fde-model-migration-audit`, `fde-presentation-skill`, `fde-project-manager`, `fde-skill-auditor`, `fde-skill-creator`, `fde-skill-manager`, `fde-subagent-creator` (from `pre-fde-skills-migration` `01d3c97`).
-- Subagent: `.agents/agents/autonomous-improver.md`.
-- Note: Non-OpenSpec SDD skills (`fde-scope-creator`, `fde-spec-creator`, `fde-impl-spec`, `fde-init-setup`, `fde-code-reviewer`, `fde-code-tester`) are excluded in favor of the workspace's standardized OpenSpec (`openspec-*`) workflow.
+
+### C. On-Demand FDE Skill Library (`.agents/skill-library/fde-*` — Manual `/fde-*` Triggers)
+- Deliverable & Diagramming: `fde-mermaid-chart` (`/fde-mermaid`), `fde-presentation-skill` (`/fde-slides`), `fde-google-docs` (`/fde-gdocs`), `fde-project-manager` (`/fde-pm`).
+- Domain & Audits: `fde-catalog-enhancement` (`/fde-catalog`), `fde-agentic-code-audit` (`/fde-audit`), `fde-model-migration-audit` (`/fde-migrate`).
+- Meta & Git Tooling: `fde-git-push` (`/fde-git-push`), `fde-skill-creator` (`/fde-skill-create`), `fde-skill-auditor` (`/fde-skill-audit`), `fde-skill-manager` (`/fde-skill-manage`), `fde-subagent-creator` (`/fde-subagent-create`), `fde-intelligent-sync` (`/fde-sync`).
+- Note: Non-OpenSpec SDD skills (`fde-scope-creator`, `fde-spec-creator`, `fde-impl-spec`, `fde-init-setup`, `fde-code-reviewer`, `fde-code-tester`) and `autonomous-improver` are excluded in favor of the workspace's standardized OpenSpec (`openspec-*`) workflow.

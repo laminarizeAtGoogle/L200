@@ -291,14 +291,16 @@ The workspace implements an **Agent-to-Agent (A2A) Software Factory** exposed be
 
 ### 11. Agent Skills Catalog & Pre-Push Sanitization Harness (`.agents/`)
 
-The workspace includes a curated set of **38 agent skills** in [`.agents/skills/`](.agents/skills/) and deterministic `PreToolUse` lifecycle gates in [`.agents/hooks.json`](.agents/hooks.json):
+The workspace includes **25 pre-loaded core skills** in [`.agents/skills/`](.agents/skills/), **13 on-demand deliverable/audit/meta skills** in [`.agents/skill-library/`](.agents/skill-library/) (invoked manually via `/fde-*` workflows in [`.agents/workflows/`](.agents/workflows/) and [`.gemini/commands/fde/`](.gemini/commands/fde/)), an OKF catalog index in [`.agents/README.md`](.agents/README.md), and deterministic `PreToolUse` lifecycle gates in [`.agents/hooks.json`](.agents/hooks.json):
 
-1. **Official Google ADK-Python Skills** ([`google/adk-python`](https://github.com/google/adk-python/tree/main)):
+1. **Official Google ADK-Python Skills (`11` pre-loaded)** ([`google/adk-python`](https://github.com/google/adk-python/tree/main)):
    - `adk-agent-builder`, `adk-architecture`, `adk-debug`, `adk-git`, `adk-review`, `adk-sample-creator`, `adk-setup`, `adk-style`, `adk-unit-design`, `adk-unit-guide`, `adk-verify-snippets`
-2. **Cloud AI FDE Skills** ([`cloud-ai-fde/agent-driven-dev`](https://github.com/cloud-ai-fde/agent-driven-dev)):
-   - `fde-a2ui-skills`, `fde-agentic-code-audit`, `fde-catalog-enhancement`, `fde-cloud-run-builder`, `fde-cross-compliance`, `fde-gcp-architect`, `fde-genai-sdk`, `fde-git-push`, `fde-google-docs`, `fde-intelligent-sync`, `fde-mcp-server-builder`, `fde-mermaid-chart`, `fde-model-migration-audit`, `fde-presentation-skill`, `fde-project-manager`, `fde-skill-auditor`, `fde-skill-creator`, `fde-skill-manager`, `fde-subagent-creator`, and `.agents/agents/autonomous-improver.md`
-3. **Workspace Governance & OpenSpec Skills**:
+2. **Core Production Cloud AI FDE Skills (`6` pre-loaded)** ([`cloud-ai-fde/agent-driven-dev`](https://github.com/cloud-ai-fde/agent-driven-dev)):
+   - `fde-genai-sdk`, `fde-mcp-server-builder`, `fde-a2ui-skills`, `fde-gcp-architect`, `fde-cloud-run-builder`, `fde-cross-compliance`
+3. **Workspace Governance & OpenSpec Skills (`8` pre-loaded)**:
    - `git-push-sanitization-check`, `update-architecture-docs`, `openspec-apply-change`, `openspec-archive-change`, `openspec-explore`, `openspec-propose`, `openspec-sync-specs`, `openspec-update-change`
-4. **Pre-Push Lifecycle Gates** ([`.agents/scripts/pre_command_hook.py`](.agents/scripts/pre_command_hook.py) & [`.agents/scripts/check_architecture_docs.py`](.agents/scripts/check_architecture_docs.py)):
+4. **On-Demand Skill Library (`13` manual `/fde-*` workflows in `.agents/skill-library/`)**:
+   - `fde-mermaid-chart` (`/fde-mermaid`), `fde-presentation-skill` (`/fde-slides`), `fde-google-docs` (`/fde-gdocs`), `fde-project-manager` (`/fde-pm`), `fde-catalog-enhancement` (`/fde-catalog`), `fde-agentic-code-audit` (`/fde-audit`), `fde-model-migration-audit` (`/fde-migrate`), `fde-git-push` (`/fde-git-push`), `fde-skill-creator` (`/fde-skill-create`), `fde-skill-auditor` (`/fde-skill-audit`), `fde-skill-manager` (`/fde-skill-manage`), `fde-subagent-creator` (`/fde-subagent-create`), `fde-intelligent-sync` (`/fde-sync`)
+5. **Pre-Push Lifecycle Gates** ([`.agents/scripts/pre_command_hook.py`](.agents/scripts/pre_command_hook.py) & [`.agents/scripts/check_architecture_docs.py`](.agents/scripts/check_architecture_docs.py)):
    - Scans tracked files, staged files, and outgoing commit diffs for cookies, JWTs, API keys, Google OAuth 2.0 tokens (`ya29...`), GCP Service Account key payloads, expanded AWS IAM keys, sensitive files, and internal Google shortlinks, depot paths, and corporate hostnames.
 

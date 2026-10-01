@@ -14,7 +14,7 @@ Skills must adhere to:
 2. **No Auxiliaries**: Files like `README.md`, `CHANGELOG.md`, etc., are explicitly forbidden.
 3. **Progressive Disclosure**: `SKILL.md` must be lean. Exhaustive documentation or step-by-step procedures should live in `resources/`. If a `SKILL.md` exceeds 3000 characters, it fails this check.
 
-*Note: The complete rules and philosophies behind these checks can be found at `.agents/skills/fde-skill-auditor/resources/agent-skills-guide.md`.*
+*Note: The complete rules and philosophies behind these checks can be found at `.agents/skill-library/fde-skill-auditor/resources/agent-skills-guide.md`.*
 
 ## Auditing Instructions
 
@@ -22,10 +22,10 @@ To perform an audit, run the packaged Python validation script:
 
 ```bash
 # Run a dry-run audit
-python .agents/skills/fde-skill-auditor/scripts/audit.py --dir .agents/skills
+python .agents/skill-library/fde-skill-auditor/scripts/audit.py --dir .agents/skills
 
 # Run an audit with auto-fix (e.g. deleting auxiliary files)
-python .agents/skills/fde-skill-auditor/scripts/audit.py --dir .agents/skills --fix
+python .agents/skill-library/fde-skill-auditor/scripts/audit.py --dir .agents/skills --fix
 ```
 
 ## Self-Correction Loop

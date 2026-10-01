@@ -64,7 +64,7 @@ skill-name/
 
 **Tip**: Use the provided helper script to scaffold a new skill:
 ```bash
-python .agents/skills/fde-skill-creator/scripts/init_skill.py <skill-name>
+python .agents/skill-library/fde-skill-creator/scripts/init_skill.py <skill-name>
 ```
 
 ### Step 4: Iteration & Refinement
