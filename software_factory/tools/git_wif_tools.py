@@ -403,7 +403,7 @@ def configure_cross_project_wif_federation(
         target a different GCP project via keyless OIDC Workload Identity
         Federation. Generates the WIF onboarding manifest
         (`.factory_wif_manifest.json`) and provides the exact provisioning
-        invocation for `~/workspace/setupScripts/setup-argolis-github-wif.sh`
+        invocation for `setupScripts/setup-argolis-github-wif.sh`
         (from `https://github.com/cloud-ai-fde/joshholtz-setupscripts`).
 
     Args:
@@ -503,11 +503,11 @@ def configure_cross_project_wif_federation(
             f"workloadIdentityPools/{validated.workload_identity_pool}/"
             f"providers/{validated.workload_identity_provider}"
         )
-        external_setup_script = Path.home() / "workspace" / "setupScripts" / "setup-argolis-github-wif.sh"
-        if external_setup_script.exists():
-            setup_script = external_setup_script
-        else:
-            setup_script = WORKSPACE_ROOT / "setupScripts" / "setup-argolis-github-wif.sh"
+        setup_script = WORKSPACE_ROOT / "setupScripts" / "setup-argolis-github-wif.sh"
+        if not setup_script.exists():
+            external_setup_script = Path.home() / "workspace" / "setupScripts" / "setup-argolis-github-wif.sh"
+            if external_setup_script.exists():
+                setup_script = external_setup_script
 
         wif_manifest = {
             "target_workspace": str(target_dir),

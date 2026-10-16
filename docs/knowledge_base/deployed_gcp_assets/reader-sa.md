@@ -27,7 +27,7 @@ The `cloudtop-agent-reader` service account establishes a hard zero-privilege se
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Provisioner: [`provision-argolis-env.sh`](file:///usr/local/google/home/joshholtz/workspace/setupScripts/provision-argolis-env.sh) in [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts)
+  - Provisioner: [`setupScripts/provision-argolis-env.sh`](../../../setupScripts/provision-argolis-env.sh) (Submodule: [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts))
 - **Principal Email**:
   `cloudtop-agent-reader@<PROJECT_ID>.iam.gserviceaccount.com`
 - **IAM Roles Granted**:
@@ -38,7 +38,7 @@ The `cloudtop-agent-reader` service account establishes a hard zero-privilege se
 ## 4. Operational Runbook & Lifecycle
 - **Provisioning & Deployment**:
   ```bash
-  ~/workspace/setupScripts/provision-argolis-env.sh --project <PROJECT_ID>
+  ./setupScripts/provision-argolis-env.sh --project <PROJECT_ID>
   ```
 - **Activating Impersonation on Cloudtop**:
   ```bash
@@ -57,7 +57,7 @@ The `cloudtop-agent-reader` service account establishes a hard zero-privilege se
 ## 5. References & Linked Assets
 - **Dendrite Diagram Node**: `reader_sa` in [`docs/architecture_diagram.dendrite.yaml`](../../architecture_diagram.dendrite.yaml)
 - **Architecture Overview**: [`docs/architecture.md`](../../architecture.md)
-- **Security Specification**: [`README.md`](file:///usr/local/google/home/joshholtz/workspace/setupScripts/README.md) in [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts)
+- **Security Specification**: [`setupScripts/README.md`](../../../setupScripts/README.md) (Submodule: [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts))
 - **Related OKF Entries**:
   - Deployer SA: [`deployed_gcp_assets/deployer-sa.md`](deployer-sa.md)
   - Workstation Shell: [`cloudtop_env/workstation/cloudtop-shell.md`](../cloudtop_env/workstation/cloudtop-shell.md)

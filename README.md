@@ -29,7 +29,7 @@ All tools, runtimes, dependencies, and credentials are strictly isolated to this
 
 | File / Directory | Purpose |
 |---|---|
-| [`setupScripts/`](https://github.com/cloud-ai-fde/joshholtz-setupscripts) | Dedicated repository for portable Argolis provisioning and WIF scripts (local: `~/workspace/setupScripts`). |
+| [`setupScripts/`](setupScripts/) | Operational scripts submodule ([`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts)), including Argolis zero-privilege IAM boundary provisioner (`provision-argolis-env.sh`) and GitHub WIF setup (`setup-argolis-github-wif.sh`). |
 | [`.github/workflows/terraform-apply.yml`](.github/workflows/terraform-apply.yml) | GitHub Actions workflow executing `terraform apply` upon merge to `main`. |
 | [`.github/workflows/terraform-plan.yml`](.github/workflows/terraform-plan.yml) | GitHub Actions workflow executing `terraform plan` upon pull requests targeting `main`. |
 | [`relocate.sh`](relocate.sh) | Portable workspace relocator to dynamically update environment paths when extracted or moved. |
@@ -105,7 +105,7 @@ To enforce a hard security boundary at the IAM layer preventing local coding age
 
 1. **Run Provisioner as Super Admin** (in Cloud Shell or privileged terminal):
    ```bash
-   ~/workspace/setupScripts/provision-argolis-env.sh --project <YOUR_ARGOLIS_PROJECT_ID>
+   ./setupScripts/provision-argolis-env.sh --project <YOUR_ARGOLIS_PROJECT_ID>
    ```
 
 2. **Configure Cloudtop to Impersonate the Read-Only Service Account**:
@@ -113,7 +113,7 @@ To enforce a hard security boundary at the IAM layer preventing local coding age
    gcloud config set auth/impersonate_service_account cloudtop-agent-reader@<YOUR_ARGOLIS_PROJECT_ID>.iam.gserviceaccount.com
    ```
 
-For detailed architectural patterns, threat model, and privileged Terraform execution rules, see the dedicated [joshholtz-setupscripts repository](https://github.com/cloud-ai-fde/joshholtz-setupscripts) (`~/workspace/setupScripts/README.md`).
+For detailed architectural patterns, threat model, and privileged Terraform execution rules, see [`setupScripts/README.md`](setupScripts/README.md) (submodule from [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts)).
 
 ---
 
@@ -195,7 +195,7 @@ Run the provisioning script from Google Cloud Shell or an authenticated admin se
 
 ```bash
 # Provision Workload Identity Federation, Service Account, and GCS state bucket:
-~/workspace/setupScripts/setup-argolis-github-wif.sh --project <YOUR_ARGOLIS_PROJECT_ID> --repo <OWNER/REPO>
+./setupScripts/setup-argolis-github-wif.sh --project <YOUR_ARGOLIS_PROJECT_ID> --repo <OWNER/REPO>
 ```
 
 #### Step 2: Configure GitHub Repository Secrets / Variables
