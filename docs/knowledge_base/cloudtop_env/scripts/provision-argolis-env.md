@@ -9,7 +9,7 @@ status: "active"
 owner: "Cloud Security & Infrastructure / Academy L200"
 dendrite_node_id: "reader_sa"
 discovered_by: "static_analysis"
-last_verified: "2026-09-28"
+last_verified: "2026-10-16"
 ---
 
 # OKF (Cloudtop Env): Argolis Zero-Privilege IAM Provisioning Script
@@ -21,14 +21,14 @@ last_verified: "2026-09-28"
 
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `scripts`
-- **File / Directory Path**: [`scripts/provision-argolis-env.sh`](../../../../scripts/provision-argolis-env.sh)
+- **File / Directory Path**: [`setupScripts/provision-argolis-env.sh`](../../../../setupScripts/provision-argolis-env.sh)
 - **Invocation Command / Syntax**:
   ```bash
   # Execute with explicit target project
-  ./scripts/provision-argolis-env.sh --project <PROJECT_ID>
+  ./setupScripts/provision-argolis-env.sh --project <PROJECT_ID>
 
   # Custom developer user and service account name
-  ./scripts/provision-argolis-env.sh \
+  ./setupScripts/provision-argolis-env.sh \
     --project <PROJECT_ID> \
     --user <USER_EMAIL> \
     --sa-name cloudtop-agent-reader
@@ -40,8 +40,8 @@ last_verified: "2026-09-28"
 - **Command-Line Arguments & Flags**:
   | Flag | Option | Default | Required | Description |
   |---|---|---|---|---|
-  | `-p` | `--project` | `$PROJECT_ID` or active gcloud | Yes | Target GCP project hosting the service account |
-  | `-u` | `--user` | `joshholtz@gcp.altostrat.com` | No | Developer user email to restrict to read-only impersonation |
+  | `-p` | `--project` | Interactive prompt / active `gcloud` | Yes | Target GCP project hosting the service account |
+  | `-u` | `--user` | Interactive prompt / `$(whoami)@gcp.altostrat.com` | No | Developer user email to restrict to read-only impersonation |
   | `-s` | `--sa-name` | `cloudtop-agent-reader` | No | Name of the read-only service account |
   | `-o` | `--org-id` | Auto-discovered | No | Argolis Organization ID for org-level role grants |
   | `-h` | `--help` | N/A | No | Print usage instructions |
@@ -60,8 +60,8 @@ last_verified: "2026-09-28"
 ## 4. Operational Runbook & Lifecycle
 - **Step 1: Usage / Execution (from Google Cloud Shell or Admin session)**:
   ```bash
-  gcloud auth login admin@joshholtz.altostrat.com
-  ./scripts/provision-argolis-env.sh --project argolis-dev-sandbox-1234
+  gcloud auth login admin@<YOUR_ARGOLIS_DOMAIN>
+  ./setupScripts/provision-argolis-env.sh --project argolis-dev-sandbox-1234
   ```
 - **Step 2: Verification & Impersonation Validation**:
   ```bash

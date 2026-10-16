@@ -9,44 +9,46 @@ status: "active"
 owner: "Cloud Security & CI/CD / Academy L200"
 dendrite_node_id: "wif_pool"
 discovered_by: "static_analysis"
-last_verified: "2026-09-28"
+last_verified: "2026-10-16"
 ---
 
 # OKF (Cloudtop Env): Argolis WIF & Terraform Remote State Setup Script
 
 ## 1. Executive Summary & Purpose
-- **Primary Function**: Provisions keyless Workload Identity Federation (WIF) and remote encrypted Terraform state infrastructure in Google Cloud, securely bridging GitHub Actions CI/CD to an Argolis GCP project via OpenID Connect (OIDC) without long-lived static service account keys.
+- **Primary Function**: Provisions keyless Workload Identity Federation (WIF) and remote encrypted Terraform state infrastructure in Google Cloud, securely bridging GitHub Actions CI/CD to any Argolis GCP project and GitHub repository via OpenID Connect (OIDC) without long-lived static service account keys.
 - **Target Audience / Consumer**: Cloud Administrators, DevOps Engineers, and automated project setup pipelines.
-- **Key Outcome**: Generates a zero-static-key authentication pipeline where GitHub Actions workflows (`terraform-plan.yml`, `terraform-apply.yml`) exchange ephemeral OIDC JWTs for temporary GCP credentials, accessing state storage and provisioning cloud resources.
+- **Key Outcome**: Generates a portable, zero-static-key authentication pipeline where GitHub Actions workflows (`terraform-plan.yml`, `terraform-apply.yml`) exchange ephemeral OIDC JWTs for temporary GCP credentials, accessing state storage and provisioning cloud resources across any project or repository.
 
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `scripts`
-- **File / Directory Path**: [`scripts/setup-argolis-github-wif.sh`](../../../../scripts/setup-argolis-github-wif.sh)
+- **File / Directory Path**: [`setupScripts/setup-argolis-github-wif.sh`](../../../../setupScripts/setup-argolis-github-wif.sh)
 - **Invocation Command / Syntax**:
   ```bash
-  # Standard automated setup with repo auto-detection
-  ./scripts/setup-argolis-github-wif.sh --project <PROJECT_ID>
+  # Interactive setup (prompts for target GCP project & GitHub repository)
+  ./setupScripts/setup-argolis-github-wif.sh
 
   # Fully parameterized setup with automatic GitHub CLI variable deployment
-  ./scripts/setup-argolis-github-wif.sh \
+  ./setupScripts/setup-argolis-github-wif.sh \
     --project <PROJECT_ID> \
     --repo <OWNER/REPO> \
     --auto-deploy-gh
   ```
-- **Runtime Environment & Dependencies**: Bash 5.2, POSIX shell utilities, Google Cloud SDK (`gcloud`), and GitHub CLI (`gh`) for automated variable deployment.
-- **Isolation Scope**: Run once per project from Google Cloud Shell or workstation admin terminal; binds external GitHub repository identity to GCP IAM perimeter.
+- **Runtime Environment & Dependencies**: Bash 5.2, POSIX shell utilities, Google Cloud SDK (`gcloud`), and GitHub CLI (`gh`) for automated repository creation, remote linking, and variable deployment.
+- **Isolation Scope**: Portable across projects; binds external GitHub repository identity to GCP IAM perimeter and updates existing OIDC provider conditions idempotently when retargeted.
 
 ## 3. Technical Specifications & Configuration
 - **Command-Line Arguments & Flags**:
   | Flag | Option | Default | Required | Description |
   |---|---|---|---|---|
-  | `-p` | `--project` | Active gcloud project | Yes | Target Argolis GCP project ID |
-  | `-r` | `--repo` | Auto-detected from `git remote` | Yes | GitHub repository path (`owner/repo`) |
+  | `-p` | `--project` | Interactive prompt / active `gcloud` project | Yes | Target Argolis GCP project ID |
+  | `-r` | `--repo` | Interactive prompt | Yes | GitHub repository path (`owner/repo` or URL) |
   | `-s` | `--sa-name` | `github-terraform-deployer` | No | Deployment Service Account identifier |
   | `-b` | `--bucket` | `<PROJECT_ID>-tfstate` | No | Cloud Storage bucket name for remote Terraform state |
   | | `--pool` | `github-actions-pool` | No | Workload Identity Pool name |
   | | `--provider` | `github-provider` | No | Workload Identity Provider name |
   | | `--region` | `us-central1` | No | Default GCP region for state bucket |
+  | | `--replace-repo-condition` | Interactive prompt if provider exists | No | Replace existing OIDC provider condition with only `--repo` |
+  | | `--append-repo-condition` | Interactive prompt if provider exists | No | Append `--repo` to existing OIDC provider condition |
   | | `--auto-deploy-gh` | Interactive prompt | No | Automatically set GitHub Action repository variables |
   | | `--skip-gh` | N/A | No | Skip GitHub Actions variable deployment |
   | `-h` | `--help` | N/A | No | Print usage instructions |
@@ -57,12 +59,12 @@ last_verified: "2026-09-28"
     - Attribute mappings:
       - `google.subject = assertion.sub`
       - `attribute.repository = assertion.repository`
+      - `attribute.repository_owner = assertion.repository_owner`
       - `attribute.actor = assertion.actor`
-      - `attribute.ref = assertion.ref`
-    - Mandatory attribute condition: `attribute.repository == '<REPO>'`
+    - Mandatory attribute condition: `assertion.repository == '<REPO>'` (automatically updated via `update-oidc` if provider already exists)
   - **Deployer Service Account (`github-terraform-deployer`)**:
-    - Workload identity user binding: `principalSet://iam.googleapis.com/<POOL>/attribute.repository/<REPO>`
-    - Scoped roles: `roles/compute.admin`, `roles/storage.admin`, `roles/iam.serviceAccountUser`
+    - Workload identity user binding: `principalSet://iam.googleapis.com/<POOL>/attribute.repository/<REPO>` (cleans up stale repo bindings when replacing provider condition)
+    - Scoped roles: `roles/editor`, `roles/storage.admin`
   - **GCS Remote State Bucket**:
     - Uniform bucket-level access enabled (`--uniform-bucket-level-access`)
     - Object versioning enabled (`gcloud storage buckets update ... --versioning`)
@@ -71,9 +73,9 @@ last_verified: "2026-09-28"
 ## 4. Operational Runbook & Lifecycle
 - **Step 1: Usage / Execution**:
   ```bash
-  ./scripts/setup-argolis-github-wif.sh \
+  ./setupScripts/setup-argolis-github-wif.sh \
     --project argolis-dev-sandbox-1234 \
-    --repo laminarizeAtGoogle/L200 \
+    --repo <OWNER>/<REPO> \
     --auto-deploy-gh
   ```
 - **Step 2: Verification & Health Check**:
@@ -87,7 +89,7 @@ last_verified: "2026-09-28"
   gcloud storage buckets describe gs://argolis-dev-sandbox-1234-tfstate
 
   # Check GitHub Action variables
-  ./bin/gh variable list -R laminarizeAtGoogle/L200
+  ./bin/gh variable list -R <OWNER>/<REPO>
   ```
 - **Step 3: Troubleshooting & Failure Modes**:
   - *Symptom*: `GitHub Actions fails with 'Failed to exchange token: 403 Forbidden'`.

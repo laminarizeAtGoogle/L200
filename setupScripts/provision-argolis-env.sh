@@ -8,42 +8,47 @@
 #   escalating to admin or performing unauthorized write operations.
 #
 # PATTERN:
-#   Zero-Privilege Base Identity (joshholtz@gcp.altostrat.com)
+#   Zero-Privilege Base Identity (<USER>@gcp.altostrat.com)
 #   - User identity holds NO direct owner/editor/creator roles.
 #   - User identity has permissions ONLY to assume (impersonate) the read-only SA.
 #   - Service Account (cloudtop-agent-reader) holds strictly read-only org roles.
 #
 # EXECUTION:
-#   Run this script as Super Admin (e.g., admin@joshholtz.altostrat.com)
+#   Run this script as Super Admin (e.g., admin@<YOUR_ARGOLIS_DOMAIN>)
 #   from Google Cloud Shell or an admin terminal session.
 # ==============================================================================
 
 set -euo pipefail
 
 # Default configuration (can be overridden via CLI flags or environment variables)
-PROJECT_ID="${PROJECT_ID:-${ARGOLIS_PROJECT_ID:-}}"
-USER_IDENTITY="${USER_IDENTITY:-joshholtz@gcp.altostrat.com}"
+ENV_PROJECT_ID="${PROJECT_ID:-${ARGOLIS_PROJECT_ID:-}}"
+PROJECT_ID=""
+DEFAULT_USER_IDENTITY="${USER_IDENTITY:-$(whoami 2>/dev/null || echo "developer")@gcp.altostrat.com}"
+USER_IDENTITY=""
 SA_NAME="${SA_NAME:-cloudtop-agent-reader}"
 ORG_ID="${ORG_ID:-}"
+CLI_PROJECT_SET="false"
+CLI_USER_SET="false"
 
 usage() {
   cat <<EOF
 Usage: $(basename "$0") [OPTIONS]
 
 Provisions the Zero-Privilege IAM boundary in an Argolis GCP environment.
+Portable across any Argolis GCP project and developer identity.
 
 Options:
   -p, --project PROJECT_ID     Target GCP project ID for hosting the Service Account.
-                               (Defaults to \$PROJECT_ID or \$ARGOLIS_PROJECT_ID)
+                               (Prompts interactively or uses active gcloud project if omitted)
   -u, --user USER_IDENTITY     Developer user email to restrict.
-                               (Default: ${USER_IDENTITY})
+                               (Default: ${DEFAULT_USER_IDENTITY})
   -s, --sa-name SA_NAME        Name of the read-only Service Account to create.
                                (Default: ${SA_NAME})
   -o, --org-id ORG_ID          Argolis Organization ID (auto-discovered if omitted).
   -h, --help                   Display this help message and exit.
 
 Example:
-  $(basename "$0") --project argolis-dev-sandbox-1234
+  $(basename "$0") --project argolis-dev-sandbox-1234 --user developer@gcp.altostrat.com
 EOF
 }
 
@@ -52,10 +57,12 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     -p|--project)
       PROJECT_ID="$2"
+      CLI_PROJECT_SET="true"
       shift 2
       ;;
     -u|--user)
       USER_IDENTITY="$2"
+      CLI_USER_SET="true"
       shift 2
       ;;
     -s|--sa-name)
@@ -78,22 +85,49 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Validate Project ID
-if [[ -z "${PROJECT_ID}" || "${PROJECT_ID}" == "<YOUR_BOOTSTRAP_OR_MANAGEMENT_PROJECT_ID>" ]]; then
-  # Try to read active gcloud project as fallback
-  ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
-  if [[ -n "${ACTIVE_GCLOUD_PROJECT}" && "${ACTIVE_GCLOUD_PROJECT}" != "(unset)" ]]; then
-    PROJECT_ID="${ACTIVE_GCLOUD_PROJECT}"
-    echo "Notice: Using active gcloud project '${PROJECT_ID}'"
+# Resolve & Validate Project ID
+ACTIVE_GCLOUD_PROJECT=$(gcloud config get-value project 2>/dev/null || true)
+if [[ "${ACTIVE_GCLOUD_PROJECT}" == "(unset)" ]]; then
+  ACTIVE_GCLOUD_PROJECT=""
+fi
+
+if [[ "${CLI_PROJECT_SET}" != "true" ]]; then
+  DEFAULT_PROJECT="${ACTIVE_GCLOUD_PROJECT:-${ENV_PROJECT_ID:-}}"
+  if [[ "${DEFAULT_PROJECT}" == "<YOUR_BOOTSTRAP_OR_MANAGEMENT_PROJECT_ID>" || "${DEFAULT_PROJECT}" == "<PROJECT_ID>" ]]; then
+    DEFAULT_PROJECT=""
+  fi
+
+  if [[ -t 0 ]]; then
+    if [[ -n "${DEFAULT_PROJECT}" ]]; then
+      read -r -p "Target GCP Project ID [${DEFAULT_PROJECT}]: " INPUT_PROJECT
+      PROJECT_ID="${INPUT_PROJECT:-${DEFAULT_PROJECT}}"
+    else
+      read -r -p "Enter Target GCP Project ID: " PROJECT_ID
+    fi
   else
-    echo "Error: PROJECT_ID is required." >&2
-    echo "Provide it with --project <PROJECT_ID> or export PROJECT_ID=<PROJECT_ID>" >&2
-    exit 1
+    PROJECT_ID="${DEFAULT_PROJECT}"
+  fi
+fi
+
+if [[ -z "${PROJECT_ID}" || "${PROJECT_ID}" == "<YOUR_BOOTSTRAP_OR_MANAGEMENT_PROJECT_ID>" || "${PROJECT_ID}" == "<PROJECT_ID>" ]]; then
+  echo "Error: PROJECT_ID is required." >&2
+  echo "Provide it with --project <PROJECT_ID> or export PROJECT_ID=<PROJECT_ID>" >&2
+  exit 1
+fi
+
+# Resolve Developer User Identity
+if [[ "${CLI_USER_SET}" != "true" ]]; then
+  if [[ -t 0 ]]; then
+    read -r -p "Developer User Identity to restrict [${DEFAULT_USER_IDENTITY}]: " INPUT_USER
+    USER_IDENTITY="${INPUT_USER:-${DEFAULT_USER_IDENTITY}}"
+  else
+    USER_IDENTITY="${DEFAULT_USER_IDENTITY}"
   fi
 fi
 
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 
+echo ""
 echo "================================================================="
 echo "Argolis Zero-Privilege IAM Security Boundary Provisioner"
 echo "================================================================="
@@ -195,7 +229,7 @@ echo "3. For Application Default Credentials (ADC):"
 echo "   gcloud auth application-default login"
 echo ""
 echo "PRIVILEGED TERRAFORM APPLIES:"
-echo "• Execute terraform apply in Google Cloud Shell authenticated as your Super Admin"
-echo "  (e.g., admin@joshholtz.altostrat.com). Your local Cloudtop never stores admin tokens."
+echo "• Execute terraform apply via GitHub Actions WIF CI/CD or in Google Cloud Shell"
+echo "  authenticated as your Super Admin (e.g., admin@<YOUR_ARGOLIS_DOMAIN>)."
+echo "  Your local Cloudtop never stores admin tokens."
 echo "================================================================="
-
