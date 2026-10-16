@@ -21,14 +21,14 @@ last_verified: "2026-10-16"
 
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `scripts`
-- **File / Directory Path**: [`setupScripts/setup-argolis-github-wif.sh`](../../../../setupScripts/setup-argolis-github-wif.sh)
+- **File / Directory Path**: [`~/workspace/setupScripts/setup-argolis-github-wif.sh`](file:///usr/local/google/home/joshholtz/workspace/setupScripts/setup-argolis-github-wif.sh) (Repository: [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts))
 - **Invocation Command / Syntax**:
   ```bash
   # Interactive setup (prompts for target GCP project & GitHub repository)
-  ./setupScripts/setup-argolis-github-wif.sh
+  ~/workspace/setupScripts/setup-argolis-github-wif.sh
 
   # Fully parameterized setup with automatic GitHub CLI variable deployment
-  ./setupScripts/setup-argolis-github-wif.sh \
+  ~/workspace/setupScripts/setup-argolis-github-wif.sh \
     --project <PROJECT_ID> \
     --repo <OWNER/REPO> \
     --auto-deploy-gh
@@ -73,7 +73,7 @@ last_verified: "2026-10-16"
 ## 4. Operational Runbook & Lifecycle
 - **Step 1: Usage / Execution**:
   ```bash
-  ./setupScripts/setup-argolis-github-wif.sh \
+  ~/workspace/setupScripts/setup-argolis-github-wif.sh \
     --project argolis-dev-sandbox-1234 \
     --repo <OWNER>/<REPO> \
     --auto-deploy-gh

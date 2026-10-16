@@ -208,7 +208,7 @@ def probe_gcp_resources_readonly(
                     "command": " ".join(cmd[1:]),
                 },
                 remediation_steps=[
-                    f"Verify that `{reader_sa}` exists and has `roles/viewer` on project `{validated.project_id}` (provision via `./setupScripts/provision-argolis-env.sh --project {validated.project_id}`).",
+                    f"Verify that `{reader_sa}` exists and has `roles/viewer` on project `{validated.project_id}` (provision via `~/workspace/setupScripts/provision-argolis-env.sh --project {validated.project_id}`).",
                     "Ensure the corresponding GCP API (e.g., compute.googleapis.com, run.googleapis.com) is enabled via Terraform.",
                 ],
                 retryable=True,

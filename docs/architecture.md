@@ -226,6 +226,6 @@ Every architectural component is documented in [`docs/knowledge_base/`](knowledg
 - **Cloud TTS Service**: [`docs/knowledge_base/codebase/cloud-tts-service.md`](knowledge_base/codebase/cloud-tts-service.md)
 - **Database Guardrail**: [`docs/knowledge_base/codebase/database-access-blocker-guardrail.md`](knowledge_base/codebase/database-access-blocker-guardrail.md)
 - **Pre-Push Credential & OSPO Sanitization Gate**: [`docs/knowledge_base/cloudtop_env/scripts/pre-command-hook.md`](knowledge_base/cloudtop_env/scripts/pre-command-hook.md)
-- **Argolis WIF & Terraform State Setup Script (`setupScripts/`)**: [`docs/knowledge_base/cloudtop_env/scripts/setup-argolis-github-wif.md`](knowledge_base/cloudtop_env/scripts/setup-argolis-github-wif.md)
-- **Argolis Zero-Privilege IAM Provisioning Script (`setupScripts/`)**: [`docs/knowledge_base/cloudtop_env/scripts/provision-argolis-env.md`](knowledge_base/cloudtop_env/scripts/provision-argolis-env.md)
+- **Argolis WIF & Terraform State Setup Script (`~/workspace/setupScripts/`)**: [`docs/knowledge_base/cloudtop_env/scripts/setup-argolis-github-wif.md`](knowledge_base/cloudtop_env/scripts/setup-argolis-github-wif.md)
+- **Argolis Zero-Privilege IAM Provisioning Script (`~/workspace/setupScripts/`)**: [`docs/knowledge_base/cloudtop_env/scripts/provision-argolis-env.md`](knowledge_base/cloudtop_env/scripts/provision-argolis-env.md)
 - **FDE & Official ADK-Python Skills Catalog**: [`docs/knowledge_base/cloudtop_env/skills/fde-and-adk-skills-suite.md`](knowledge_base/cloudtop_env/skills/fde-and-adk-skills-suite.md)

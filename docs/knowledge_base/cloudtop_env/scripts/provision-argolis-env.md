@@ -21,14 +21,14 @@ last_verified: "2026-10-16"
 
 ## 2. Cloudtop Environment Context
 - **Sub-Category**: `scripts`
-- **File / Directory Path**: [`setupScripts/provision-argolis-env.sh`](../../../../setupScripts/provision-argolis-env.sh)
+- **File / Directory Path**: [`~/workspace/setupScripts/provision-argolis-env.sh`](file:///usr/local/google/home/joshholtz/workspace/setupScripts/provision-argolis-env.sh) (Repository: [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts))
 - **Invocation Command / Syntax**:
   ```bash
   # Execute with explicit target project
-  ./setupScripts/provision-argolis-env.sh --project <PROJECT_ID>
+  ~/workspace/setupScripts/provision-argolis-env.sh --project <PROJECT_ID>
 
   # Custom developer user and service account name
-  ./setupScripts/provision-argolis-env.sh \
+  ~/workspace/setupScripts/provision-argolis-env.sh \
     --project <PROJECT_ID> \
     --user <USER_EMAIL> \
     --sa-name cloudtop-agent-reader
@@ -61,7 +61,7 @@ last_verified: "2026-10-16"
 - **Step 1: Usage / Execution (from Google Cloud Shell or Admin session)**:
   ```bash
   gcloud auth login admin@<YOUR_ARGOLIS_DOMAIN>
-  ./setupScripts/provision-argolis-env.sh --project argolis-dev-sandbox-1234
+  ~/workspace/setupScripts/provision-argolis-env.sh --project argolis-dev-sandbox-1234
   ```
 - **Step 2: Verification & Impersonation Validation**:
   ```bash
