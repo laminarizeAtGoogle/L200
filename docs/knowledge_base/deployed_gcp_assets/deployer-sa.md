@@ -28,7 +28,7 @@ The `github-terraform-deployer` service account is the privileged deployment ide
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Provisioner: [`scripts/setup-argolis-github-wif.sh`](../../../scripts/setup-argolis-github-wif.sh)
+  - Provisioner: [`setupScripts/setup-argolis-github-wif.sh`](../../../setupScripts/setup-argolis-github-wif.sh)
 - **Principal Email**:
   `github-terraform-deployer@<PROJECT_ID>.iam.gserviceaccount.com`
 - **IAM Roles Granted**:
@@ -38,7 +38,7 @@ The `github-terraform-deployer` service account is the privileged deployment ide
 
 ## 4. Operational Runbook & Lifecycle
 - **Provisioning & Deployment**:
-  - Automated by `./scripts/setup-argolis-github-wif.sh`.
+  - Automated by `./setupScripts/setup-argolis-github-wif.sh`.
 - **Verification & Health Checks**:
   ```bash
   gcloud iam service-accounts describe github-terraform-deployer@<PROJECT_ID>.iam.gserviceaccount.com

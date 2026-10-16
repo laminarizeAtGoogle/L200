@@ -403,7 +403,7 @@ def configure_cross_project_wif_federation(
         target a different GCP project via keyless OIDC Workload Identity
         Federation. Generates the WIF onboarding manifest
         (`.factory_wif_manifest.json`) and provides the exact provisioning
-        invocation for `scripts/setup-argolis-github-wif.sh`.
+        invocation for `setupScripts/setup-argolis-github-wif.sh`.
 
     Args:
         workspace_path: Target workspace filesystem path.
@@ -502,7 +502,7 @@ def configure_cross_project_wif_federation(
             f"workloadIdentityPools/{validated.workload_identity_pool}/"
             f"providers/{validated.workload_identity_provider}"
         )
-        setup_script = WORKSPACE_ROOT / "scripts" / "setup-argolis-github-wif.sh"
+        setup_script = WORKSPACE_ROOT / "setupScripts" / "setup-argolis-github-wif.sh"
 
         wif_manifest = {
             "target_workspace": str(target_dir),

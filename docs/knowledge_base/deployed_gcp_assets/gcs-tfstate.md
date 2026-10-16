@@ -29,7 +29,7 @@ The Remote Terraform State Bucket provides secure, centralized, and versioned st
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
   - Backend configuration: [`terraform/backend.tf.example`](../../../terraform/backend.tf.example)
-  - Bucket provisioner: [`scripts/setup-argolis-github-wif.sh`](../../../scripts/setup-argolis-github-wif.sh)
+  - Bucket provisioner: [`setupScripts/setup-argolis-github-wif.sh`](../../../setupScripts/setup-argolis-github-wif.sh)
 - **Bucket Name Pattern**: `<PROJECT_ID>-tfstate`
 - **Location**: Multi-region `US` or regional `us-central1`.
 - **Security Features**:
@@ -41,7 +41,7 @@ The Remote Terraform State Bucket provides secure, centralized, and versioned st
 ## 4. Operational Runbook & Lifecycle
 - **Provisioning & Deployment**:
   ```bash
-  ./scripts/setup-argolis-github-wif.sh --project <PROJECT_ID> --repo <OWNER/REPO>
+  ./setupScripts/setup-argolis-github-wif.sh --project <PROJECT_ID> --repo <OWNER/REPO>
   ```
 - **Verification & Health Checks**:
   ```bash
