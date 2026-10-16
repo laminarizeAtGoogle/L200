@@ -1,3 +1,6 @@
 [submodule ".agents"]
 	path = .agents
 	url = https://github.com/cloud-ai-fde/fde-agent-factory.git
+[submodule "setupScripts"]
+	path = setupScripts
+	url = https://github.com/cloud-ai-fde/joshholtz-setupscripts.git
