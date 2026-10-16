@@ -27,7 +27,7 @@ Workload Identity Federation (WIF) enables GitHub Actions workflows to authentic
 
 ## 3. Technical Specifications & Configuration
 - **Implementation Path(s)**:
-  - Provisioning script: [`setupScripts/setup-argolis-github-wif.sh`](../../../setupScripts/setup-argolis-github-wif.sh)
+  - Provisioning script: [`setup-argolis-github-wif.sh`](file:///usr/local/google/home/joshholtz/workspace/setupScripts/setup-argolis-github-wif.sh) in [`cloud-ai-fde/joshholtz-setupscripts`](https://github.com/cloud-ai-fde/joshholtz-setupscripts)
 - **Protocols & Interfaces**: HTTPS / OIDC (OpenID Connect v1.0) / OAuth 2.0 Token Exchange (RFC 8693).
 - **GCP Resource Hierarchy**:
   - Pool: `projects/<PROJECT_NUMBER>/locations/global/workloadIdentityPools/github-actions-pool`
@@ -44,7 +44,7 @@ Workload Identity Federation (WIF) enables GitHub Actions workflows to authentic
 ## 4. Operational Runbook & Lifecycle
 - **Provisioning & Deployment**:
   ```bash
-  ./setupScripts/setup-argolis-github-wif.sh --project <PROJECT_ID> --repo <OWNER/REPO>
+  ~/workspace/setupScripts/setup-argolis-github-wif.sh --project <PROJECT_ID> --repo <OWNER/REPO>
   ```
 - **Verification & Health Checks**:
   ```bash
